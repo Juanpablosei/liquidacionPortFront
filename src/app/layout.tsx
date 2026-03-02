@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Toaster } from 'sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthHydrator } from '@/components/auth-hydrator';
 import './globals.css';
 
@@ -30,8 +31,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <AuthHydrator />
-        {children}
+        <TooltipProvider>
+          <AuthHydrator />
+          {children}
+        </TooltipProvider>
         <Toaster
           position="bottom-right"
           richColors

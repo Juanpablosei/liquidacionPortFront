@@ -17,6 +17,8 @@ export function AuthHydrator() {
       try {
         const data = await refreshTokens(refreshToken);
         setTokens(data.accessToken, data.refreshToken);
+        // Restaurar cookie para que el proxy.ts permita el acceso al dashboard
+        document.cookie = 'auth-token=1; path=/; SameSite=Lax';
       } catch {
         logout();
       } finally {

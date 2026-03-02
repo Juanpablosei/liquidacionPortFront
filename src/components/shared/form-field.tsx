@@ -27,18 +27,18 @@ export function FormField({
       <Label
         htmlFor={name}
         className={cn(
-          'text-sm font-medium text-[#0F172A]',
-          required && "after:content-['*'] after:ml-0.5 after:text-[#DC2626]",
+          'text-sm font-medium text-slate-300',
+          required && "after:content-['*'] after:ml-0.5 after:text-red-400",
         )}
       >
         {label}
       </Label>
       {children}
       {hint && !error && (
-        <p className="text-xs text-[#64748B]">{hint}</p>
+        <p className="text-xs text-slate-500">{hint}</p>
       )}
       {error && (
-        <p className="text-xs text-[#DC2626]">{error}</p>
+        <p className="text-xs text-red-400">{error}</p>
       )}
     </div>
   );

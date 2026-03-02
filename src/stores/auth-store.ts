@@ -25,11 +25,19 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading:       true,
 
-      login: (user, accessToken, refreshToken) =>
-        set({ user, accessToken, refreshToken, isAuthenticated: true, isLoading: false }),
+      login: (user, accessToken, refreshToken) => {
+        if (typeof document !== 'undefined') {
+          document.cookie = 'auth-token=1; path=/; SameSite=Lax';
+        }
+        set({ user, accessToken, refreshToken, isAuthenticated: true, isLoading: false });
+      },
 
-      logout: () =>
-        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false }),
+      logout: () => {
+        if (typeof document !== 'undefined') {
+          document.cookie = 'auth-token=; path=/; max-age=0; SameSite=Lax';
+        }
+        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+      },
 
       setTokens: (accessToken, refreshToken) =>
         set({ accessToken, refreshToken }),
