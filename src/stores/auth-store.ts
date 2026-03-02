@@ -29,6 +29,11 @@ export const useAuthStore = create<AuthState>()(
         if (typeof document !== 'undefined') {
           document.cookie = 'auth-token=1; path=/; SameSite=Lax';
         }
+        // Debug: lo que guardamos en el store (Zustand persist lo escribe en localStorage)
+        console.log('[AuthStore] login() — guardando en store (y localStorage):', {
+          accessToken: accessToken ? `${accessToken.slice(0, 20)}...` : null,
+          refreshToken: refreshToken ? `${refreshToken.slice(0, 20)}...` : null,
+        });
         set({ user, accessToken, refreshToken, isAuthenticated: true, isLoading: false });
       },
 
@@ -40,7 +45,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       setTokens: (accessToken, refreshToken) =>
-        set({ accessToken, refreshToken }),
+        set({ accessToken, refreshToken, isAuthenticated: true }),
 
       setUser: (user) =>
         set({ user }),
@@ -52,6 +57,7 @@ export const useAuthStore = create<AuthState>()(
       name:    'auth-storage',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
+        accessToken:     state.accessToken,
         refreshToken:    state.refreshToken,
         user:            state.user,
         isAuthenticated: state.isAuthenticated,

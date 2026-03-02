@@ -45,8 +45,9 @@ export default function CompanyDashboardPage() {
     ])
       .then(([co, mems]) => {
         setCompany(co);
-        setMembers(mems);
-        const membership = mems.find((m) => m.userId === user?.id);
+        const list = Array.isArray(mems) ? mems : [];
+        setMembers(list);
+        const membership = list.find((m) => m.userId === user?.id);
         if (membership) {
           setActiveCompany(co, membership);
         }

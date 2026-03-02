@@ -17,28 +17,77 @@ export interface LoginResponse {
   expiresIn:    number;
 }
 
+/** Backend devuelve doble anidación: apiFetch retorna data; los tokens están en data.data. */
+function unwrapLoginResponse(raw: unknown): LoginResponse {
+  const obj = raw as Record<string, unknown>;
+  const inner =
+    obj?.data && typeof obj.data === 'object' && 'accessToken' in (obj.data as object)
+      ? (obj.data as Record<string, unknown>)
+      : obj?.data && typeof obj.data === 'object' && 'data' in obj.data
+        ? (obj.data as Record<string, unknown>).data
+        : obj;
+  const payload = (inner ?? obj) as Record<string, unknown>;
+  return {
+    user:         payload.user as User,
+    accessToken:  String(payload.accessToken ?? ''),
+    refreshToken: String(payload.refreshToken ?? ''),
+    expiresIn:   Number(payload.expiresIn ?? 0),
+  };
+}
+
 export async function login(dto: LoginDto): Promise<LoginResponse> {
-  return apiFetch<LoginResponse>(API.auth.login, {
+  const raw = await apiFetch<LoginResponse | { data: { data?: Record<string, unknown> } }>(API.auth.login, {
     method:   'POST',
     body:     JSON.stringify(dto),
     skipAuth: true,
   });
+  const res = unwrapLoginResponse(raw);
+  if (!res.user && res.accessToken) {
+    const { useAuthStore } = await import('@/stores/auth-store');
+    useAuthStore.getState().setTokens(res.accessToken, res.refreshToken);
+    res.user = await getMe();
+  }
+  return res;
 }
 
 export async function register(dto: RegisterDto): Promise<LoginResponse> {
-  return apiFetch<LoginResponse>(API.auth.register, {
+  const raw = await apiFetch<LoginResponse | { data: LoginResponse | { data?: Record<string, unknown> } }>(API.auth.register, {
     method:   'POST',
     body:     JSON.stringify(dto),
     skipAuth: true,
   });
+  const res = unwrapLoginResponse(raw);
+  if (!res.user && res.accessToken) {
+    const { useAuthStore } = await import('@/stores/auth-store');
+    useAuthStore.getState().setTokens(res.accessToken, res.refreshToken);
+    res.user = await getMe();
+  }
+  return res;
+}
+
+function unwrapTokenResponse(raw: unknown): TokenResponse {
+  const obj = raw as Record<string, unknown>;
+  const inner =
+    obj?.data && typeof obj.data === 'object' && 'accessToken' in (obj.data as object)
+      ? (obj.data as Record<string, unknown>)
+      : obj?.data && typeof obj.data === 'object' && 'data' in obj.data
+        ? (obj.data as Record<string, unknown>).data
+        : obj;
+  const p = (inner ?? obj) as Record<string, unknown>;
+  return {
+    accessToken:  String(p.accessToken ?? ''),
+    refreshToken: String(p.refreshToken ?? ''),
+    expiresIn:   Number(p.expiresIn ?? 0),
+  };
 }
 
 export async function refreshTokens(refreshToken: string): Promise<TokenResponse> {
-  return apiFetch<TokenResponse>(API.auth.refresh, {
+  const raw = await apiFetch<TokenResponse | { data: TokenResponse | { data: TokenResponse } }>(API.auth.refresh, {
     method:   'POST',
     body:     JSON.stringify({ refreshToken }),
     skipAuth: true,
   });
+  return unwrapTokenResponse(raw);
 }
 
 export async function logout(): Promise<void> {

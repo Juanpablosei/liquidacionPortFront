@@ -31,7 +31,24 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await loginApi(data);
+      // Debug: token que devolvió el backend (se guarda en localStorage vía auth-store)
+      console.log('[Login] Token del backend:', {
+        accessToken: res.accessToken,
+        refreshToken: res.refreshToken,
+        accessTokenLength: res.accessToken?.length,
+      });
       loginStore(res.user, res.accessToken, res.refreshToken);
+      // Verificar que quedó en localStorage (Zustand persist escribe de forma asíncrona)
+      setTimeout(() => {
+        const stored = localStorage.getItem('auth-storage');
+        const parsed = stored ? JSON.parse(stored) : null;
+        console.log('[Login] En localStorage (auth-storage):', parsed);
+        if (parsed?.state?.accessToken) {
+          console.log('[Login] accessToken en storage OK, longitud:', parsed.state.accessToken.length);
+        } else {
+          console.warn('[Login] accessToken NO está en localStorage');
+        }
+      }, 100);
       router.push(ROUTES.companies);
     } catch (err) {
       if (err instanceof ApiRequestError) {

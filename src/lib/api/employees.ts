@@ -3,6 +3,25 @@ import { API } from '@/lib/constants/api-endpoints';
 import type { Employee } from '@/lib/types/employee';
 import type { PaginatedResponse } from '@/lib/types/api';
 
+/** Backend devuelve { items, total, page, limit, pages }; apiFetch ya retorna data, normalizamos por si viene anidado. */
+function toPaginated<T>(raw: unknown): PaginatedResponse<T> {
+  const obj =
+    raw && typeof raw === 'object' && 'items' in (raw as object)
+      ? raw
+      : raw && typeof raw === 'object' && 'data' in (raw as object)
+        ? (raw as { data: unknown }).data
+        : raw;
+  const o = (obj && typeof obj === 'object' ? obj : {}) as Record<string, unknown>;
+  const items = Array.isArray(o.items) ? (o.items as T[]) : [];
+  return {
+    items,
+    total:  Number(o.total ?? items.length),
+    page:   Number(o.page ?? 1),
+    limit:  Number(o.limit ?? 20),
+    pages:  Number(o.pages ?? 1),
+  };
+}
+
 export interface CreateEmployeeDto {
   documentType:   string;
   documentNumber: string;
@@ -46,7 +65,9 @@ export function listEmployees(
   if (params.search)              query.set('search', params.search);
   if (params.isActive !== undefined) query.set('isActive', String(params.isActive));
   const qs = query.toString();
-  return apiFetch(`${API.employees.list(companyId)}${qs ? `?${qs}` : ''}`);
+  return apiFetch<PaginatedResponse<Employee> | { data: PaginatedResponse<Employee> }>(
+    `${API.employees.list(companyId)}${qs ? `?${qs}` : ''}`,
+  ).then(toPaginated);
 }
 
 export function getEmployee(companyId: string, employeeId: string): Promise<Employee> {

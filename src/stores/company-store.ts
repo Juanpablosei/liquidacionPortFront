@@ -26,7 +26,7 @@ export const useCompanyStore = create<CompanyState>()(
         set({ activeCompany: company, membership, role: membership.role }),
 
       setCompanies: (companies) =>
-        set({ companies }),
+        set({ companies: Array.isArray(companies) ? companies : [] }),
 
       clearCompany: () =>
         set({ activeCompany: null, membership: null, role: null }),

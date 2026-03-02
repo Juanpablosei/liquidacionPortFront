@@ -1,40 +1,33 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { refreshTokens } from '@/lib/api/auth';
 
 export function AuthHydrator() {
-  // Previene doble ejecución en React Strict Mode (desarrollo):
-  // React monta → efecto → "desmonta" → vuelve a montar → efecto de nuevo.
-  // Sin este guard, ambas ejecuciones leen el mismo refreshToken antes de que
-  // la primera lo rote, la segunda falla y llama logout().
-  const ran = useRef(false);
-
   useEffect(() => {
-    if (ran.current) return;
-    ran.current = true;
-
-    (async () => {
-      // getState() lee el store EN ESTE MOMENTO (después de que Zustand persist
-      // ya hidró desde localStorage con su setTimeout interno).
-      const { refreshToken, user, login, logout, hydrate } = useAuthStore.getState();
+    async function hydrateAuth() {
+      // Leer desde getState() garantiza el estado más reciente,
+      // incluyendo el ya rehidratado desde localStorage por Zustand persist.
+      const { refreshToken, setTokens, logout, hydrate } = useAuthStore.getState();
 
       if (!refreshToken) {
-        hydrate(); // Sin sesión → terminar loading, redirigirá a /login
+        hydrate();
         return;
       }
 
       try {
         const data = await refreshTokens(refreshToken);
-        // login() ya setea isAuthenticated: true, isLoading: false y la cookie
-        login(user!, data.accessToken, data.refreshToken);
+        setTokens(data.accessToken, data.refreshToken);
+        document.cookie = 'auth-token=1; path=/; SameSite=Lax';
       } catch {
-        // Refresh falló (token expirado o backend no disponible) → cerrar sesión
-        logout(); // logout() ya limpia la cookie
-        hydrate(); // terminar loading para que el layout redirija
+        logout();
+      } finally {
+        useAuthStore.getState().hydrate();
       }
-    })();
+    }
+
+    hydrateAuth();
   }, []);
 
   return null;

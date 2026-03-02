@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Building2, Plus, Users, ArrowRight, Briefcase } from 'lucide-react';
+import { Building2, Plus, ArrowRight } from 'lucide-react';
 import { useCompanyStore } from '@/stores/company-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { listCompanies } from '@/lib/api/companies';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
@@ -12,19 +12,21 @@ import { EmptyState } from '@/components/shared/empty-state';
 import type { Company } from '@/lib/types/company';
 
 export default function CompaniesPage() {
-  const router = useRouter();
-  const { companies, setCompanies, setActiveCompany, clearCompany } = useCompanyStore();
+  const { companies, setCompanies, clearCompany } = useCompanyStore();
+  const { isAuthenticated, isLoading: authLoading } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
+  const companyList = Array.isArray(companies) ? companies : [];
 
   useEffect(() => {
     clearCompany();
+    if (authLoading || !isAuthenticated) return;
     listCompanies()
       .then((data) => {
         setCompanies(data);
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [setCompanies, clearCompany]);
+  }, [authLoading, isAuthenticated, setCompanies, clearCompany]);
 
   return (
     <>
@@ -61,7 +63,7 @@ export default function CompaniesPage() {
             </div>
           ))}
         </div>
-      ) : companies.length === 0 ? (
+      ) : companyList.length === 0 ? (
         <EmptyState
           icon={<Building2 className="w-6 h-6" />}
           title="Todavía no tenés empresas"
@@ -78,7 +80,7 @@ export default function CompaniesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {companies.map((company) => (
+          {companyList.map((company) => (
             <CompanyCard key={company.id} company={company} />
           ))}
 

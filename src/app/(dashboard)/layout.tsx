@@ -20,12 +20,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   }, [isLoading, isAuthenticated, router]);
 
+  // Solo fetchear empresas DESPUÉS de que AuthHydrator termine (isLoading: false)
+  // para evitar que la llamada corra sin accessToken y consuma el refreshToken
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (isLoading || !isAuthenticated) return;
     listCompanies()
       .then(setCompanies)
       .catch(() => {});
-  }, [isAuthenticated, setCompanies]);
+  }, [isLoading, isAuthenticated, setCompanies]);
 
   // Spinner solo mientras se verifica la sesión (isLoading).
   if (isLoading) {

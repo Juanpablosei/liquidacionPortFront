@@ -19,7 +19,8 @@ async function refreshAccessToken(): Promise<string | null> {
     if (!res.ok) throw new Error('Refresh failed');
 
     const json = await res.json();
-    const { accessToken: newAccess, refreshToken: newRefresh } = json.data;
+    const data = json.data?.data && typeof json.data.data === 'object' ? json.data.data : json.data;
+    const { accessToken: newAccess, refreshToken: newRefresh } = data;
     setTokens(newAccess, newRefresh);
     return newAccess;
   } catch {

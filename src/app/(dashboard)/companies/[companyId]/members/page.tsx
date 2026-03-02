@@ -74,7 +74,7 @@ export default function MembersPage() {
   async function fetchMembers() {
     try {
       const data = await listMembers(companyId);
-      setMembers(data);
+      setMembers(Array.isArray(data) ? data : []);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Error al cargar miembros');
     } finally {
@@ -124,7 +124,8 @@ export default function MembersPage() {
     }
   }
 
-  const currentUserRole = members.find((m) => m.userId === user?.id)?.role;
+  const memberList = Array.isArray(members) ? members : [];
+  const currentUserRole = memberList.find((m) => m.userId === user?.id)?.role;
 
   return (
     <>
@@ -147,7 +148,7 @@ export default function MembersPage() {
 
       {isLoading ? (
         <MembersSkeleton />
-      ) : members.length === 0 ? (
+      ) : memberList.length === 0 ? (
         <EmptyState title="Sin miembros" description="Esta empresa aún no tiene miembros." />
       ) : (
         <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-hidden">
@@ -161,7 +162,7 @@ export default function MembersPage() {
               </tr>
             </thead>
             <tbody>
-              {members.map((member) => {
+              {memberList.map((member) => {
                 const memberUser  = member.user;
                 const isCurrentUser = member.userId === user?.id;
                 const isOwnerRow    = member.role === 'OWNER';

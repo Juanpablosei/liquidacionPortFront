@@ -25,8 +25,19 @@ export interface UpdateMemberDto {
   role: CompanyRole;
 }
 
+/** Backend puede devolver T[] o { items: T[] } o { data: T[] }; normalizamos a array. */
+function toArray<T>(raw: unknown): T[] {
+  if (Array.isArray(raw)) return raw as T[];
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    if (Array.isArray(o.items)) return o.items as T[];
+    if (Array.isArray(o.data)) return o.data as T[];
+  }
+  return [];
+}
+
 export function listCompanies(): Promise<Company[]> {
-  return apiFetch(API.companies.list);
+  return apiFetch<Company[] | { items?: Company[]; data?: Company[] }>(API.companies.list).then((r) => toArray<Company>(r));
 }
 
 export function createCompany(data: CreateCompanyDto): Promise<Company> {
@@ -48,7 +59,7 @@ export function updateCompany(id: string, data: UpdateCompanyDto): Promise<Compa
 }
 
 export function listMembers(companyId: string): Promise<CompanyUser[]> {
-  return apiFetch(API.companies.members(companyId));
+  return apiFetch<CompanyUser[] | { items?: CompanyUser[]; data?: CompanyUser[] }>(API.companies.members(companyId)).then((r) => toArray<CompanyUser>(r));
 }
 
 export function addMember(companyId: string, data: AddMemberDto): Promise<CompanyUser> {
