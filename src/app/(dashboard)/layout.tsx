@@ -27,6 +27,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       .catch(() => {});
   }, [isAuthenticated, setCompanies]);
 
+  // Spinner solo mientras se verifica la sesión (isLoading).
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#0A0F1C] flex items-center justify-center">
@@ -35,7 +36,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  if (!isAuthenticated) return null;
+  // Sin sesión: fondo oscuro (nunca blanco) mientras el useEffect
+  // ejecuta router.replace('/login'). No se renderiza contenido protegido.
+  if (!isAuthenticated) {
+    return <div className="min-h-screen bg-[#0A0F1C]" />;
+  }
 
   return (
     <div className="flex h-screen bg-[#0A0F1C] overflow-hidden">

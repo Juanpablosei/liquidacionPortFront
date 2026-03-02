@@ -1,0 +1,131 @@
+'use client';
+
+import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  type ColumnDef,
+} from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { EmptyState } from '@/components/shared/empty-state';
+
+interface DataTableProps<T> {
+  columns:       ColumnDef<T>[];
+  data:          T[];
+  total:         number;
+  page:          number;
+  limit:         number;
+  isLoading?:    boolean;
+  onPageChange:  (page: number) => void;
+  onRowClick?:   (row: T) => void;
+  emptyMessage?: string;
+}
+
+export function DataTable<T>({
+  columns,
+  data,
+  total,
+  page,
+  limit,
+  isLoading    = false,
+  onPageChange,
+  onRowClick,
+  emptyMessage = 'No hay datos para mostrar.',
+}: DataTableProps<T>) {
+  const pages = Math.max(1, Math.ceil(total / limit));
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    manualPagination: true,
+    pageCount: pages,
+  });
+
+  return (
+    <div className="flex flex-col gap-0">
+      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+        <table className="w-full text-sm">
+          <thead>
+            {table.getHeaderGroups().map((hg) => (
+              <tr key={hg.id} className="border-b border-white/[0.06]">
+                {hg.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap"
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+
+          <tbody>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className="border-b border-white/[0.04]">
+                  {columns.map((_, j) => (
+                    <td key={j} className="px-4 py-3">
+                      <div className="h-4 bg-white/[0.05] rounded animate-pulse" />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length}>
+                  <EmptyState title={emptyMessage} />
+                </td>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  className={[
+                    'border-b border-white/[0.04] last:border-0 transition-colors',
+                    'even:bg-white/[0.01]',
+                    onRowClick ? 'cursor-pointer hover:bg-white/[0.04]' : '',
+                  ].join(' ')}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-3 text-slate-300">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {!isLoading && total > 0 && (
+        <div className="flex items-center justify-between px-1 pt-3">
+          <span className="text-xs text-slate-500">
+            {total} {total === 1 ? 'registro' : 'registros'} · Página {page} de {pages}
+          </span>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onPageChange(page - 1)}
+              disabled={page <= 1}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => onPageChange(page + 1)}
+              disabled={page >= pages}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,34 +1,40 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
 import { refreshTokens } from '@/lib/api/auth';
 
 export function AuthHydrator() {
-  const { refreshToken, setTokens, logout, hydrate } = useAuthStore();
+  // Previene doble ejecución en React Strict Mode (desarrollo):
+  // React monta → efecto → "desmonta" → vuelve a montar → efecto de nuevo.
+  // Sin este guard, ambas ejecuciones leen el mismo refreshToken antes de que
+  // la primera lo rote, la segunda falla y llama logout().
+  const ran = useRef(false);
 
   useEffect(() => {
-    async function hydrateAuth() {
+    if (ran.current) return;
+    ran.current = true;
+
+    (async () => {
+      // getState() lee el store EN ESTE MOMENTO (después de que Zustand persist
+      // ya hidró desde localStorage con su setTimeout interno).
+      const { refreshToken, user, login, logout, hydrate } = useAuthStore.getState();
+
       if (!refreshToken) {
-        hydrate();
+        hydrate(); // Sin sesión → terminar loading, redirigirá a /login
         return;
       }
 
       try {
         const data = await refreshTokens(refreshToken);
-        setTokens(data.accessToken, data.refreshToken);
-        // Restaurar cookie para que el proxy.ts permita el acceso al dashboard
-        document.cookie = 'auth-token=1; path=/; SameSite=Lax';
+        // login() ya setea isAuthenticated: true, isLoading: false y la cookie
+        login(user!, data.accessToken, data.refreshToken);
       } catch {
-        logout();
-      } finally {
-        hydrate();
+        // Refresh falló (token expirado o backend no disponible) → cerrar sesión
+        logout(); // logout() ya limpia la cookie
+        hydrate(); // terminar loading para que el layout redirija
       }
-    }
-
-    hydrateAuth();
-  // Solo ejecutar al montar
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    })();
   }, []);
 
   return null;
