@@ -99,7 +99,13 @@ export async function logoutAll(): Promise<void> {
 }
 
 export async function getMe(): Promise<User> {
-  return apiFetch<User>(API.auth.me);
+  const raw = await apiFetch<unknown>(API.auth.me);
+  const obj = raw as Record<string, unknown>;
+  // El backend puede devolver doble anidación: { success, data: { id, email... } }
+  if (obj?.data && typeof obj.data === 'object' && 'id' in (obj.data as object)) {
+    return obj.data as User;
+  }
+  return raw as User;
 }
 
 export async function getSessions(): Promise<UserSession[]> {
@@ -134,8 +140,12 @@ export async function confirmEmail(token: string): Promise<void> {
   });
 }
 
-export async function sendConfirmationEmail(): Promise<void> {
-  return apiFetch<void>(API.auth.sendConfirmationEmail, { method: 'POST' });
+export async function sendConfirmationEmail(email: string): Promise<void> {
+  return apiFetch<void>(API.auth.sendConfirmationEmail, {
+    method:   'POST',
+    body:     JSON.stringify({ email }),
+    skipAuth: true,
+  });
 }
 
 export async function changePassword(dto: ChangePasswordDto): Promise<void> {

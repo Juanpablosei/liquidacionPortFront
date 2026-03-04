@@ -15,48 +15,73 @@ import {
   Settings2,
   ArrowRight,
 } from 'lucide-react';
-import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
 import { getCompany, listMembers } from '@/lib/api/companies';
+import { listEmployees } from '@/lib/api/employees';
+import { listRuns, listPeriods } from '@/lib/api/payroll';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { StatCard } from '@/components/shared/stat-card';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { usePermissions } from '@/lib/hooks/use-permissions';
 import type { Company, CompanyUser } from '@/lib/types/company';
+import type { PayrollRun, PayrollPeriod } from '@/lib/types/payroll';
+
+const RUN_STATUS_LABELS: Record<string, string> = {
+  DRAFT:     'Borrador',
+  RUNNING:   'Calculando',
+  COMPLETED: 'Calculado',
+  CLOSED:    'Cerrado',
+};
+
+function formatPeriodRange(start: string, end: string): string {
+  const fmt = (d: string) => {
+    const iso = d.includes('T') ? d : d + 'T00:00:00';
+    return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
+  };
+  return `${fmt(start)} → ${fmt(end)}`;
+}
 
 export default function CompanyDashboardPage() {
   const { companyId } = useParams<{ companyId: string }>();
-  const { user } = useAuthStore();
-  const { setActiveCompany, activeCompany } = useCompanyStore();
+  const { setActiveCompany } = useCompanyStore();
   const { role } = usePermissions();
 
-  const [company,  setCompany]  = useState<Company | null>(null);
-  const [members,  setMembers]  = useState<CompanyUser[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [company,       setCompany]       = useState<Company | null>(null);
+  const [members,       setMembers]       = useState<CompanyUser[]>([]);
+  const [activeEmpCount, setActiveEmpCount] = useState<number | null>(null);
+  const [lastRun,       setLastRun]       = useState<PayrollRun | null>(null);
+  const [lastRunPeriod, setLastRunPeriod] = useState<PayrollPeriod | null>(null);
+  const [isLoading,     setIsLoading]     = useState(true);
 
   useEffect(() => {
     if (!companyId) return;
 
     setIsLoading(true);
-    Promise.all([
-      getCompany(companyId),
-      listMembers(companyId),
-    ])
-      .then(([co, mems]) => {
+    getCompany(companyId)
+      .then(async (co) => {
         setCompany(co);
-        const list = Array.isArray(mems) ? mems : [];
-        setMembers(list);
-        const membership = list.find((m) => m.userId === user?.id);
-        if (membership) {
-          setActiveCompany(co, membership);
+        if (co.myRole) setActiveCompany(co, co.myRole);
+        const [mems, empRes, runs, periods] = await Promise.all([
+          listMembers(companyId).catch(() => []),
+          listEmployees(companyId, { limit: 1, isActive: true }).catch(() => null),
+          listRuns(companyId).catch(() => []),
+          listPeriods(companyId).catch(() => []),
+        ]);
+        setMembers(Array.isArray(mems) ? mems : []);
+        if (empRes) setActiveEmpCount(empRes.total);
+        if (runs.length > 0) {
+          const sorted = [...runs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          setLastRun(sorted[0]);
+          const period = periods.find((p) => p.id === sorted[0].periodId);
+          if (period) setLastRunPeriod(period);
         }
       })
       .catch((err: Error) => {
         toast.error(err.message ?? 'No se pudo cargar la empresa');
       })
       .finally(() => setIsLoading(false));
-  }, [companyId, user?.id, setActiveCompany]);
+  }, [companyId, setActiveCompany]);
 
   if (isLoading) return <DashboardSkeleton />;
   if (!company) return null;
@@ -83,16 +108,15 @@ export default function CompanyDashboardPage() {
         />
         <StatCard
           title="Empleados activos"
-          value="—"
+          value={activeEmpCount ?? '—'}
           icon={<UserCog className="w-4 h-4" />}
-          description="Próximamente disponible"
           href={ROUTES.employees(companyId)}
         />
         <StatCard
-          title="Último run"
-          value="—"
+          title="Última liquidación"
+          value={lastRun ? RUN_STATUS_LABELS[lastRun.status] : 'Sin runs'}
           icon={<Receipt className="w-4 h-4" />}
-          description="Próximamente disponible"
+          description={lastRunPeriod?.name ?? (lastRunPeriod ? formatPeriodRange(lastRunPeriod.startDate, lastRunPeriod.endDate) : undefined)}
           href={ROUTES.payroll(companyId)}
         />
         <StatCard

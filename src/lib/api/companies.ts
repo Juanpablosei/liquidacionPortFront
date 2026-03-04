@@ -17,8 +17,8 @@ export interface UpdateCompanyDto {
 }
 
 export interface AddMemberDto {
-  email: string;
-  role:  Exclude<CompanyRole, 'OWNER'>;
+  userId: string;
+  role:   Exclude<CompanyRole, 'OWNER'>;
 }
 
 export interface UpdateMemberDto {
@@ -36,26 +36,35 @@ function toArray<T>(raw: unknown): T[] {
   return [];
 }
 
+/** Backend devuelve doble anidación para objetos individuales: apiFetch retorna data; el objeto real está en data.data. */
+function unwrapObject<T extends object>(raw: unknown, key: keyof T): T {
+  const obj = raw as Record<string, unknown>;
+  if (obj?.data && typeof obj.data === 'object' && key in (obj.data as object)) {
+    return obj.data as T;
+  }
+  return raw as T;
+}
+
 export function listCompanies(): Promise<Company[]> {
   return apiFetch<Company[] | { items?: Company[]; data?: Company[] }>(API.companies.list).then((r) => toArray<Company>(r));
 }
 
 export function createCompany(data: CreateCompanyDto): Promise<Company> {
-  return apiFetch(API.companies.create, {
+  return apiFetch<unknown>(API.companies.create, {
     method: 'POST',
     body:   JSON.stringify(data),
-  });
+  }).then((r) => unwrapObject<Company>(r, 'id'));
 }
 
 export function getCompany(id: string): Promise<Company> {
-  return apiFetch(API.companies.detail(id));
+  return apiFetch<unknown>(API.companies.detail(id)).then((r) => unwrapObject<Company>(r, 'id'));
 }
 
 export function updateCompany(id: string, data: UpdateCompanyDto): Promise<Company> {
-  return apiFetch(API.companies.update(id), {
+  return apiFetch<unknown>(API.companies.update(id), {
     method: 'PATCH',
     body:   JSON.stringify(data),
-  });
+  }).then((r) => unwrapObject<Company>(r, 'id'));
 }
 
 export function listMembers(companyId: string): Promise<CompanyUser[]> {
@@ -63,10 +72,10 @@ export function listMembers(companyId: string): Promise<CompanyUser[]> {
 }
 
 export function addMember(companyId: string, data: AddMemberDto): Promise<CompanyUser> {
-  return apiFetch(API.companies.members(companyId), {
+  return apiFetch<unknown>(API.companies.members(companyId), {
     method: 'POST',
     body:   JSON.stringify(data),
-  });
+  }).then((r) => unwrapObject<CompanyUser>(r, 'id'));
 }
 
 export function updateMember(
@@ -74,10 +83,10 @@ export function updateMember(
   userId:    string,
   data:      UpdateMemberDto,
 ): Promise<CompanyUser> {
-  return apiFetch(API.companies.member(companyId, userId), {
+  return apiFetch<unknown>(API.companies.member(companyId, userId), {
     method: 'PATCH',
     body:   JSON.stringify(data),
-  });
+  }).then((r) => unwrapObject<CompanyUser>(r, 'id'));
 }
 
 export function removeMember(companyId: string, userId: string): Promise<void> {
@@ -90,8 +99,8 @@ export function transferOwnership(
   companyId:      string,
   newOwnerUserId: string,
 ): Promise<Company> {
-  return apiFetch(API.companies.transferOwnership(companyId), {
+  return apiFetch<unknown>(API.companies.transferOwnership(companyId), {
     method: 'POST',
     body:   JSON.stringify({ newOwnerUserId }),
-  });
+  }).then((r) => unwrapObject<Company>(r, 'id'));
 }

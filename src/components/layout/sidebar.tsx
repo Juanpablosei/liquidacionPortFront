@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  X,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -210,6 +211,116 @@ export function Sidebar() {
             ? <ChevronRight className="w-3.5 h-3.5" />
             : <><ChevronLeft className="w-3.5 h-3.5" /><span className="text-xs">Colapsar</span></>
           }
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+// ─── Mobile Sidebar Drawer ───────────────────────────────────────────────────
+
+export function MobileSidebar({ onClose }: { onClose: () => void }) {
+  const pathname = usePathname();
+  const router   = useRouter();
+  const { user, logout } = useAuthStore();
+  const { activeCompany, clearCompany } = useCompanyStore();
+  const { role } = usePermissions();
+
+  const companyId = activeCompany?.id;
+
+  const mainNav: NavItemDef[] = companyId ? [
+    { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: 'Dashboard',   exact: true },
+    { href: ROUTES.employees(companyId),  icon: Users,           label: 'Empleados',   minRole: 'MANAGER' },
+    { href: ROUTES.attendance(companyId), icon: Clock,           label: 'Asistencia',  minRole: 'MANAGER' },
+    { href: ROUTES.overtime(companyId),   icon: Timer,           label: 'Horas extra', minRole: 'MANAGER' },
+    { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: 'Feriados' },
+    { href: ROUTES.concepts(companyId),   icon: Tags,            label: 'Conceptos',   minRole: 'MANAGER' },
+    { href: ROUTES.payroll(companyId),    icon: Receipt,         label: 'Nómina',      minRole: 'MANAGER' },
+  ] : [
+    { href: ROUTES.companies, icon: Building2, label: 'Mis empresas', exact: true },
+  ];
+
+  const adminNav: NavItemDef[] = companyId ? [
+    { href: ROUTES.companyMembers(companyId),  icon: UserCog,   label: 'Miembros',       minRole: 'ADMIN' },
+    { href: ROUTES.companySettings(companyId), icon: Settings2, label: 'Configuración',  minRole: 'ADMIN' },
+  ] : [];
+
+  const displayName = user?.name ?? user?.email ?? 'Usuario';
+  const initials    = displayName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
+
+  async function handleLogout() {
+    try { await logoutApi(); } catch { /* ignore */ }
+    logout();
+    clearCompany();
+    onClose();
+    router.push(ROUTES.login);
+  }
+
+  return (
+    <aside className="flex flex-col h-screen w-[240px] bg-[#060B16] border-r border-white/[0.06]">
+      {/* Logo + close */}
+      <div className="flex items-center justify-between border-b border-white/[0.06] h-14 px-4 shrink-0">
+        <Link href={ROUTES.companies} className="flex items-center gap-2.5" onClick={onClose}>
+          <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center shrink-0">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+          </div>
+          <span className="text-[14px] font-semibold tracking-tight text-white">Silent Port</span>
+        </Link>
+        <button
+          onClick={onClose}
+          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Company switcher */}
+      <div className="pt-3 shrink-0">
+        <CompanySwitcher collapsed={false} />
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto px-2 pb-2 flex flex-col gap-0.5">
+        {mainNav.map((item) => (
+          <div key={item.href} onClick={onClose}>
+            <NavItem item={item} collapsed={false} pathname={pathname} role={role} />
+          </div>
+        ))}
+        {adminNav.length > 0 && (
+          <>
+            <div className="my-2 border-t border-white/[0.06] mx-1" />
+            {adminNav.map((item) => (
+              <div key={item.href} onClick={onClose}>
+                <NavItem item={item} collapsed={false} pathname={pathname} role={role} />
+              </div>
+            ))}
+          </>
+        )}
+      </nav>
+
+      {/* Bottom */}
+      <div className="border-t border-white/[0.06] p-2 shrink-0 flex flex-col gap-1">
+        <Link
+          href={ROUTES.profile}
+          onClick={onClose}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors"
+        >
+          <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
+            {initials}
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-white truncate leading-none">{displayName}</p>
+            {user?.email && <p className="text-[11px] text-slate-500 truncate">{user.email}</p>}
+          </div>
+        </Link>
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+        >
+          <LogOut className="w-4 h-4 shrink-0" />
+          <span className="text-sm">Salir</span>
         </button>
       </div>
     </aside>

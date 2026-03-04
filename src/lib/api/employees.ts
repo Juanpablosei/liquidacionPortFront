@@ -65,9 +65,9 @@ export function listEmployees(
   if (params.search)              query.set('search', params.search);
   if (params.isActive !== undefined) query.set('isActive', String(params.isActive));
   const qs = query.toString();
-  return apiFetch<PaginatedResponse<Employee> | { data: PaginatedResponse<Employee> }>(
+  return apiFetch<unknown>(
     `${API.employees.list(companyId)}${qs ? `?${qs}` : ''}`,
-  ).then(toPaginated);
+  ).then(toPaginated<Employee>);
 }
 
 export function getEmployee(companyId: string, employeeId: string): Promise<Employee> {

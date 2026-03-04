@@ -10,6 +10,7 @@ export interface Attendance {
   notes:         string | null;
   createdAt:     string;
   updatedAt:     string;
+  employee?:     { firstName: string; lastName: string };
 }
 
 export interface OvertimeEntry {
@@ -21,6 +22,7 @@ export interface OvertimeEntry {
   notes:        string | null;
   createdAt:    string;
   updatedAt:    string;
+  employee?:    { firstName: string; lastName: string };
 }
 
 export interface Holiday {

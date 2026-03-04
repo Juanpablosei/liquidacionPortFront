@@ -9,7 +9,7 @@ import { listCompanies } from '@/lib/api/companies';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
-import type { Company } from '@/lib/types/company';
+import type { Company, CompanyRole } from '@/lib/types/company';
 
 export default function CompaniesPage() {
   const { companies, setCompanies, clearCompany } = useCompanyStore();
@@ -101,7 +101,15 @@ export default function CompaniesPage() {
   );
 }
 
-function getInitials(name: string): string {
+const ROLE_STYLES: Record<CompanyRole, string> = {
+  OWNER:   'bg-amber-500/10 text-amber-400 border-amber-500/20',
+  ADMIN:   'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  MANAGER: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+  MEMBER:  'bg-slate-500/10 text-slate-400 border-slate-500/20',
+};
+
+function getInitials(name: string | undefined): string {
+  if (!name) return '?';
   return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
 }
 
@@ -126,14 +134,19 @@ function CompanyCard({ company }: { company: Company }) {
         <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-[#2563EB] group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-slate-500">
-        {company.address && (
-          <span className="truncate">{company.address}</span>
-        )}
-      </div>
+      {company.address && (
+        <p className="text-xs text-slate-500 truncate mb-3">{company.address}</p>
+      )}
 
-      <div className={`mt-3 inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${company.isActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
-        {company.isActive ? 'Activa' : 'Inactiva'}
+      <div className="flex items-center gap-2">
+        <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${company.isActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
+          {company.isActive ? 'Activa' : 'Inactiva'}
+        </div>
+        {company.myRole && (
+          <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${ROLE_STYLES[company.myRole]}`}>
+            {company.myRole.charAt(0) + company.myRole.slice(1).toLowerCase()}
+          </div>
+        )}
       </div>
     </Link>
   );

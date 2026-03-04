@@ -12,8 +12,8 @@ export const updateCompanySchema = createCompanySchema.partial().extend({
 });
 
 export const addMemberSchema = z.object({
-  email: z.string().email('Email inválido'),
-  role:  z.enum(['ADMIN', 'MANAGER', 'MEMBER'], 'Seleccioná un rol'),
+  userId: z.string().uuid('ID de usuario inválido'),
+  role:   z.enum(['ADMIN', 'MANAGER', 'MEMBER'], 'Seleccioná un rol'),
 });
 
 export type CreateCompanyInput = z.infer<typeof createCompanySchema>;

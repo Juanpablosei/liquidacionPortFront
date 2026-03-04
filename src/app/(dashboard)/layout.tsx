@@ -4,15 +4,17 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
-import { Sidebar } from '@/components/layout/sidebar';
+import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
 import { listCompanies } from '@/lib/api/companies';
+import { useUiStore } from '@/stores/ui-store';
 import { ROUTES } from '@/lib/constants/routes';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router           = useRouter();
   const { isAuthenticated, isLoading } = useAuthStore();
   const { setCompanies } = useCompanyStore();
+  const { mobileSidebarOpen, closeMobileSidebar } = useUiStore();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -46,7 +48,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-[#0A0F1C] overflow-hidden">
-      <Sidebar />
+      {/* Mobile sidebar drawer */}
+      {mobileSidebarOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            onClick={closeMobileSidebar}
+          />
+          <div className="fixed inset-y-0 left-0 z-50 lg:hidden">
+            <MobileSidebar onClose={closeMobileSidebar} />
+          </div>
+        </>
+      )}
+
+      {/* Desktop sidebar — hidden on mobile */}
+      <div className="hidden lg:flex">
+        <Sidebar />
+      </div>
 
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         <Header />

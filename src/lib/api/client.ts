@@ -12,9 +12,10 @@ async function refreshAccessToken(): Promise<string | null> {
 
   try {
     const res = await fetch(`${BASE_URL}/auth/refresh`, {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ refreshToken }),
+      method:      'POST',
+      credentials: 'include',
+      headers:     { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+      body:        JSON.stringify({ refreshToken }),
     });
     if (!res.ok) throw new Error('Refresh failed');
 
@@ -49,7 +50,12 @@ export async function apiFetch<T>(
     headers['Authorization'] = `Bearer ${accessToken}`;
   }
 
-  const response = await fetch(`${BASE_URL}${path}`, { headers, ...rest });
+  const method = (rest.method ?? 'GET').toUpperCase();
+  if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+    headers['X-Requested-With'] = 'XMLHttpRequest';
+  }
+
+  const response = await fetch(`${BASE_URL}${path}`, { credentials: 'include', headers, ...rest });
 
   if (response.status === 401 && !skipAuth) {
     if (!isRefreshing) {
@@ -64,7 +70,7 @@ export async function apiFetch<T>(
     if (!newToken) throw new ApiRequestError('Sesión expirada', 401);
 
     headers['Authorization'] = `Bearer ${newToken}`;
-    const retryResponse = await fetch(`${BASE_URL}${path}`, { headers, ...rest });
+    const retryResponse = await fetch(`${BASE_URL}${path}`, { credentials: 'include', headers, ...rest });
     return parseResponse<T>(retryResponse);
   }
 

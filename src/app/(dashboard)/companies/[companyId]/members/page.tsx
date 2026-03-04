@@ -52,7 +52,7 @@ const ASSIGNABLE_ROLES: { value: CompanyRole; label: string }[] = [
   { value: 'MEMBER',  label: 'Miembro' },
 ];
 
-function getInitials(name?: string | null, email?: string): string {
+function getInitials(name?: string | null, email?: string | null): string {
   if (name) return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   return email?.[0]?.toUpperCase() ?? '?';
 }
@@ -163,7 +163,6 @@ export default function MembersPage() {
             </thead>
             <tbody>
               {memberList.map((member) => {
-                const memberUser  = member.user;
                 const isCurrentUser = member.userId === user?.id;
                 const isOwnerRow    = member.role === 'OWNER';
                 const canModify     = isAdmin() && !isOwnerRow && !isCurrentUser;
@@ -173,15 +172,15 @@ export default function MembersPage() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-[#2563EB]/15 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
-                          {getInitials(memberUser?.name, memberUser?.email)}
+                          {getInitials(member.name, member.email)}
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-white">
-                            {memberUser?.name ?? memberUser?.email ?? member.userId}
+                            {member.name ?? member.email ?? member.userId}
                             {isCurrentUser && <span className="ml-2 text-[11px] text-slate-500">(vos)</span>}
                           </p>
-                          {memberUser?.name && memberUser?.email && (
-                            <p className="text-xs text-slate-500 truncate">{memberUser.email}</p>
+                          {member.name && member.email && (
+                            <p className="text-xs text-slate-500 truncate">{member.email}</p>
                           )}
                         </div>
                       </div>
@@ -255,7 +254,7 @@ export default function MembersPage() {
         onOpenChange={(o) => { if (!o) setRemoveTarget(null); }}
         onConfirm={handleRemove}
         title="Quitar miembro"
-        description={`¿Estás seguro que querés quitar a ${removeTarget?.user?.name ?? removeTarget?.user?.email ?? 'este miembro'} de la empresa?`}
+        description={`¿Estás seguro que querés quitar a ${removeTarget?.name ?? removeTarget?.email ?? 'este miembro'} de la empresa?`}
         confirmLabel="Quitar"
         variant="warning"
         isLoading={actionLoading}
@@ -267,7 +266,7 @@ export default function MembersPage() {
         onOpenChange={(o) => { if (!o) setTransferTarget(null); }}
         onConfirm={handleTransfer}
         title="Transferir ownership"
-        description={`¿Estás seguro que querés transferir la propiedad de la empresa a ${transferTarget?.user?.name ?? transferTarget?.user?.email ?? 'este miembro'}? Vos quedás como ADMIN.`}
+        description={`¿Estás seguro que querés transferir la propiedad de la empresa a ${transferTarget?.name ?? transferTarget?.email ?? 'este miembro'}? Vos quedás como ADMIN.`}
         confirmLabel="Transferir"
         variant="danger"
         isLoading={actionLoading}
@@ -347,12 +346,11 @@ function AddMemberDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-1">
-          <FormField label="Email" name="email" error={errors.email?.message} required>
+          <FormField label="ID de usuario" name="userId" error={errors.userId?.message} required>
             <Input
-              {...register('email')}
-              type="email"
-              placeholder="usuario@ejemplo.com"
-              className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600"
+              {...register('userId')}
+              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 font-mono text-xs"
             />
           </FormField>
 

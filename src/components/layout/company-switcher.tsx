@@ -12,7 +12,8 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 
-function getInitials(name: string): string {
+function getInitials(name: string | undefined): string {
+  if (!name) return '?';
   return name
     .split(' ')
     .slice(0, 2)

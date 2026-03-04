@@ -10,15 +10,18 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EmptyState } from '@/components/shared/empty-state';
 
 interface DataTableProps<T> {
-  columns:       ColumnDef<T>[];
-  data:          T[];
-  total:         number;
-  page:          number;
-  limit:         number;
-  isLoading?:    boolean;
-  onPageChange:  (page: number) => void;
-  onRowClick?:   (row: T) => void;
-  emptyMessage?: string;
+  columns:          ColumnDef<T>[];
+  data:             T[];
+  total:            number;
+  page:             number;
+  limit:            number;
+  isLoading?:       boolean;
+  onPageChange:     (page: number) => void;
+  onRowClick?:      (row: T) => void;
+  emptyMessage?:    string;
+  emptyIcon?:       React.ReactNode;
+  emptyDescription?: string;
+  emptyAction?:     React.ReactNode;
 }
 
 export function DataTable<T>({
@@ -27,10 +30,13 @@ export function DataTable<T>({
   total,
   page,
   limit,
-  isLoading    = false,
+  isLoading        = false,
   onPageChange,
   onRowClick,
-  emptyMessage = 'No hay datos para mostrar.',
+  emptyMessage     = 'No hay datos para mostrar.',
+  emptyIcon,
+  emptyDescription,
+  emptyAction,
 }: DataTableProps<T>) {
   const pages = Math.max(1, Math.ceil(total / limit));
 
@@ -77,7 +83,12 @@ export function DataTable<T>({
             ) : data.length === 0 ? (
               <tr>
                 <td colSpan={columns.length}>
-                  <EmptyState title={emptyMessage} />
+                  <EmptyState
+                    icon={emptyIcon}
+                    title={emptyMessage}
+                    description={emptyDescription}
+                    action={emptyAction}
+                  />
                 </td>
               </tr>
             ) : (

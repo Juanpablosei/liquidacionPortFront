@@ -51,14 +51,14 @@ function buildBreadcrumbs(
 export function Header() {
   const pathname = usePathname();
   const { activeCompany } = useCompanyStore();
-  const { toggleSidebar } = useUiStore();
+  const { openMobileSidebar } = useUiStore();
 
   const crumbs = buildBreadcrumbs(pathname, activeCompany?.name, activeCompany?.id);
 
   return (
     <header className="h-14 border-b border-white/[0.06] bg-[#0A0F1C] flex items-center px-5 gap-4 shrink-0">
       <button
-        onClick={toggleSidebar}
+        onClick={openMobileSidebar}
         className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors lg:hidden"
       >
         <Menu className="w-4 h-4" />
