@@ -1,46 +1,44 @@
 import { apiFetch } from './client';
 import { API } from '@/lib/constants/api-endpoints';
 import type { Attendance } from '@/lib/types/attendance';
+import type { PaginatedResponse } from '@/lib/types/api';
 
 export interface CreateAttendanceDto {
-  employeeId: string;
-  date:       string;
-  clockIn?:   string;
-  clockOut?:  string;
-  notes?:     string;
+  employeeId:    string;
+  date:          string;
+  clockIn?:      string;
+  clockOut?:     string;
+  workedMinutes?: number;
+  notes?:        string;
 }
 
 export interface UpdateAttendanceDto {
-  date?:     string;
-  clockIn?:  string;
-  clockOut?: string;
-  notes?:    string;
+  clockIn?:       string;
+  clockOut?:      string;
+  workedMinutes?: number;
+  notes?:        string;
 }
 
 export interface ListAttendanceParams {
   employeeId?: string;
   fromDate?:   string;
   toDate?:     string;
-}
-
-function toArray<T>(raw: unknown): T[] {
-  if (Array.isArray(raw)) return raw as T[];
-  if (raw && typeof raw === 'object' && 'items' in (raw as object)) {
-    return ((raw as { items: T[] }).items);
-  }
-  return [];
+  page?:       number;
+  limit?:      number;
 }
 
 export function listAttendance(
   companyId: string,
   params:    ListAttendanceParams = {},
-): Promise<Attendance[]> {
+): Promise<PaginatedResponse<Attendance>> {
   const query = new URLSearchParams();
   if (params.employeeId) query.set('employeeId', params.employeeId);
   if (params.fromDate)   query.set('fromDate',   params.fromDate);
   if (params.toDate)     query.set('toDate',     params.toDate);
+  if (params.page)       query.set('page',       String(params.page));
+  if (params.limit)      query.set('limit',      String(params.limit));
   const qs = query.toString();
-  return apiFetch<unknown>(`${API.attendance.list(companyId)}${qs ? `?${qs}` : ''}`).then(toArray<Attendance>);
+  return apiFetch<PaginatedResponse<Attendance>>(`${API.attendance.list(companyId)}${qs ? `?${qs}` : ''}`);
 }
 
 export function createAttendance(

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,6 +10,7 @@ import { Plus, Pencil, Trash2, CalendarDays } from 'lucide-react';
 import { listHolidays, createHoliday, updateHoliday, deleteHoliday } from '@/lib/api/holidays';
 import { holidaySchema, type HolidayInput } from '@/lib/validators/attendance';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
 import { FormField } from '@/components/shared/form-field';
@@ -32,9 +33,9 @@ const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:t
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - 1 + i);
 
-function formatDate(d: string): string {
+function formatDate(d: string, locale: string): string {
   const iso = d.includes('T') ? d : d + 'T00:00:00';
-  return new Date(iso).toLocaleDateString('es-AR', {
+  return new Date(iso).toLocaleDateString(locale, {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }
@@ -42,6 +43,8 @@ function formatDate(d: string): string {
 export default function HolidaysPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { canEdit, canDelete } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
 
   const [holidays,   setHolidays]   = useState<Holiday[]>([]);
   const [isLoading,  setIsLoading]  = useState(true);
@@ -52,8 +55,10 @@ export default function HolidaysPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isSaving,   setIsSaving]   = useState(false);
 
+  const schema = useMemo(() => holidaySchema(t.validators), [t.validators]);
+
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<HolidayInput>({
-    resolver: zodResolver(holidaySchema),
+    resolver: zodResolver(schema),
     defaultValues: { isOptional: false },
   });
 
@@ -64,9 +69,9 @@ export default function HolidaysPage() {
     setIsLoading(true);
     listHolidays(companyId, { year })
       .then(setHolidays)
-      .catch((err: Error) => toast.error(err.message ?? 'Error al cargar feriados'))
+      .catch((err: Error) => toast.error(err.message ?? t.holidays.saveError))
       .finally(() => setIsLoading(false));
-  }, [companyId, year]);
+  }, [companyId, year, t.holidays.saveError]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -87,15 +92,15 @@ export default function HolidaysPage() {
     try {
       if (editItem) {
         await updateHoliday(companyId, editItem.id, data);
-        toast.success('Feriado actualizado');
+        toast.success(t.holidays.updated);
       } else {
         await createHoliday(companyId, data);
-        toast.success('Feriado creado');
+        toast.success(t.holidays.created);
       }
       setSheetOpen(false);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al guardar');
+      toast.error((err as Error).message ?? t.holidays.saveError);
     } finally {
       setIsSaving(false);
     }
@@ -106,11 +111,11 @@ export default function HolidaysPage() {
     setIsDeleting(true);
     try {
       await deleteHoliday(companyId, deleteItem.id);
-      toast.success('Feriado eliminado');
+      toast.success(t.holidays.deleted);
       setDeleteItem(null);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al eliminar');
+      toast.error((err as Error).message ?? t.holidays.deleteError);
     } finally {
       setIsDeleting(false);
     }
@@ -118,23 +123,23 @@ export default function HolidaysPage() {
 
   const columns: ColumnDef<Holiday>[] = [
     {
-      header: 'Fecha',
+      header: t.holidays.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date)}</span>
+        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date, localeId)}</span>
       ),
     },
     {
-      header: 'Nombre',
+      header: t.holidays.name,
       cell: ({ row }) => (
         <span className="text-sm text-white">{row.original.name}</span>
       ),
     },
     {
-      header: 'Tipo',
+      header: t.holidays.type,
       cell: ({ row }) => (
         row.original.isOptional
-          ? <StatusBadge status="inactive" label="Optativo" />
-          : <StatusBadge status="active"   label="Obligatorio" />
+          ? <StatusBadge status="inactive" label={t.holidays.optional} />
+          : <StatusBadge status="active"   label={t.holidays.mandatory} />
       ),
     },
     {
@@ -145,19 +150,19 @@ export default function HolidaysPage() {
           {canEdit() && (
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
-              title="Editar"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              aria-label={t.common.edit}
             >
-              <Pencil className="w-3.5 h-3.5" />
+              <Pencil className="w-4 h-4" />
             </button>
           )}
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
-              title="Eliminar"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              aria-label={t.common.delete}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -168,8 +173,8 @@ export default function HolidaysPage() {
   return (
     <>
       <PageHeader
-        title="Feriados"
-        description="Días no laborables del año."
+        title={t.holidays.title}
+        description={t.holidays.description}
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
@@ -178,7 +183,7 @@ export default function HolidaysPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Agregar feriado
+              {t.holidays.addHoliday}
             </button>
           </RoleGate>
         }
@@ -190,8 +195,9 @@ export default function HolidaysPage() {
           <button
             key={y}
             onClick={() => setYear(y)}
+            aria-pressed={year === y}
             className={[
-              'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+              'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
               year === y
                 ? 'bg-[#2563EB] text-white'
                 : 'text-slate-400 hover:text-slate-300',
@@ -210,9 +216,9 @@ export default function HolidaysPage() {
         limit={holidays.length || 1}
         isLoading={isLoading}
         onPageChange={() => {}}
-        emptyMessage={`Sin feriados para ${year}`}
+        emptyMessage={t.holidays.emptyTitle.replace('{year}', String(year))}
         emptyIcon={<CalendarDays className="w-6 h-6" />}
-        emptyDescription="Agregá los días no laborables para que se descuenten correctamente en la nómina."
+        emptyDescription={t.holidays.emptyDesc}
         emptyAction={
           canEdit() ? (
             <button
@@ -220,7 +226,7 @@ export default function HolidaysPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Agregar feriado
+              {t.holidays.addHoliday}
             </button>
           ) : undefined
         }
@@ -234,35 +240,37 @@ export default function HolidaysPage() {
         >
           <SheetHeader className="pb-4 border-b border-white/[0.06]">
             <SheetTitle className="text-white">
-              {editItem ? 'Editar feriado' : 'Agregar feriado'}
+              {editItem ? t.holidays.editTitle : t.holidays.createTitle}
             </SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
-            <FormField label="Fecha" name="date" error={errors.date?.message} required>
+            <FormField label={t.holidays.date} name="date" error={errors.date?.message} required>
               <Input type="date" {...register('date')} className={INPUT_CLASS} />
             </FormField>
 
-            <FormField label="Nombre" name="name" error={errors.name?.message} required>
+            <FormField label={t.holidays.name} name="name" error={errors.name?.message} required>
               <Input
                 {...register('name')}
-                placeholder="Ej: Día del Trabajador"
+                maxLength={200}
+                placeholder={t.holidays.namePlaceholder}
                 className={INPUT_CLASS}
               />
             </FormField>
 
-            <FormField label="Tipo" name="isOptional" error={errors.isOptional?.message}>
+            <FormField label={t.holidays.type} name="isOptional" error={errors.isOptional?.message}>
               <div className="flex gap-2">
                 {[
-                  { value: false, label: 'Obligatorio' },
-                  { value: true,  label: 'Optativo' },
+                  { value: false, label: t.holidays.mandatory },
+                  { value: true,  label: t.holidays.optional },
                 ].map((opt) => (
                   <button
                     key={String(opt.value)}
                     type="button"
                     onClick={() => setValue('isOptional', opt.value)}
+                    aria-pressed={watchedOptional === opt.value}
                     className={[
-                      'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors',
+                      'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors cursor-pointer',
                       watchedOptional === opt.value
                         ? 'bg-[#2563EB]/20 border-[#2563EB]/50 text-[#93BBFC]'
                         : 'bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white',
@@ -280,14 +288,14 @@ export default function HolidaysPage() {
                 onClick={() => setSheetOpen(false)}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
               >
-                Cancelar
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
               >
-                {isSaving ? 'Guardando...' : 'Guardar'}
+                {isSaving ? t.common.saving : t.common.save}
               </button>
             </SheetFooter>
           </form>
@@ -298,9 +306,9 @@ export default function HolidaysPage() {
         open={!!deleteItem}
         onOpenChange={(open) => { if (!open) setDeleteItem(null); }}
         onConfirm={handleDelete}
-        title="Eliminar feriado"
-        description="¿Estás seguro de que querés eliminar este feriado? Esta acción no se puede deshacer."
-        confirmLabel="Eliminar"
+        title={t.holidays.deleteTitle}
+        description={t.holidays.deleteDesc}
+        confirmLabel={t.common.delete}
         variant="danger"
         isLoading={isDeleting}
       />

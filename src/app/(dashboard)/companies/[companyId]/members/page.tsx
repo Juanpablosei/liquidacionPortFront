@@ -24,6 +24,7 @@ import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { FormField } from '@/components/shared/form-field';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Input } from '@/components/ui/input';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
 import {
   Dialog,
   DialogContent,
@@ -39,19 +40,6 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { CompanyUser, CompanyRole } from '@/lib/types/company';
 
-const ROLE_LABELS: Record<CompanyRole, string> = {
-  OWNER:   'Propietario',
-  ADMIN:   'Admin',
-  MANAGER: 'Manager',
-  MEMBER:  'Miembro',
-};
-
-const ASSIGNABLE_ROLES: { value: CompanyRole; label: string }[] = [
-  { value: 'ADMIN',   label: 'Admin' },
-  { value: 'MANAGER', label: 'Manager' },
-  { value: 'MEMBER',  label: 'Miembro' },
-];
-
 function getInitials(name?: string | null, email?: string | null): string {
   if (name) return name.split(' ').slice(0, 2).map((w) => w[0]).join('').toUpperCase();
   return email?.[0]?.toUpperCase() ?? '?';
@@ -61,6 +49,21 @@ export default function MembersPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { user }      = useAuthStore();
   const { isAdmin, isOwner } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
+
+  const ROLE_LABELS: Record<CompanyRole, string> = {
+    OWNER:   t.members.owner,
+    ADMIN:   t.members.admin,
+    MANAGER: t.members.manager,
+    MEMBER:  t.members.memberRole,
+  };
+
+  const ASSIGNABLE_ROLES: { value: CompanyRole; label: string }[] = [
+    { value: 'ADMIN',   label: t.members.admin },
+    { value: 'MANAGER', label: t.members.manager },
+    { value: 'MEMBER',  label: t.members.memberRole },
+  ];
 
   const [members,   setMembers]   = useState<CompanyUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -76,7 +79,7 @@ export default function MembersPage() {
       const data = await listMembers(companyId);
       setMembers(Array.isArray(data) ? data : []);
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al cargar miembros');
+      toast.error(err instanceof Error ? err.message : t.members.removeError);
     } finally {
       setIsLoading(false);
     }
@@ -87,10 +90,10 @@ export default function MembersPage() {
   async function handleChangeRole(memberId: string, role: CompanyRole) {
     try {
       await updateMember(companyId, memberId, { role });
-      toast.success('Rol actualizado');
+      toast.success(t.members.roleUpdated);
       fetchMembers();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al actualizar rol');
+      toast.error(err instanceof Error ? err.message : t.members.roleError);
     }
   }
 
@@ -99,11 +102,11 @@ export default function MembersPage() {
     setActionLoading(true);
     try {
       await removeMember(companyId, removeTarget.userId);
-      toast.success('Miembro eliminado');
+      toast.success(t.members.memberRemoved);
       setRemoveTarget(null);
       fetchMembers();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al eliminar miembro');
+      toast.error(err instanceof Error ? err.message : t.members.removeError);
     } finally {
       setActionLoading(false);
     }
@@ -114,11 +117,11 @@ export default function MembersPage() {
     setActionLoading(true);
     try {
       await transferOwnership(companyId, transferTarget.userId);
-      toast.success('Ownership transferido correctamente');
+      toast.success(t.members.transferred);
       setTransferTarget(null);
       fetchMembers();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al transferir ownership');
+      toast.error(err instanceof Error ? err.message : t.members.transferError);
     } finally {
       setActionLoading(false);
     }
@@ -130,8 +133,8 @@ export default function MembersPage() {
   return (
     <>
       <PageHeader
-        title="Miembros"
-        description="Gestioná quién tiene acceso a esta empresa y con qué permisos."
+        title={t.members.title}
+        description={t.members.description}
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
@@ -140,7 +143,7 @@ export default function MembersPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Agregar miembro
+              {t.members.addMember}
             </button>
           </RoleGate>
         }
@@ -149,15 +152,15 @@ export default function MembersPage() {
       {isLoading ? (
         <MembersSkeleton />
       ) : memberList.length === 0 ? (
-        <EmptyState title="Sin miembros" description="Esta empresa aún no tiene miembros." />
+        <EmptyState title={t.members.emptyTitle} description={t.members.emptyDesc} />
       ) : (
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-hidden">
+        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-white/[0.06]">
-                <th className="text-left text-xs font-medium text-slate-500 px-5 py-3">Miembro</th>
-                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden sm:table-cell">Rol</th>
-                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden md:table-cell">Desde</th>
+                <th className="text-left text-xs font-medium text-slate-500 px-5 py-3">{t.members.member}</th>
+                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden sm:table-cell">{t.members.role}</th>
+                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden md:table-cell">{t.members.since}</th>
                 <th className="px-4 py-3 w-12" />
               </tr>
             </thead>
@@ -168,7 +171,7 @@ export default function MembersPage() {
                 const canModify     = isAdmin() && !isOwnerRow && !isCurrentUser;
 
                 return (
-                  <tr key={member.id} className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.02] transition-colors">
+                  <tr key={member.id} className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.04] transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-[#2563EB]/15 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
@@ -177,7 +180,7 @@ export default function MembersPage() {
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-white">
                             {member.name ?? member.email ?? member.userId}
-                            {isCurrentUser && <span className="ml-2 text-[11px] text-slate-500">(vos)</span>}
+                            {isCurrentUser && <span className="ml-2 text-[11px] text-slate-500">{t.members.you}</span>}
                           </p>
                           {member.name && member.email && (
                             <p className="text-xs text-slate-500 truncate">{member.email}</p>
@@ -191,6 +194,7 @@ export default function MembersPage() {
                         <RoleSelector
                           currentRole={member.role}
                           onChange={(r) => handleChangeRole(member.userId, r)}
+                          assignableRoles={ASSIGNABLE_ROLES}
                         />
                       ) : (
                         <StatusBadge status={member.role} />
@@ -198,7 +202,7 @@ export default function MembersPage() {
                     </td>
 
                     <td className="px-4 py-4 text-sm text-slate-500 hidden md:table-cell">
-                      {new Date(member.joinedAt).toLocaleDateString('es-AR', {
+                      {new Date(member.joinedAt).toLocaleDateString(localeId, {
                         day: '2-digit', month: 'short', year: 'numeric',
                       })}
                     </td>
@@ -207,7 +211,7 @@ export default function MembersPage() {
                       {canModify && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors">
+                            <button className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer" aria-label={t.members.options}>
                               <ChevronDown className="w-3.5 h-3.5" />
                             </button>
                           </DropdownMenuTrigger>
@@ -218,7 +222,7 @@ export default function MembersPage() {
                                 className="text-yellow-400 focus:text-yellow-300 focus:bg-yellow-500/10 cursor-pointer"
                               >
                                 <AlertTriangle className="w-3.5 h-3.5 mr-2" />
-                                Transferir ownership
+                                {t.members.transferOption}
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem
@@ -226,7 +230,7 @@ export default function MembersPage() {
                               className="text-red-400 focus:text-red-300 focus:bg-red-500/10 cursor-pointer"
                             >
                               <UserMinus className="w-3.5 h-3.5 mr-2" />
-                              Quitar de la empresa
+                              {t.members.removeOption}
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -253,9 +257,9 @@ export default function MembersPage() {
         open={!!removeTarget}
         onOpenChange={(o) => { if (!o) setRemoveTarget(null); }}
         onConfirm={handleRemove}
-        title="Quitar miembro"
-        description={`¿Estás seguro que querés quitar a ${removeTarget?.name ?? removeTarget?.email ?? 'este miembro'} de la empresa?`}
-        confirmLabel="Quitar"
+        title={t.members.removeTitle}
+        description={t.members.removeDesc.replace('{name}', removeTarget?.name ?? removeTarget?.email ?? t.members.member)}
+        confirmLabel={t.members.removeLabel}
         variant="warning"
         isLoading={actionLoading}
       />
@@ -265,9 +269,9 @@ export default function MembersPage() {
         open={!!transferTarget}
         onOpenChange={(o) => { if (!o) setTransferTarget(null); }}
         onConfirm={handleTransfer}
-        title="Transferir ownership"
-        description={`¿Estás seguro que querés transferir la propiedad de la empresa a ${transferTarget?.name ?? transferTarget?.email ?? 'este miembro'}? Vos quedás como ADMIN.`}
-        confirmLabel="Transferir"
+        title={t.members.transferTitle}
+        description={t.members.transferDesc.replace('{name}', transferTarget?.name ?? transferTarget?.email ?? t.members.member)}
+        confirmLabel={t.members.transferLabel}
         variant="danger"
         isLoading={actionLoading}
       />
@@ -278,9 +282,11 @@ export default function MembersPage() {
 function RoleSelector({
   currentRole,
   onChange,
+  assignableRoles,
 }: {
   currentRole: CompanyRole;
   onChange:    (role: CompanyRole) => void;
+  assignableRoles: { value: CompanyRole; label: string }[];
 }) {
   return (
     <Select value={currentRole} onValueChange={(v) => onChange(v as CompanyRole)}>
@@ -288,7 +294,7 @@ function RoleSelector({
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="bg-[#0F172A] border border-white/[0.08]">
-        {ASSIGNABLE_ROLES.map((r) => (
+        {assignableRoles.map((r) => (
           <SelectItem key={r.value} value={r.value} className="text-white focus:bg-white/[0.05]">
             {r.label}
           </SelectItem>
@@ -309,7 +315,15 @@ function AddMemberDialog({
   companyId:     string;
   onSuccess:     () => void;
 }) {
+  const t = useTranslation();
   const [loading, setLoading] = useState(false);
+
+  const ASSIGNABLE_ROLES: { value: CompanyRole; label: string }[] = [
+    { value: 'ADMIN',   label: t.members.admin },
+    { value: 'MANAGER', label: t.members.manager },
+    { value: 'MEMBER',  label: t.members.memberRole },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -318,7 +332,7 @@ function AddMemberDialog({
     reset,
     formState: { errors },
   } = useForm<AddMemberInput>({
-    resolver: zodResolver(addMemberSchema),
+    resolver: zodResolver(addMemberSchema(t.validators)),
     defaultValues: { role: 'MEMBER' },
   });
 
@@ -328,11 +342,11 @@ function AddMemberDialog({
     setLoading(true);
     try {
       await addMember(companyId, data);
-      toast.success('Miembro agregado correctamente');
+      toast.success(t.members.memberAdded);
       reset();
       onSuccess();
     } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : 'Error al agregar miembro');
+      toast.error(err instanceof Error ? err.message : t.members.addError);
     } finally {
       setLoading(false);
     }
@@ -342,22 +356,22 @@ function AddMemberDialog({
     <Dialog open={open} onOpenChange={(o) => { if (!o) reset(); onOpenChange(o); }}>
       <DialogContent className="bg-[#0F172A] border border-white/[0.08] text-white max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-white">Agregar miembro</DialogTitle>
+          <DialogTitle className="text-white">{t.members.addMember}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-1">
-          <FormField label="ID de usuario" name="userId" error={errors.userId?.message} required>
+          <FormField label={t.members.userId} name="userId" error={errors.userId?.message} required>
             <Input
               {...register('userId')}
-              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+              placeholder={t.members.userIdPlaceholder}
               className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 font-mono text-xs"
             />
           </FormField>
 
-          <FormField label="Rol" name="role" error={errors.role?.message} required>
+          <FormField label={t.members.role} name="role" error={errors.role?.message} required>
             <Select value={selectedRole} onValueChange={(v) => setValue('role', v as Exclude<CompanyRole, 'OWNER'>)}>
               <SelectTrigger className="bg-white/[0.05] border-white/[0.1] text-white">
-                <SelectValue placeholder="Seleccioná un rol" />
+                <SelectValue placeholder={t.members.selectRole} />
               </SelectTrigger>
               <SelectContent className="bg-[#0F172A] border border-white/[0.08]">
                 {ASSIGNABLE_ROLES.map((r) => (
@@ -374,7 +388,7 @@ function AddMemberDialog({
             disabled={loading}
             className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mt-1"
           >
-            {loading ? 'Agregando...' : 'Agregar miembro'}
+            {loading ? t.members.adding : t.members.addMember}
           </button>
         </form>
       </DialogContent>
@@ -386,7 +400,7 @@ function MembersSkeleton() {
   return (
     <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-hidden">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.04] last:border-0 animate-pulse">
+        <div key={i} className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.04] last:border-0 motion-safe:animate-pulse">
           <div className="w-8 h-8 rounded-full bg-white/[0.06]" />
           <div className="flex-1">
             <div className="h-4 bg-white/[0.06] rounded w-36 mb-1.5" />

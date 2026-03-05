@@ -11,6 +11,7 @@ import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/validator
 import { resetPassword as resetPasswordApi } from '@/lib/api/auth';
 import { ApiRequestError } from '@/lib/api/client';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from '@/lib/i18n';
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -19,30 +20,31 @@ function ResetPasswordForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const t = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(resetPasswordSchema(t.validators)),
   });
 
   async function onSubmit(data: ResetPasswordFormData) {
     if (!token) {
-      toast.error('El enlace es inválido o ya expiró');
+      toast.error(t.auth.resetPassword.invalidLink);
       return;
     }
     setIsLoading(true);
     try {
       await resetPasswordApi({ token, newPassword: data.newPassword });
-      toast.success('Contraseña actualizada correctamente');
+      toast.success(t.auth.resetPassword.success);
       router.push(ROUTES.login);
     } catch (err) {
       if (err instanceof ApiRequestError && err.status === 400) {
-        toast.error('El enlace es inválido o ya expiró');
+        toast.error(t.auth.resetPassword.invalidLink);
       } else {
-        toast.error('Ocurrió un error inesperado');
+        toast.error(t.auth.resetPassword.unexpectedError);
       }
     } finally {
       setIsLoading(false);
@@ -52,10 +54,10 @@ function ResetPasswordForm() {
   if (!token) {
     return (
       <div className="text-center" style={{ animation: 'fadeUp 0.5s ease both' }}>
-        <p className="text-sm text-red-400 mb-4">El enlace es inválido o ya expiró.</p>
+        <p className="text-sm text-red-400 mb-4">{t.auth.resetPassword.invalidLink}</p>
         <Link href={ROUTES.forgotPassword}
           className="text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors">
-          Solicitar un nuevo enlace
+          {t.auth.resetPassword.requestNewLink}
         </Link>
       </div>
     );
@@ -65,17 +67,17 @@ function ResetPasswordForm() {
     <div style={{ animation: 'fadeUp 0.5s ease both' }}>
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
-          Nueva contraseña
+          {t.auth.resetPassword.title}
         </h1>
         <p className="text-sm text-slate-400">
-          Ingresá tu nueva contraseña para continuar
+          {t.auth.resetPassword.subtitle}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="newPassword" className="text-sm font-medium text-slate-300">
-            Nueva contraseña
+            {t.auth.resetPassword.newPassword}
           </label>
           <div className="relative">
             <input
@@ -83,24 +85,25 @@ function ResetPasswordForm() {
               type={showNew ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/20"
+              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
               {...register('newPassword')}
             />
             <button type="button" onClick={() => setShowNew((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors" tabIndex={-1}>
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              aria-label={showNew ? t.auth.resetPassword.hidePassword : t.auth.resetPassword.showPassword} tabIndex={-1}>
               {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
           {errors.newPassword ? (
             <p className="text-xs text-red-400">{errors.newPassword.message}</p>
           ) : (
-            <p className="text-xs text-slate-600">Mínimo 8 caracteres, una mayúscula, una minúscula y un número</p>
+            <p className="text-xs text-slate-400">{t.auth.resetPassword.passwordHint}</p>
           )}
         </div>
 
         <div className="flex flex-col gap-1.5">
           <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">
-            Confirmar contraseña
+            {t.auth.resetPassword.confirmPassword}
           </label>
           <div className="relative">
             <input
@@ -108,11 +111,12 @@ function ResetPasswordForm() {
               type={showConfirm ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/20"
+              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
               {...register('confirmPassword')}
             />
             <button type="button" onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors" tabIndex={-1}>
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              aria-label={showConfirm ? t.auth.resetPassword.hidePassword : t.auth.resetPassword.showPassword} tabIndex={-1}>
               {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
@@ -127,9 +131,9 @@ function ResetPasswordForm() {
           className="mt-1 h-11 w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
-            <><Loader2 className="w-4 h-4 animate-spin" />Guardando...</>
+            <><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.auth.resetPassword.submitting}</>
           ) : (
-            'Guardar nueva contraseña'
+            t.auth.resetPassword.submit
           )}
         </button>
       </form>
@@ -138,7 +142,7 @@ function ResetPasswordForm() {
         <Link href={ROUTES.login}
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          Volver al inicio de sesión
+          {t.auth.resetPassword.backToLogin}
         </Link>
       </div>
 
@@ -156,7 +160,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-32">
-        <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-slate-500" />
       </div>
     }>
       <ResetPasswordForm />

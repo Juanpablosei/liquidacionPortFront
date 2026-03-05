@@ -7,6 +7,7 @@ export interface CreateContractDto {
   endDate?:     string;
   salaryType:   'MONTHLY' | 'HOURLY';
   salaryAmount: string;
+  conceptIds?:  string[];
 }
 
 export interface UpdateContractDto {
@@ -23,6 +24,16 @@ export interface SetScheduleDto {
     endTime:      string;
     breakMinutes: number;
   }>;
+}
+
+export interface ContractConcept {
+  id:        string;
+  code:      string;
+  name:      string;
+  category:  'EARNING' | 'DEDUCTION';
+  calcType:  'FIXED' | 'PERCENT' | 'HOURLY' | 'MANUAL';
+  isActive:  boolean;
+  sortOrder: number;
 }
 
 export function listContracts(
@@ -72,5 +83,48 @@ export function setSchedule(
   return apiFetch(API.contracts.schedule(companyId, employeeId, contractId), {
     method: 'PUT',
     body:   JSON.stringify(data),
+  });
+}
+
+// ─── Contract Concepts ───────────────────────────────────────────────────────
+
+function toArray<T>(raw: unknown): T[] {
+  if (Array.isArray(raw)) return raw as T[];
+  if (raw && typeof raw === 'object') {
+    const o = raw as Record<string, unknown>;
+    if (Array.isArray(o.items)) return o.items as T[];
+    if (Array.isArray(o.data))  return o.data  as T[];
+  }
+  return [];
+}
+
+export function listContractConcepts(
+  companyId:  string,
+  employeeId: string,
+  contractId: string,
+): Promise<ContractConcept[]> {
+  return apiFetch<unknown>(API.contracts.concepts(companyId, employeeId, contractId)).then(toArray<ContractConcept>);
+}
+
+export function assignContractConcepts(
+  companyId:  string,
+  employeeId: string,
+  contractId: string,
+  conceptIds: string[],
+): Promise<ContractConcept[]> {
+  return apiFetch<unknown>(API.contracts.concepts(companyId, employeeId, contractId), {
+    method: 'POST',
+    body:   JSON.stringify({ conceptIds }),
+  }).then(toArray<ContractConcept>);
+}
+
+export function removeContractConcept(
+  companyId:  string,
+  employeeId: string,
+  contractId: string,
+  conceptId:  string,
+): Promise<void> {
+  return apiFetch(API.contracts.concept(companyId, employeeId, contractId, conceptId), {
+    method: 'DELETE',
   });
 }

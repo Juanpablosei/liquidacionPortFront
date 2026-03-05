@@ -9,6 +9,7 @@ import { listCompanies } from '@/lib/api/companies';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
+import { useTranslation } from '@/lib/i18n';
 import type { Company, CompanyRole } from '@/lib/types/company';
 
 export default function CompaniesPage() {
@@ -16,6 +17,7 @@ export default function CompaniesPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const companyList = Array.isArray(companies) ? companies : [];
+  const t = useTranslation();
 
   useEffect(() => {
     clearCompany();
@@ -31,15 +33,15 @@ export default function CompaniesPage() {
   return (
     <>
       <PageHeader
-        title="Mis empresas"
-        description="Seleccioná una empresa para administrarla o creá una nueva."
+        title={t.companies.title}
+        description={t.companies.description}
         actions={
           <Link
             href={ROUTES.newCompany}
             className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Nueva empresa
+            {t.companies.newCompany}
           </Link>
         }
       />
@@ -49,7 +51,7 @@ export default function CompaniesPage() {
           {Array.from({ length: 3 }).map((_, i) => (
             <div
               key={i}
-              className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 animate-pulse"
+              className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 motion-safe:animate-pulse"
             >
               <div className="flex items-start gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-white/[0.06]" />
@@ -66,15 +68,15 @@ export default function CompaniesPage() {
       ) : companyList.length === 0 ? (
         <EmptyState
           icon={<Building2 className="w-6 h-6" />}
-          title="Todavía no tenés empresas"
-          description="Creá tu primera empresa para empezar a gestionar tu nómina."
+          title={t.companies.emptyTitle}
+          description={t.companies.emptyDesc}
           action={
             <Link
               href={ROUTES.newCompany}
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Crear mi primera empresa
+              {t.companies.emptyAction}
             </Link>
           }
         />
@@ -92,7 +94,7 @@ export default function CompaniesPage() {
               <Plus className="w-5 h-5" />
             </div>
             <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-              Agregar empresa
+              {t.companies.addCompany}
             </span>
           </Link>
         </div>
@@ -114,6 +116,8 @@ function getInitials(name: string | undefined): string {
 }
 
 function CompanyCard({ company }: { company: Company }) {
+  const t = useTranslation();
+
   return (
     <Link
       href={ROUTES.company(company.id)}
@@ -128,7 +132,7 @@ function CompanyCard({ company }: { company: Company }) {
             {company.name}
           </h3>
           {company.taxId && (
-            <p className="text-xs text-slate-500 mt-0.5">CUIT {company.taxId}</p>
+            <p className="text-xs text-slate-500 mt-0.5">{t.companies.cuit} {company.taxId}</p>
           )}
         </div>
         <ArrowRight className="w-4 h-4 text-slate-600 group-hover:text-[#2563EB] group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
@@ -140,7 +144,7 @@ function CompanyCard({ company }: { company: Company }) {
 
       <div className="flex items-center gap-2">
         <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${company.isActive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border-slate-500/20'}`}>
-          {company.isActive ? 'Activa' : 'Inactiva'}
+          {company.isActive ? t.common.active : t.common.inactive}
         </div>
         {company.myRole && (
           <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium border ${ROLE_STYLES[company.myRole]}`}>

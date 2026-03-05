@@ -1,5 +1,6 @@
 'use client';
 
+import { Children, cloneElement, isValidElement } from 'react';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,23 @@ export function FormField({
   children,
   className,
 }: FormFieldProps) {
+  const describedBy = [
+    hint && !error ? `${name}-hint` : null,
+    error ? `${name}-error` : null,
+  ].filter(Boolean).join(' ') || undefined;
+
+  // Inject id + aria-describedby into the first child element (Input/Select/etc.)
+  const enhanced = Children.map(children, (child, i) => {
+    if (i === 0 && isValidElement<Record<string, unknown>>(child)) {
+      return cloneElement(child, {
+        id: (child.props.id as string) ?? name,
+        'aria-describedby': describedBy,
+        'aria-invalid': error ? true : undefined,
+      });
+    }
+    return child;
+  });
+
   return (
     <div className={cn('flex flex-col gap-1.5', className)}>
       <Label
@@ -33,12 +51,12 @@ export function FormField({
       >
         {label}
       </Label>
-      {children}
+      {enhanced}
       {hint && !error && (
-        <p className="text-xs text-slate-500">{hint}</p>
+        <p id={`${name}-hint`} className="text-xs text-slate-400">{hint}</p>
       )}
       {error && (
-        <p className="text-xs text-red-400">{error}</p>
+        <p id={`${name}-error`} className="text-xs text-red-400" role="alert">{error}</p>
       )}
     </div>
   );

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,6 +11,7 @@ import { listOvertime, createOvertime, updateOvertime, deleteOvertime } from '@/
 import { listEmployees } from '@/lib/api/employees';
 import { overtimeSchema, type OvertimeInput } from '@/lib/validators/attendance';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
 import { FormField } from '@/components/shared/form-field';
@@ -26,20 +27,21 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import type { OvertimeEntry, OvertimeType } from '@/lib/types/attendance';
 import type { Employee } from '@/lib/types/employee';
 
 const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
 
-const OT_TYPE_FILTER: { value: OvertimeType | ''; label: string }[] = [
-  { value: '',       label: 'Todos los tipos' },
-  { value: 'OT_50',  label: 'OT 50%' },
-  { value: 'OT_100', label: 'OT 100%' },
-];
-
-function formatDate(d: string): string {
+function formatDate(d: string, locale: string): string {
   const iso = d.includes('T') ? d : d + 'T00:00:00';
-  return new Date(iso).toLocaleDateString('es-AR', {
+  return new Date(iso).toLocaleDateString(locale, {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }
@@ -47,6 +49,14 @@ function formatDate(d: string): string {
 export default function OvertimePage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { isManager, canEdit, canDelete } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
+
+  const OT_TYPE_FILTER: { value: OvertimeType | ''; label: string }[] = [
+    { value: '',       label: t.overtime.allTypes },
+    { value: 'OT_50',  label: t.overtime.ot50 },
+    { value: 'OT_100', label: t.overtime.ot100 },
+  ];
 
   const [employees,   setEmployees]   = useState<Employee[]>([]);
   const [records,     setRecords]     = useState<OvertimeEntry[]>([]);
@@ -61,8 +71,10 @@ export default function OvertimePage() {
   const [isDeleting,  setIsDeleting]  = useState(false);
   const [isSaving,    setIsSaving]    = useState(false);
 
+  const schema = useMemo(() => overtimeSchema(t.validators), [t.validators]);
+
   const { register, handleSubmit, reset, setValue, watch, formState: { errors } } = useForm<OvertimeInput>({
-    resolver: zodResolver(overtimeSchema),
+    resolver: zodResolver(schema),
     defaultValues: { overtimeType: 'OT_50' },
   });
 
@@ -83,11 +95,12 @@ export default function OvertimePage() {
       fromDate:   filterFrom || undefined,
       toDate:     filterTo   || undefined,
       type:       filterType || undefined,
+      limit:      100,
     })
-      .then(setRecords)
-      .catch((err: Error) => toast.error(err.message ?? 'Error al cargar horas extra'))
+      .then((res) => setRecords(res.items))
+      .catch((err: Error) => toast.error(err.message ?? t.overtime.saveError))
       .finally(() => setIsLoading(false));
-  }, [companyId, filterEmp, filterFrom, filterTo, filterType]);
+  }, [companyId, filterEmp, filterFrom, filterTo, filterType, t.overtime.saveError]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -120,15 +133,15 @@ export default function OvertimePage() {
       };
       if (editItem) {
         await updateOvertime(companyId, editItem.id, base);
-        toast.success('Hora extra actualizada');
+        toast.success(t.overtime.updated);
       } else {
         await createOvertime(companyId, { employeeId: data.employeeId, ...base });
-        toast.success('Hora extra registrada');
+        toast.success(t.overtime.created);
       }
       setSheetOpen(false);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al guardar');
+      toast.error((err as Error).message ?? t.overtime.saveError);
     } finally {
       setIsSaving(false);
     }
@@ -139,11 +152,11 @@ export default function OvertimePage() {
     setIsDeleting(true);
     try {
       await deleteOvertime(companyId, deleteItem.id);
-      toast.success('Registro eliminado');
+      toast.success(t.overtime.deleted);
       setDeleteItem(null);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al eliminar');
+      toast.error((err as Error).message ?? t.overtime.deleteError);
     } finally {
       setIsDeleting(false);
     }
@@ -158,31 +171,31 @@ export default function OvertimePage() {
 
   const columns: ColumnDef<OvertimeEntry>[] = [
     {
-      header: 'Empleado',
+      header: t.overtime.employee,
       cell: ({ row }) => (
         <span className="text-sm text-white">{empName(row.original)}</span>
       ),
     },
     {
-      header: 'Fecha',
+      header: t.overtime.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date)}</span>
+        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date, localeId)}</span>
       ),
     },
     {
-      header: 'Tipo',
+      header: t.overtime.type,
       cell: ({ row }) => <StatusBadge status={row.original.overtimeType} />,
     },
     {
-      header: 'Minutos',
+      header: t.overtime.minutes,
       cell: ({ row }) => (
         <span className="font-mono text-slate-300 text-sm">{row.original.minutes} min</span>
       ),
     },
     {
-      header: 'Notas',
+      header: t.overtime.notes,
       cell: ({ row }) => (
-        <span className="text-slate-500 text-sm truncate max-w-[180px] block">{row.original.notes ?? '—'}</span>
+        <span className="text-slate-400 text-sm truncate max-w-[120px] sm:max-w-[180px] block">{row.original.notes ?? '—'}</span>
       ),
     },
     {
@@ -193,19 +206,19 @@ export default function OvertimePage() {
           {canEdit() && (
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
-              title="Editar"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              aria-label={t.common.edit}
             >
-              <Pencil className="w-3.5 h-3.5" />
+              <Pencil className="w-4 h-4" />
             </button>
           )}
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
-              title="Eliminar"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              aria-label={t.common.delete}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -216,7 +229,7 @@ export default function OvertimePage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">No tenés permisos para ver esta sección.</p>
+        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -224,8 +237,8 @@ export default function OvertimePage() {
   return (
     <>
       <PageHeader
-        title="Horas extra"
-        description="Registros de tiempo extra del personal."
+        title={t.overtime.title}
+        description={t.overtime.description}
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
@@ -234,7 +247,7 @@ export default function OvertimePage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Registrar
+              {t.overtime.register}
             </button>
           </RoleGate>
         }
@@ -245,9 +258,10 @@ export default function OvertimePage() {
         <select
           value={filterEmp}
           onChange={(e) => setFilterEmp(e.target.value)}
+          aria-label={t.overtime.employee}
           className="flex-1 min-w-0 px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
         >
-          <option value="">Todos los empleados</option>
+          <option value="">{t.overtime.allEmployees}</option>
           {employees.map((e) => (
             <option key={e.id} value={e.id}>{e.lastName}, {e.firstName}</option>
           ))}
@@ -255,6 +269,7 @@ export default function OvertimePage() {
         <select
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as OvertimeType | '')}
+          aria-label={t.overtime.type}
           className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
         >
           {OT_TYPE_FILTER.map((o) => (
@@ -265,12 +280,14 @@ export default function OvertimePage() {
           type="date"
           value={filterFrom}
           onChange={(e) => setFilterFrom(e.target.value)}
+          aria-label={t.common.from}
           className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
         />
         <input
           type="date"
           value={filterTo}
           onChange={(e) => setFilterTo(e.target.value)}
+          aria-label={t.common.from}
           className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
         />
       </div>
@@ -283,12 +300,12 @@ export default function OvertimePage() {
         limit={records.length || 1}
         isLoading={isLoading}
         onPageChange={() => {}}
-        emptyMessage="Sin registros de horas extra"
+        emptyMessage={t.overtime.emptyTitle}
         emptyIcon={<Timer className="w-6 h-6" />}
         emptyDescription={
           filterEmp || filterFrom || filterTo || filterType
-            ? 'No hay registros que coincidan con los filtros aplicados.'
-            : 'Cuando un empleado trabaje fuera de horario, registralo aquí.'
+            ? t.overtime.emptyFilter
+            : t.overtime.emptyDesc
         }
         emptyAction={
           canEdit() && !filterEmp && !filterFrom && !filterTo && !filterType ? (
@@ -297,7 +314,7 @@ export default function OvertimePage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Registrar hora extra
+              {t.overtime.emptyAction}
             </button>
           ) : undefined
         }
@@ -311,64 +328,73 @@ export default function OvertimePage() {
         >
           <SheetHeader className="pb-4 border-b border-white/[0.06]">
             <SheetTitle className="text-white">
-              {editItem ? 'Editar hora extra' : 'Registrar hora extra'}
+              {editItem ? t.overtime.editTitle : t.overtime.createTitle}
             </SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
             {!editItem && (
-              <FormField label="Empleado" name="employeeId" error={errors.employeeId?.message} required>
-                <select
-                  {...register('employeeId')}
-                  className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+              <FormField label={t.overtime.employee} name="employeeId" error={errors.employeeId?.message} required>
+                <Select
+                  onValueChange={(v) => setValue('employeeId', v, { shouldValidate: true })}
                 >
-                  <option value="">Seleccioná un empleado</option>
-                  {employees.map((e) => (
-                    <option key={e.id} value={e.id}>{e.lastName}, {e.firstName}</option>
-                  ))}
-                </select>
+                  <SelectTrigger className={INPUT_CLASS}>
+                    <SelectValue placeholder={t.overtime.selectEmployee} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                    {employees.map((e) => (
+                      <SelectItem key={e.id} value={e.id}>
+                        {e.lastName}, {e.firstName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormField>
             )}
 
-            <FormField label="Fecha" name="date" error={errors.date?.message} required>
+            <FormField label={t.overtime.date} name="date" error={errors.date?.message} required>
               <Input type="date" {...register('date')} className={INPUT_CLASS} />
             </FormField>
 
-            <FormField label="Tipo" name="overtimeType" error={errors.overtimeType?.message} required>
+            <FormField label={t.overtime.type} name="overtimeType" error={errors.overtimeType?.message} required>
               <div className="flex gap-2">
-                {(['OT_50', 'OT_100'] as OvertimeType[]).map((t) => (
+                {(['OT_50', 'OT_100'] as OvertimeType[]).map((ot) => (
                   <button
-                    key={t}
+                    key={ot}
                     type="button"
-                    onClick={() => setValue('overtimeType', t)}
+                    onClick={() => setValue('overtimeType', ot)}
+                    aria-pressed={watchedType === ot}
                     className={[
-                      'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors',
-                      watchedType === t
+                      'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors cursor-pointer',
+                      watchedType === ot
                         ? 'bg-[#2563EB]/20 border-[#2563EB]/50 text-[#93BBFC]'
                         : 'bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white',
                     ].join(' ')}
                   >
-                    {t === 'OT_50' ? 'OT 50%' : 'OT 100%'}
+                    {ot === 'OT_50' ? t.overtime.ot50 : t.overtime.ot100}
                   </button>
                 ))}
               </div>
             </FormField>
 
-            <FormField label="Minutos" name="minutes" error={errors.minutes?.message} required>
+            <FormField label={t.overtime.minutes} name="minutes" error={errors.minutes?.message} required>
               <Input
                 type="number"
                 min={1}
+                max={1440}
                 {...register('minutes', { valueAsNumber: true })}
-                placeholder="Ej: 120"
+                placeholder={t.overtime.minutesPlaceholder}
                 className={INPUT_CLASS}
               />
             </FormField>
 
-            <FormField label="Notas" name="notes" error={errors.notes?.message}>
+            <FormField label={t.overtime.notes} name="notes" error={errors.notes?.message}>
               <textarea
+                id="notes"
                 {...register('notes')}
                 rows={3}
-                placeholder="Observaciones opcionales..."
+                maxLength={500}
+                placeholder={t.common.notesPlaceholder}
                 className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-[#2563EB]/50 transition-colors resize-none"
               />
             </FormField>
@@ -379,14 +405,14 @@ export default function OvertimePage() {
                 onClick={() => setSheetOpen(false)}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
               >
-                Cancelar
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
               >
-                {isSaving ? 'Guardando...' : 'Guardar'}
+                {isSaving ? t.common.saving : t.common.save}
               </button>
             </SheetFooter>
           </form>
@@ -397,9 +423,9 @@ export default function OvertimePage() {
         open={!!deleteItem}
         onOpenChange={(open) => { if (!open) setDeleteItem(null); }}
         onConfirm={handleDelete}
-        title="Eliminar hora extra"
-        description="¿Estás seguro de que querés eliminar este registro? Esta acción no se puede deshacer."
-        confirmLabel="Eliminar"
+        title={t.overtime.deleteTitle}
+        description={t.overtime.deleteDesc}
+        confirmLabel={t.common.delete}
         variant="danger"
         isLoading={isDeleting}
       />

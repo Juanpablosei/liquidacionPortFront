@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, Users, FileText, TrendingUp, Shield, Zap, BarChart3 } from 'lucide-react';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from '@/lib/i18n';
+import { useAuthStore } from '@/stores/auth-store';
 
 const BAR_DATA = [
   { month: 'Ago', value: 68, amount: '$2.1M' },
@@ -45,53 +47,31 @@ function useCountUp(target: number, duration = 1800) {
   return count;
 }
 
-function StatCard({ value, suffix = '', label }: { value: number; suffix?: string; label: string }) {
+function StatCard({ value, suffix = '', label, locale }: { value: number; suffix?: string; label: string; locale?: string | null }) {
   const count = useCountUp(value);
   return (
     <div className="flex flex-col gap-1">
       <span className="text-4xl font-semibold text-white tracking-tight tabular-nums">
-        {count.toLocaleString('es-AR')}{suffix}
+        {count.toLocaleString(locale === 'en' ? 'en-US' : 'es-AR')}{suffix}
       </span>
       <span className="text-sm text-slate-400">{label}</span>
     </div>
   );
 }
 
-const FEATURES = [
-  {
-    icon: <Users className="w-5 h-5" />,
-    title: 'Multi-empresa',
-    desc: 'Gestioná múltiples empresas desde una sola cuenta con roles y permisos granulares.',
-  },
-  {
-    icon: <FileText className="w-5 h-5" />,
-    title: 'Motor de liquidación',
-    desc: 'Cálculo automático de haberes, deducciones y conceptos. Exportá en CSV con un clic.',
-  },
-  {
-    icon: <TrendingUp className="w-5 h-5" />,
-    title: 'Asistencia y overtime',
-    desc: 'Registrá entradas, salidas y horas extra. El motor las incorpora en cada liquidación.',
-  },
-  {
-    icon: <Shield className="w-5 h-5" />,
-    title: 'Roles y seguridad',
-    desc: 'OWNER, ADMIN, MANAGER y MEMBER. Cada rol ve y hace exactamente lo que debe.',
-  },
-  {
-    icon: <Zap className="w-5 h-5" />,
-    title: 'Liquidación en segundos',
-    desc: 'Creá un período, ejecutá el run y revisá los recibos. El proceso completo en minutos.',
-  },
-  {
-    icon: <BarChart3 className="w-5 h-5" />,
-    title: 'Historial completo',
-    desc: 'Contratos, asistencias y payslips nunca se borran. Trazabilidad total del empleado.',
-  },
-];
-
 export default function HomePage() {
   const [barsVisible, setBarsVisible] = useState(false);
+  const t = useTranslation();
+  const locale = useAuthStore((s) => s.user?.locale);
+
+  const FEATURES = [
+    { icon: <Users className="w-5 h-5" />,      title: t.landing.featureMulti,      desc: t.landing.featureMultiDesc },
+    { icon: <FileText className="w-5 h-5" />,   title: t.landing.featureEngine,     desc: t.landing.featureEngineDesc },
+    { icon: <TrendingUp className="w-5 h-5" />,  title: t.landing.featureAttendance, desc: t.landing.featureAttendanceDesc },
+    { icon: <Shield className="w-5 h-5" />,      title: t.landing.featureRoles,      desc: t.landing.featureRolesDesc },
+    { icon: <Zap className="w-5 h-5" />,         title: t.landing.featureFast,       desc: t.landing.featureFastDesc },
+    { icon: <BarChart3 className="w-5 h-5" />,   title: t.landing.featureHistory,    desc: t.landing.featureHistoryDesc },
+  ];
 
   useEffect(() => {
     const t = setTimeout(() => setBarsVisible(true), 400);
@@ -120,7 +100,7 @@ export default function HomePage() {
         style={{ background: 'radial-gradient(circle, rgba(16,163,74,0.07) 0%, transparent 70%)' }} />
 
       {/* NAV */}
-      <nav className="relative z-10 flex items-center justify-between px-8 py-5 max-w-7xl mx-auto">
+      <nav className="relative z-10 flex items-center justify-between px-5 sm:px-8 py-5 max-w-7xl mx-auto">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -131,53 +111,52 @@ export default function HomePage() {
         </div>
         <div className="flex items-center gap-6">
           <Link href={ROUTES.login}
-            className="text-sm text-slate-400 hover:text-white transition-colors">
-            Ingresar
+            className="text-sm text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg">
+            {t.landing.login}
           </Link>
           <Link href={ROUTES.register}
-            className="text-sm bg-white text-[#0A0F1C] px-4 py-2 rounded-lg font-medium hover:bg-slate-100 transition-colors">
-            Comenzar gratis
+            className="text-sm bg-white text-[#0A0F1C] px-4 py-2 rounded-lg font-medium hover:bg-slate-100 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+            {t.landing.startFree}
           </Link>
         </div>
       </nav>
 
       {/* HERO */}
-      <section className="relative z-10 max-w-7xl mx-auto px-8 pt-20 pb-24">
+      <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-20 pb-24">
         <div className="max-w-3xl">
           <div className="inline-flex items-center gap-2 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-full px-4 py-1.5 mb-8"
             style={{ animation: 'fadeUp 0.6s ease both' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] animate-pulse" />
-            <span className="text-xs text-[#93BBFC] font-medium">Sistema de gestión de nómina</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] motion-safe:animate-pulse" />
+            <span className="text-xs text-[#93BBFC] font-medium">{t.landing.metaTitle.replace('Silent Port — ', '')}</span>
           </div>
 
-          <h1 className="text-6xl font-semibold leading-[1.08] tracking-tight mb-6"
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.08] tracking-tight mb-6"
             style={{ animation: 'fadeUp 0.6s ease 0.1s both' }}>
-            Liquidá sueldos
+            {t.landing.heroTitle1}
             <br />
-            <span className="text-[#2563EB]">sin fricción.</span>
+            <span className="text-[#2563EB]">{t.landing.heroTitle2}</span>
           </h1>
 
           <p className="text-lg text-slate-400 leading-relaxed mb-10 max-w-xl"
             style={{ animation: 'fadeUp 0.6s ease 0.2s both' }}>
-            Gestión de empleados, contratos, asistencia y liquidación de nómina
-            para equipos que no tienen tiempo que perder.
+            {t.landing.heroDesc}
           </p>
 
           <div className="flex items-center gap-4" style={{ animation: 'fadeUp 0.6s ease 0.3s both' }}>
             <Link href={ROUTES.register}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-medium text-sm transition-all hover:shadow-[0_0_32px_rgba(37,99,235,0.4)] active:scale-[0.98]">
-              Comenzar
+              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-medium text-sm transition-all hover:shadow-[0_0_32px_rgba(37,99,235,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+              {t.landing.heroCta}
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link href={ROUTES.login}
-              className="text-sm text-slate-400 hover:text-white transition-colors">
-              Ya tengo cuenta →
+              className="text-sm text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg">
+              {t.landing.heroLogin}
             </Link>
           </div>
         </div>
 
         {/* DASHBOARD PREVIEW */}
-        <div className="mt-20 relative" style={{ animation: 'fadeUp 0.8s ease 0.4s both' }}>
+        <div className="mt-20 relative overflow-hidden" style={{ animation: 'fadeUp 0.8s ease 0.4s both' }}>
           <div className="rounded-2xl border border-white/[0.06] bg-[#0F172A]/80 backdrop-blur overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
             {/* Window chrome */}
@@ -185,13 +164,13 @@ export default function HomePage() {
               <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
               <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
               <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-              <span className="ml-4 text-xs text-slate-500">Panel de nómina — Empresa Ejemplo S.A.</span>
+              <span className="ml-4 text-xs text-slate-500">{t.landing.demoTitle}</span>
             </div>
 
             <div className="grid grid-cols-12 gap-0">
               {/* Sidebar simulado */}
               <div className="col-span-2 border-r border-white/[0.05] py-6 px-3 hidden md:flex flex-col gap-1">
-                {['Dashboard', 'Empleados', 'Asistencia', 'Nómina', 'Conceptos'].map((item, i) => (
+                {(t.landing.demoNav as string[]).map((item: string, i: number) => (
                   <div key={item}
                     className={`text-xs px-3 py-2 rounded-lg ${i === 3 ? 'bg-[#2563EB]/15 text-[#93BBFC]' : 'text-slate-500'}`}>
                     {item}
@@ -203,12 +182,12 @@ export default function HomePage() {
               <div className="col-span-12 md:col-span-10 p-6">
 
                 {/* Stats row */}
-                <div className="grid grid-cols-4 gap-3 mb-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
                   {[
-                    { label: 'Empleados activos', value: '48', delta: '+3' },
-                    { label: 'Nómina del mes', value: '$3.1M', delta: '+8.2%' },
-                    { label: 'Último run', value: 'COMPLETADO', delta: null, status: true },
-                    { label: 'Payslips emitidos', value: '48', delta: null },
+                    { label: t.landing.demoActiveEmployees, value: '48', delta: '+3' },
+                    { label: t.landing.demoMonthPayroll, value: '$3.1M', delta: '+8.2%' },
+                    { label: t.landing.demoLastRun, value: t.landing.demoCompleted, delta: null, status: true },
+                    { label: t.landing.demoPayslips, value: '48', delta: null },
                   ].map((s) => (
                     <div key={s.label}
                       className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
@@ -217,27 +196,27 @@ export default function HomePage() {
                         {s.value}
                       </p>
                       {s.delta && (
-                        <p className="text-[10px] text-[#4ADE80] mt-0.5">{s.delta} vs mes ant.</p>
+                        <p className="text-[10px] text-[#4ADE80] mt-0.5">{s.delta} {t.landing.demoVsLastMonth}</p>
                       )}
                     </div>
                   ))}
                 </div>
 
                 {/* Charts row */}
-                <div className="grid grid-cols-5 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
 
                   {/* Bar chart */}
-                  <div className="col-span-3 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+                  <div className="col-span-1 sm:col-span-3 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <p className="text-xs font-medium text-white">Nómina mensual</p>
-                      <span className="text-[10px] text-slate-500 bg-white/[0.04] px-2 py-0.5 rounded">últimos 7 meses</span>
+                      <p className="text-xs font-medium text-white">{t.landing.demoMonthlyPayroll}</p>
+                      <span className="text-[10px] text-slate-500 bg-white/[0.04] px-2 py-0.5 rounded">{t.landing.demoLast7Months}</span>
                     </div>
                     <div className="flex items-end gap-2 h-28">
                       {BAR_DATA.map((bar, i) => (
                         <div key={bar.month} className="flex-1 flex flex-col items-center gap-1.5">
                           <div className="w-full relative group cursor-default">
                             <div
-                              className="w-full rounded-t-md transition-all duration-700"
+                              className="w-full rounded-t-md transition-all duration-300"
                               style={{
                                 height: barsVisible ? `${bar.value * 0.92}px` : '0px',
                                 background: i === BAR_DATA.length - 1
@@ -255,11 +234,11 @@ export default function HomePage() {
                   </div>
 
                   {/* Line chart + table */}
-                  <div className="col-span-2 flex flex-col gap-3">
+                  <div className="col-span-1 sm:col-span-2 flex flex-col gap-3">
 
                     {/* Line chart */}
                     <div className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                      <p className="text-xs font-medium text-white mb-3">Costo por empleado</p>
+                      <p className="text-xs font-medium text-white mb-3">{t.landing.demoCostPerEmployee}</p>
                       <svg viewBox="0 0 100 80" className="w-full h-16" preserveAspectRatio="none">
                         <defs>
                           <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
@@ -284,11 +263,11 @@ export default function HomePage() {
 
                     {/* Mini table */}
                     <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                      <p className="text-[10px] text-slate-500 mb-2">Últimos empleados</p>
+                      <p className="text-[10px] text-slate-500 mb-2">{t.landing.demoLastEmployees}</p>
                       {['García, María', 'López, Juan', 'Pérez, Ana'].map((name) => (
                         <div key={name} className="flex items-center justify-between py-1 border-b border-white/[0.04] last:border-0">
                           <span className="text-[10px] text-slate-300">{name}</span>
-                          <span className="text-[10px] text-[#4ADE80]">Activo</span>
+                          <span className="text-[10px] text-[#4ADE80]">{t.landing.demoActive}</span>
                         </div>
                       ))}
                     </div>
@@ -306,22 +285,22 @@ export default function HomePage() {
 
       {/* STATS */}
       <section className="relative z-10 border-y border-white/[0.06] bg-white/[0.02]">
-        <div className="max-w-7xl mx-auto px-8 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
-          <StatCard value={1200} suffix="+" label="Empresas usando la plataforma" />
-          <StatCard value={48000} suffix="+" label="Empleados liquidados" />
-          <StatCard value={99} suffix="%" label="Uptime garantizado" />
-          <StatCard value={3} suffix=" min" label="Para completar una liquidación" />
+        <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
+          <StatCard value={1200} suffix="+" label={t.landing.statsCompanies} locale={locale} />
+          <StatCard value={48000} suffix="+" label={t.landing.statsEmployees} locale={locale} />
+          <StatCard value={99} suffix="%" label={t.landing.statsUptime} locale={locale} />
+          <StatCard value={3} suffix=" min" label={t.landing.statsTime} locale={locale} />
         </div>
       </section>
 
       {/* FEATURES */}
-      <section className="relative z-10 max-w-7xl mx-auto px-8 py-28">
+      <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-28">
         <div className="mb-14">
-          <p className="text-xs font-medium text-[#2563EB] uppercase tracking-widest mb-3">Funcionalidades</p>
+          <p className="text-xs font-medium text-[#2563EB] uppercase tracking-widest mb-3">{t.landing.featuresTitle}</p>
           <h2 className="text-4xl font-semibold tracking-tight">
-            Todo lo que necesitás,
+            {t.landing.featuresSubtitle1}
             <br />
-            <span className="text-slate-400">sin lo que no.</span>
+            <span className="text-slate-400">{t.landing.featuresSubtitle2}</span>
           </h2>
         </div>
 
@@ -341,46 +320,45 @@ export default function HomePage() {
 
       {/* QUOTE / TESTIMONIAL */}
       <section className="relative z-10 border-y border-white/[0.06] bg-white/[0.02]">
-        <div className="max-w-3xl mx-auto px-8 py-20 text-center">
+        <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20 text-center">
           <div className="text-5xl text-[#2563EB]/30 font-serif mb-6">"</div>
           <p className="text-xl text-white leading-relaxed font-light mb-8">
-            Antes tardábamos <span className="text-white font-semibold">4 horas</span> en cerrar la nómina.
-            Ahora son <span className="text-[#2563EB] font-semibold">20 minutos</span>.
+            {t.landing.testimonial}
           </p>
           <div className="flex items-center justify-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-sm font-semibold text-[#2563EB]">
               CR
             </div>
             <div className="text-left">
-              <p className="text-sm font-medium text-white">Carmen Rodríguez</p>
-              <p className="text-xs text-slate-500">RRHH — Construye S.A.</p>
+              <p className="text-sm font-medium text-white">{t.landing.testimonialAuthor}</p>
+              <p className="text-xs text-slate-500">{t.landing.testimonialRole}</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA FINAL */}
-      <section className="relative z-10 max-w-7xl mx-auto px-8 py-28 text-center">
+      <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-28 text-center">
         <div className="relative inline-block mb-8">
           <div className="absolute inset-0 blur-3xl bg-[#2563EB]/20 rounded-full" />
         </div>
-        <h2 className="text-5xl font-semibold tracking-tight mb-5">
-          Empezá hoy.
+        <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight mb-5">
+          {t.landing.ctaTitle}
           <br />
-          <span className="text-slate-400">Es gratis.</span>
+          <span className="text-slate-400">{t.landing.ctaSubtitle}</span>
         </h2>
         <p className="text-slate-400 mb-10 text-lg max-w-md mx-auto">
-          Sin tarjeta de crédito. Sin contrato. Creá tu empresa y liquidá tu primera nómina en minutos.
+          {t.landing.ctaDesc}
         </p>
         <Link href={ROUTES.register}
-          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-medium text-base transition-all hover:shadow-[0_0_48px_rgba(37,99,235,0.5)] active:scale-[0.98]">
-          Comenzar gratis
+          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-medium text-base transition-all hover:shadow-[0_0_48px_rgba(37,99,235,0.5)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+          {t.landing.ctaButton}
           <ArrowRight className="w-5 h-5" />
         </Link>
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/[0.06] px-8 py-8 max-w-7xl mx-auto flex items-center justify-between">
+      <footer className="relative z-10 border-t border-white/[0.06] px-5 sm:px-8 py-8 max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-5 h-5 rounded-md bg-[#2563EB] flex items-center justify-center">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -390,7 +368,7 @@ export default function HomePage() {
           <span className="text-sm font-medium text-slate-400">Silent Port</span>
         </div>
         <p className="text-xs text-slate-600">
-          © {new Date().getFullYear()} — Sistema de gestión de nómina
+          {t.landing.footer.replace('{year}', String(new Date().getFullYear()))}
         </p>
       </footer>
 

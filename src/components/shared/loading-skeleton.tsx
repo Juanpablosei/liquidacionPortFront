@@ -10,7 +10,7 @@ export function LoadingSkeleton({ variant, rows = 5 }: LoadingSkeletonProps) {
         {/* Header row */}
         <div className="flex items-center gap-4 px-4 py-3 border-b border-white/[0.06]">
           {[40, 120, 80, 80, 60].map((w, i) => (
-            <div key={i} className="h-3 bg-white/[0.05] rounded animate-pulse" style={{ width: w }} />
+            <div key={i} className="h-3 bg-white/[0.05] rounded motion-safe:animate-pulse" style={{ width: w }} />
           ))}
         </div>
         {/* Data rows */}
@@ -19,7 +19,7 @@ export function LoadingSkeleton({ variant, rows = 5 }: LoadingSkeletonProps) {
             {[40, 120, 80, 80, 60].map((w, j) => (
               <div
                 key={j}
-                className="h-3.5 bg-white/[0.04] rounded animate-pulse"
+                className="h-3.5 bg-white/[0.04] rounded motion-safe:animate-pulse"
                 style={{ width: w, animationDelay: `${i * 60 + j * 15}ms` }}
               />
             ))}
@@ -35,7 +35,7 @@ export function LoadingSkeleton({ variant, rows = 5 }: LoadingSkeletonProps) {
         {Array.from({ length: rows }).map((_, i) => (
           <div
             key={i}
-            className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 animate-pulse"
+            className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 motion-safe:animate-pulse"
             style={{ animationDelay: `${i * 80}ms` }}
           >
             <div className="flex items-start justify-between mb-4">
@@ -54,11 +54,11 @@ export function LoadingSkeleton({ variant, rows = 5 }: LoadingSkeletonProps) {
       <div className="flex flex-col gap-5 max-w-lg">
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex flex-col gap-1.5" style={{ animationDelay: `${i * 60}ms` }}>
-            <div className="h-3 bg-white/[0.06] rounded w-24 animate-pulse" />
-            <div className="h-11 bg-white/[0.04] rounded-xl border border-white/[0.06] animate-pulse" />
+            <div className="h-3 bg-white/[0.06] rounded w-24 motion-safe:animate-pulse" />
+            <div className="h-11 bg-white/[0.04] rounded-xl border border-white/[0.06] motion-safe:animate-pulse" />
           </div>
         ))}
-        <div className="h-11 bg-[#2563EB]/20 rounded-xl animate-pulse w-32 mt-2" />
+        <div className="h-11 bg-[#2563EB]/20 rounded-xl motion-safe:animate-pulse w-32 mt-2" />
       </div>
     );
   }
@@ -67,17 +67,17 @@ export function LoadingSkeleton({ variant, rows = 5 }: LoadingSkeletonProps) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
-        <div className="w-12 h-12 rounded-full bg-white/[0.06] animate-pulse" />
+        <div className="w-12 h-12 rounded-full bg-white/[0.06] motion-safe:animate-pulse" />
         <div className="flex flex-col gap-2">
-          <div className="h-5 bg-white/[0.08] rounded w-40 animate-pulse" />
-          <div className="h-3.5 bg-white/[0.05] rounded w-56 animate-pulse" />
+          <div className="h-5 bg-white/[0.08] rounded w-40 motion-safe:animate-pulse" />
+          <div className="h-3.5 bg-white/[0.05] rounded w-56 motion-safe:animate-pulse" />
         </div>
       </div>
       <div className="flex flex-col gap-3">
         {Array.from({ length: rows }).map((_, i) => (
           <div
             key={i}
-            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-xl animate-pulse"
+            className="h-12 bg-white/[0.03] border border-white/[0.06] rounded-xl motion-safe:animate-pulse"
             style={{ animationDelay: `${i * 50}ms` }}
           />
         ))}

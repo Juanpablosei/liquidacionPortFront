@@ -8,6 +8,7 @@ import {
 } from '@tanstack/react-table';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { EmptyState } from '@/components/shared/empty-state';
+import { useTranslation } from '@/lib/i18n';
 
 interface DataTableProps<T> {
   columns:          ColumnDef<T>[];
@@ -33,11 +34,12 @@ export function DataTable<T>({
   isLoading        = false,
   onPageChange,
   onRowClick,
-  emptyMessage     = 'No hay datos para mostrar.',
+  emptyMessage,
   emptyIcon,
   emptyDescription,
   emptyAction,
 }: DataTableProps<T>) {
+  const t = useTranslation();
   const pages = Math.max(1, Math.ceil(total / limit));
 
   const table = useReactTable({
@@ -58,7 +60,7 @@ export function DataTable<T>({
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider whitespace-nowrap"
+                    className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap"
                   >
                     {header.isPlaceholder
                       ? null
@@ -75,7 +77,7 @@ export function DataTable<T>({
                 <tr key={i} className="border-b border-white/[0.04]">
                   {columns.map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-white/[0.05] rounded animate-pulse" />
+                      <div className="h-4 bg-white/[0.05] rounded motion-safe:animate-pulse" />
                     </td>
                   ))}
                 </tr>
@@ -85,7 +87,7 @@ export function DataTable<T>({
                 <td colSpan={columns.length}>
                   <EmptyState
                     icon={emptyIcon}
-                    title={emptyMessage}
+                    title={emptyMessage ?? t.dataTable.noData}
                     description={emptyDescription}
                     action={emptyAction}
                   />
@@ -96,10 +98,13 @@ export function DataTable<T>({
                 <tr
                   key={row.id}
                   onClick={onRowClick ? () => onRowClick(row.original) : undefined}
+                  onKeyDown={onRowClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onRowClick(row.original); } } : undefined}
+                  tabIndex={onRowClick ? 0 : undefined}
+                  role={onRowClick ? 'button' : undefined}
                   className={[
                     'border-b border-white/[0.04] last:border-0 transition-colors',
                     'even:bg-white/[0.01]',
-                    onRowClick ? 'cursor-pointer hover:bg-white/[0.04]' : '',
+                    onRowClick ? 'cursor-pointer hover:bg-white/[0.04] focus-visible:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]/50' : '',
                   ].join(' ')}
                 >
                   {row.getVisibleCells().map((cell) => (
@@ -116,21 +121,23 @@ export function DataTable<T>({
 
       {!isLoading && total > 0 && (
         <div className="flex items-center justify-between px-1 pt-3">
-          <span className="text-xs text-slate-500">
-            {total} {total === 1 ? 'registro' : 'registros'} · Página {page} de {pages}
+          <span className="text-xs text-slate-400">
+            {total} {total === 1 ? t.dataTable.record : t.dataTable.records} · {t.dataTable.pageOf.replace('{page}', String(page)).replace('{pages}', String(pages))}
           </span>
           <div className="flex items-center gap-1">
             <button
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              aria-label={t.dataTable.prevPage}
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0F1C]"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
             <button
               onClick={() => onPageChange(page + 1)}
               disabled={page >= pages}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              aria-label={t.dataTable.nextPage}
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0F1C]"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

@@ -17,6 +17,7 @@ import { ConfirmDialog } from '@/components/shared/confirm-dialog';
 import { StatusBadge }   from '@/components/shared/status-badge';
 import { RoleGate }      from '@/components/shared/role-gate';
 import { usePermissions } from '@/lib/hooks/use-permissions';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
 import {
   Sheet,
   SheetContent,
@@ -31,25 +32,15 @@ const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:t
 
 type ActiveTab = 'EARNING' | 'DEDUCTION';
 
-const CALC_TYPE_CONFIG: Record<ConceptCalcType, { label: string; icon: React.ReactNode; color: string }> = {
-  FIXED:   { label: 'Fijo',        icon: <Hash   className="w-3 h-3" />, color: 'text-blue-400' },
-  PERCENT: { label: 'Porcentaje',  icon: <TrendingUp className="w-3 h-3" />, color: 'text-violet-400' },
-  HOURLY:  { label: 'Por hora',    icon: <Clock  className="w-3 h-3" />, color: 'text-cyan-400' },
-  MANUAL:  { label: 'Manual',      icon: <Sliders className="w-3 h-3" />, color: 'text-slate-400' },
-};
-
-function formatAmount(concept: PayrollConcept): string {
+function formatAmount(concept: PayrollConcept, locale: string): string {
+  const nf = new Intl.NumberFormat(locale, { style: 'currency', currency: 'ARS' });
   switch (concept.calcType) {
     case 'FIXED':
-      return concept.fixedAmount
-        ? new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(Number(concept.fixedAmount))
-        : '—';
+      return concept.fixedAmount ? nf.format(Number(concept.fixedAmount)) : '—';
     case 'PERCENT':
       return concept.percentValue ? `${concept.percentValue}%` : '—';
     case 'HOURLY':
-      return concept.hourlyRate
-        ? `${new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(Number(concept.hourlyRate))}/h`
-        : '—';
+      return concept.hourlyRate ? `${nf.format(Number(concept.hourlyRate))}/h` : '—';
     case 'MANUAL':
       return '—';
   }
@@ -58,6 +49,15 @@ function formatAmount(concept: PayrollConcept): string {
 export default function ConceptsPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { isManager, canEdit, canDelete } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
+
+  const calcTypeConfig: Record<ConceptCalcType, { label: string; icon: React.ReactNode; color: string }> = {
+    FIXED:   { label: t.concepts.fixed,    icon: <Hash   className="w-3 h-3" />, color: 'text-blue-400' },
+    PERCENT: { label: t.concepts.percent,  icon: <TrendingUp className="w-3 h-3" />, color: 'text-violet-400' },
+    HOURLY:  { label: t.concepts.hourly,   icon: <Clock  className="w-3 h-3" />, color: 'text-cyan-400' },
+    MANUAL:  { label: t.concepts.manual,   icon: <Sliders className="w-3 h-3" />, color: 'text-slate-400' },
+  };
 
   const [concepts,    setConcepts]    = useState<PayrollConcept[]>([]);
   const [isLoading,   setIsLoading]   = useState(true);
@@ -69,7 +69,7 @@ export default function ConceptsPage() {
   const [isSaving,    setIsSaving]    = useState(false);
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<ConceptInput>({
-    resolver: zodResolver(conceptSchema),
+    resolver: zodResolver(conceptSchema(t.validators)),
     defaultValues: { category: 'EARNING', calcType: 'FIXED', percentBase: 'BASIC', sortOrder: '0' },
   });
 
@@ -80,9 +80,9 @@ export default function ConceptsPage() {
     setIsLoading(true);
     listConcepts(companyId)
       .then(setConcepts)
-      .catch((err: Error) => toast.error(err.message ?? 'Error al cargar conceptos'))
+      .catch((err: Error) => toast.error(err.message ?? t.concepts.loadError))
       .finally(() => setIsLoading(false));
-  }, [companyId]);
+  }, [companyId, t.concepts.loadError]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -135,15 +135,15 @@ export default function ConceptsPage() {
 
       if (editItem) {
         await updateConcept(companyId, editItem.id, payload);
-        toast.success('Concepto actualizado');
+        toast.success(t.concepts.updated);
       } else {
         await createConcept(companyId, payload);
-        toast.success('Concepto creado');
+        toast.success(t.concepts.created);
       }
       setSheetOpen(false);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al guardar');
+      toast.error((err as Error).message ?? t.concepts.saveError);
     } finally {
       setIsSaving(false);
     }
@@ -152,10 +152,10 @@ export default function ConceptsPage() {
   async function handleToggleActive(item: PayrollConcept) {
     try {
       await updateConcept(companyId, item.id, { isActive: !item.isActive });
-      toast.success(item.isActive ? 'Concepto desactivado' : 'Concepto activado');
+      toast.success(item.isActive ? t.concepts.deactivated : t.concepts.activated);
       load();
     } catch {
-      toast.error('Error al cambiar estado');
+      toast.error(t.concepts.statusError);
     }
   }
 
@@ -164,11 +164,11 @@ export default function ConceptsPage() {
     setIsDeleting(true);
     try {
       await deleteConcept(companyId, deleteItem.id);
-      toast.success('Concepto eliminado');
+      toast.success(t.concepts.deleted);
       setDeleteItem(null);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al eliminar');
+      toast.error((err as Error).message ?? t.concepts.deleteError);
     } finally {
       setIsDeleting(false);
     }
@@ -181,7 +181,7 @@ export default function ConceptsPage() {
 
   const columns: ColumnDef<PayrollConcept>[] = [
     {
-      header: 'Código',
+      header: t.concepts.code,
       cell: ({ row }) => (
         <span className="font-mono text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
           {row.original.code}
@@ -189,15 +189,15 @@ export default function ConceptsPage() {
       ),
     },
     {
-      header: 'Nombre',
+      header: t.concepts.name,
       cell: ({ row }) => (
         <span className="text-sm text-white font-medium">{row.original.name}</span>
       ),
     },
     {
-      header: 'Tipo cálculo',
+      header: t.concepts.calcType,
       cell: ({ row }) => {
-        const cfg = CALC_TYPE_CONFIG[row.original.calcType];
+        const cfg = calcTypeConfig[row.original.calcType];
         return (
           <span className={`inline-flex items-center gap-1.5 text-xs font-medium ${cfg.color}`}>
             {cfg.icon}
@@ -207,19 +207,19 @@ export default function ConceptsPage() {
       },
     },
     {
-      header: 'Valor',
+      header: t.concepts.value,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-slate-300">{formatAmount(row.original)}</span>
+        <span className="font-mono text-sm text-slate-300">{formatAmount(row.original, localeId)}</span>
       ),
     },
     {
-      header: 'Estado',
+      header: t.concepts.status,
       cell: ({ row }) => (
         <StatusBadge status={row.original.isActive ? 'active' : 'inactive'} />
       ),
     },
     {
-      header: 'Orden',
+      header: t.concepts.order,
       cell: ({ row }) => (
         <span className="text-sm text-slate-500 font-mono">{row.original.sortOrder}</span>
       ),
@@ -233,31 +233,31 @@ export default function ConceptsPage() {
             <>
               <button
                 onClick={(e) => { e.stopPropagation(); handleToggleActive(row.original); }}
-                className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
+                className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                   row.original.isActive
                     ? 'text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06]'
                     : 'text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/[0.06]'
                 }`}
-                title={row.original.isActive ? 'Desactivar' : 'Activar'}
+                title={row.original.isActive ? t.concepts.deactivate : t.concepts.activate}
               >
-                {row.original.isActive ? 'Desactivar' : 'Activar'}
+                {row.original.isActive ? t.concepts.deactivate : t.concepts.activate}
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
-                title="Editar"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+                aria-label={t.common.edit}
               >
-                <Pencil className="w-3.5 h-3.5" />
+                <Pencil className="w-4 h-4" />
               </button>
             </>
           )}
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
-              title="Eliminar"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              aria-label={t.common.delete}
             >
-              <Trash2 className="w-3.5 h-3.5" />
+              <Trash2 className="w-4 h-4" />
             </button>
           )}
         </div>
@@ -268,7 +268,7 @@ export default function ConceptsPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">No tenés permisos para ver esta sección.</p>
+        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -276,8 +276,8 @@ export default function ConceptsPage() {
   return (
     <>
       <PageHeader
-        title="Conceptos de nómina"
-        description="Haberes y deducciones que componen la liquidación."
+        title={t.concepts.title}
+        description={t.concepts.description}
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
@@ -286,7 +286,7 @@ export default function ConceptsPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Nuevo concepto
+              {t.concepts.newConcept}
             </button>
           </RoleGate>
         }
@@ -295,13 +295,14 @@ export default function ConceptsPage() {
       {/* Tabs Haberes / Deducciones */}
       <div className="flex items-center gap-1 mb-5 bg-white/[0.03] border border-white/[0.06] rounded-xl p-1 w-fit">
         {([
-          { key: 'EARNING',   label: 'Haberes',     count: earningsCount,   color: 'text-emerald-400' },
-          { key: 'DEDUCTION', label: 'Deducciones', count: deductionsCount, color: 'text-red-400' },
+          { key: 'EARNING',   label: t.concepts.earnings,   count: earningsCount,   color: 'text-emerald-400' },
+          { key: 'DEDUCTION', label: t.concepts.deductions, count: deductionsCount, color: 'text-red-400' },
         ] as const).map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+            aria-pressed={activeTab === tab.key}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               activeTab === tab.key
                 ? 'bg-white/[0.08] text-white shadow-sm'
                 : 'text-slate-500 hover:text-slate-300'
@@ -323,12 +324,12 @@ export default function ConceptsPage() {
         limit={filtered.length || 1}
         isLoading={isLoading}
         onPageChange={() => {}}
-        emptyMessage={`Sin ${activeTab === 'EARNING' ? 'haberes' : 'deducciones'}`}
+        emptyMessage={activeTab === 'EARNING' ? t.concepts.noEarnings : t.concepts.noDeductions}
         emptyIcon={<Tags className="w-6 h-6" />}
         emptyDescription={
           activeTab === 'EARNING'
-            ? 'Los haberes son los componentes que suman al sueldo bruto. Creá el primero para empezar.'
-            : 'Las deducciones se restan del bruto. Ej: IPS, impuestos, anticipos.'
+            ? t.concepts.earningsEmpty
+            : t.concepts.deductionsEmpty
         }
         emptyAction={
           canEdit() ? (
@@ -337,7 +338,7 @@ export default function ConceptsPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Nuevo concepto
+              {t.concepts.newConcept}
             </button>
           ) : undefined
         }
@@ -351,22 +352,23 @@ export default function ConceptsPage() {
         >
           <SheetHeader className="pb-4 border-b border-white/[0.06]">
             <SheetTitle className="text-white">
-              {editItem ? 'Editar concepto' : 'Nuevo concepto'}
+              {editItem ? t.concepts.editTitle : t.concepts.createTitle}
             </SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
 
-            {/* Código + Nombre */}
+            {/* Codigo + Orden */}
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Código" name="code" error={errors.code?.message} required>
+              <FormField label={t.concepts.code} name="code" error={errors.code?.message} required>
                 <Input
                   {...register('code')}
-                  placeholder="ej. BASICO"
+                  maxLength={20}
+                  placeholder={t.concepts.codePlaceholder}
                   className={`${INPUT_CLASS} font-mono uppercase`}
                 />
               </FormField>
-              <FormField label="Orden" name="sortOrder" error={errors.sortOrder?.message}>
+              <FormField label={t.concepts.order} name="sortOrder" error={errors.sortOrder?.message}>
                 <Input
                   type="number"
                   min={0}
@@ -376,23 +378,24 @@ export default function ConceptsPage() {
               </FormField>
             </div>
 
-            <FormField label="Nombre" name="name" error={errors.name?.message} required>
+            <FormField label={t.concepts.name} name="name" error={errors.name?.message} required>
               <Input
                 {...register('name')}
-                placeholder="ej. Sueldo básico"
+                maxLength={100}
+                placeholder={t.concepts.namePlaceholder}
                 className={INPUT_CLASS}
               />
             </FormField>
 
-            {/* Categoría */}
-            <FormField label="Categoría" name="category" error={errors.category?.message} required>
+            {/* Categoria */}
+            <FormField label={t.concepts.category} name="category" error={errors.category?.message} required>
               <div className="grid grid-cols-2 gap-2">
                 {(['EARNING', 'DEDUCTION'] as const).map((cat) => (
                   <button
                     key={cat}
                     type="button"
                     onClick={() => setValue('category', cat)}
-                    className={`py-2 rounded-lg text-sm font-medium border transition-all ${
+                    className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                       watch('category') === cat
                         ? cat === 'EARNING'
                           ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
@@ -400,23 +403,23 @@ export default function ConceptsPage() {
                         : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
                     }`}
                   >
-                    {cat === 'EARNING' ? 'Haber' : 'Deducción'}
+                    {cat === 'EARNING' ? t.concepts.categoryEarning : t.concepts.categoryDeduction}
                   </button>
                 ))}
               </div>
             </FormField>
 
-            {/* Tipo de cálculo */}
-            <FormField label="Tipo de cálculo" name="calcType" error={errors.calcType?.message} required>
+            {/* Tipo de calculo */}
+            <FormField label={t.concepts.calcTypeLabel} name="calcType" error={errors.calcType?.message} required>
               <div className="grid grid-cols-2 gap-2">
                 {(['FIXED', 'PERCENT', 'HOURLY', 'MANUAL'] as const).map((type) => {
-                  const cfg = CALC_TYPE_CONFIG[type];
+                  const cfg = calcTypeConfig[type];
                   return (
                     <button
                       key={type}
                       type="button"
                       onClick={() => setValue('calcType', type)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                         watchedCalcType === type
                           ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
                           : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
@@ -432,9 +435,9 @@ export default function ConceptsPage() {
               </div>
             </FormField>
 
-            {/* Campos dinámicos según calcType */}
+            {/* Campos dinamicos segun calcType */}
             {watchedCalcType === 'FIXED' && (
-              <FormField label="Monto fijo (ARS)" name="fixedAmount" error={errors.fixedAmount?.message}>
+              <FormField label={t.concepts.fixedAmount} name="fixedAmount" error={errors.fixedAmount?.message}>
                 <Input
                   type="number"
                   step="0.01"
@@ -448,7 +451,7 @@ export default function ConceptsPage() {
 
             {watchedCalcType === 'PERCENT' && (
               <>
-                <FormField label="Porcentaje (%)" name="percentValue" error={errors.percentValue?.message}>
+                <FormField label={t.concepts.percentAmount} name="percentValue" error={errors.percentValue?.message}>
                   <Input
                     type="number"
                     step="0.01"
@@ -459,20 +462,20 @@ export default function ConceptsPage() {
                     className={`${INPUT_CLASS} font-mono`}
                   />
                 </FormField>
-                <FormField label="Base de cálculo" name="percentBase" error={errors.percentBase?.message}>
+                <FormField label={t.concepts.calcBase} name="percentBase" error={errors.percentBase?.message}>
                   <div className="grid grid-cols-2 gap-2">
                     {(['BASIC', 'GROSS'] as const).map((base) => (
                       <button
                         key={base}
                         type="button"
                         onClick={() => setValue('percentBase', base)}
-                        className={`py-2 rounded-lg text-sm font-medium border transition-all ${
+                        className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                           watch('percentBase') === base
                             ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
                             : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
                         }`}
                       >
-                        {base === 'BASIC' ? 'Básico' : 'Bruto'}
+                        {base === 'BASIC' ? t.concepts.calcBaseBasic : t.concepts.calcBaseGross}
                       </button>
                     ))}
                   </div>
@@ -481,7 +484,7 @@ export default function ConceptsPage() {
             )}
 
             {watchedCalcType === 'HOURLY' && (
-              <FormField label="Valor por hora (ARS)" name="hourlyRate" error={errors.hourlyRate?.message}>
+              <FormField label={t.concepts.hourlyAmount} name="hourlyRate" error={errors.hourlyRate?.message}>
                 <Input
                   type="number"
                   step="0.01"
@@ -496,7 +499,7 @@ export default function ConceptsPage() {
             {watchedCalcType === 'MANUAL' && (
               <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-4 py-3">
                 <p className="text-xs text-slate-500 leading-relaxed">
-                  El monto se ingresa manualmente en cada recibo de sueldo al momento de liquidar.
+                  {t.concepts.manualNote}
                 </p>
               </div>
             )}
@@ -507,14 +510,14 @@ export default function ConceptsPage() {
                 onClick={() => setSheetOpen(false)}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
               >
-                Cancelar
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
               >
-                {isSaving ? 'Guardando...' : 'Guardar'}
+                {isSaving ? t.common.saving : t.common.save}
               </button>
             </SheetFooter>
           </form>
@@ -525,9 +528,9 @@ export default function ConceptsPage() {
         open={!!deleteItem}
         onOpenChange={(open) => { if (!open) setDeleteItem(null); }}
         onConfirm={handleDelete}
-        title="Eliminar concepto"
-        description={`¿Estás seguro de que querés eliminar "${deleteItem?.name}"? Esta acción no se puede deshacer.`}
-        confirmLabel="Eliminar"
+        title={t.concepts.deleteTitle}
+        description={t.concepts.deleteDesc.replace('{name}', deleteItem?.name ?? '')}
+        confirmLabel={t.common.delete}
         variant="danger"
         isLoading={isDeleting}
       />

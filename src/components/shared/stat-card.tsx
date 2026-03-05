@@ -25,7 +25,7 @@ export function StatCard({ title, value, icon, description, trend, href }: StatC
       <div>
         <p className="text-2xl font-semibold text-white tabular-nums tracking-tight">{value}</p>
         {description && (
-          <p className="text-xs text-slate-500 mt-1">{description}</p>
+          <p className="text-xs text-slate-400 mt-1">{description}</p>
         )}
       </div>
 
@@ -43,7 +43,7 @@ export function StatCard({ title, value, icon, description, trend, href }: StatC
 
   if (href) {
     return (
-      <Link href={href} className="block">
+      <Link href={href} className="block cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-xl focus-visible:outline-none">
         {content}
       </Link>
     );

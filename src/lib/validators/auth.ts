@@ -1,50 +1,67 @@
 import { z } from 'zod';
+import type { Translations } from '@/lib/i18n/es';
 
-const passwordSchema = z
-  .string()
-  .min(8, 'La contraseña debe tener al menos 8 caracteres')
-  .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
-  .regex(/[a-z]/, 'Debe contener al menos una minúscula')
-  .regex(/[0-9]/, 'Debe contener al menos un número');
+const nameRegex = /^[a-záéíóúñüA-ZÁÉÍÓÚÑÜ\s'-]+$/;
 
-export const loginSchema = z.object({
-  email:    z.string().email('Email inválido'),
-  password: z.string().min(1, 'La contraseña es requerida'),
-});
+type V = Translations['validators'];
 
-export const registerSchema = z.object({
-  name:     z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(100).optional().or(z.literal('')),
-  email:    z.string().email('Email inválido'),
-  password: passwordSchema,
-});
+function passwordSchema(v: V) {
+  return z
+    .string()
+    .min(8, v.passwordMin8)
+    .regex(/[A-Z]/, v.passwordUppercase)
+    .regex(/[a-z]/, v.passwordLowercase)
+    .regex(/[0-9]/, v.passwordNumber);
+}
 
-export const forgotPasswordSchema = z.object({
-  email: z.string().email('Email inválido'),
-});
-
-export const resetPasswordSchema = z
-  .object({
-    newPassword:     passwordSchema,
-    confirmPassword: z.string().min(1, 'Confirmá tu contraseña'),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path:    ['confirmPassword'],
+export function loginSchema(v: V) {
+  return z.object({
+    email:    z.string().email(v.emailInvalid),
+    password: z.string().min(1, v.passwordRequired),
   });
+}
 
-export const changePasswordSchema = z
-  .object({
-    currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
-    newPassword:     passwordSchema,
-    confirmPassword: z.string().min(1, 'Confirmá tu contraseña'),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path:    ['confirmPassword'],
+export function registerSchema(v: V) {
+  return z.object({
+    name:     z.string().min(2, v.nameMin2).max(100).regex(nameRegex, v.nameLettersOnly).optional().or(z.literal('')),
+    email:    z.string().email(v.emailInvalid),
+    password: passwordSchema(v),
   });
+}
 
-export type LoginFormData        = z.infer<typeof loginSchema>;
-export type RegisterFormData     = z.infer<typeof registerSchema>;
-export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
-export type ResetPasswordFormData  = z.infer<typeof resetPasswordSchema>;
-export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
+export function forgotPasswordSchema(v: V) {
+  return z.object({
+    email: z.string().email(v.emailInvalid),
+  });
+}
+
+export function resetPasswordSchema(v: V) {
+  return z
+    .object({
+      newPassword:     passwordSchema(v),
+      confirmPassword: z.string().min(1, v.confirmPassword),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: v.passwordsMismatch,
+      path:    ['confirmPassword'],
+    });
+}
+
+export function changePasswordSchema(v: V) {
+  return z
+    .object({
+      currentPassword: z.string().min(1, v.currentPasswordRequired),
+      newPassword:     passwordSchema(v),
+      confirmPassword: z.string().min(1, v.confirmPassword),
+    })
+    .refine((data) => data.newPassword === data.confirmPassword, {
+      message: v.passwordsMismatch,
+      path:    ['confirmPassword'],
+    });
+}
+
+export type LoginFormData         = z.infer<ReturnType<typeof loginSchema>>;
+export type RegisterFormData      = z.infer<ReturnType<typeof registerSchema>>;
+export type ForgotPasswordFormData = z.infer<ReturnType<typeof forgotPasswordSchema>>;
+export type ResetPasswordFormData  = z.infer<ReturnType<typeof resetPasswordSchema>>;
+export type ChangePasswordFormData = z.infer<ReturnType<typeof changePasswordSchema>>;

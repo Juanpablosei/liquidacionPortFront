@@ -1,10 +1,15 @@
 import { z } from 'zod';
+import type { Translations } from '@/lib/i18n/es';
 
-export const createPeriodSchema = z.object({
-  periodType: z.enum(['MONTHLY', 'BIWEEKLY', 'WEEKLY', 'CUSTOM']),
-  startDate:  z.string().min(1, 'La fecha de inicio es requerida'),
-  endDate:    z.string().min(1, 'La fecha de fin es requerida'),
-  name:       z.string().max(100).optional(),
-});
+type V = Translations['validators'];
 
-export type CreatePeriodInput = z.infer<typeof createPeriodSchema>;
+export function createPeriodSchema(v: V) {
+  return z.object({
+    periodType: z.enum(['MONTHLY', 'BIWEEKLY', 'WEEKLY', 'CUSTOM']),
+    startDate:  z.string().min(1, v.startDateRequired),
+    endDate:    z.string().min(1, v.dateRequired),
+    name:       z.string().max(100).optional(),
+  });
+}
+
+export type CreatePeriodInput = z.infer<ReturnType<typeof createPeriodSchema>>;

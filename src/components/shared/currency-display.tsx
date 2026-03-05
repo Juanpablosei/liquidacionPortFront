@@ -24,7 +24,7 @@ export function CurrencyDisplay({
     return (
       <Tooltip>
         <TooltipTrigger asChild>
-          <span className={cn('text-slate-600 font-mono cursor-default', className)}>—</span>
+          <span className={cn('text-slate-500 font-mono cursor-default', className)}>—</span>
         </TooltipTrigger>
         <TooltipContent>Sin acceso</TooltipContent>
       </Tooltip>
@@ -32,13 +32,13 @@ export function CurrencyDisplay({
   }
 
   if (amount === null || amount === undefined) {
-    return <span className={cn('text-slate-500', className)}>—</span>;
+    return <span className={cn('text-slate-400', className)}>—</span>;
   }
 
   const numeric = typeof amount === 'string' ? parseFloat(amount) : amount;
 
   if (isNaN(numeric)) {
-    return <span className={cn('text-slate-500', className)}>—</span>;
+    return <span className={cn('text-slate-400', className)}>—</span>;
   }
 
   const customFormatter = currency !== 'ARS'

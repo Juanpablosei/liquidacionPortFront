@@ -10,6 +10,7 @@ import {
   CalendarDays,
   Tags,
   Receipt,
+  FileText,
   UserCog,
   Settings2,
   Building2,
@@ -22,12 +23,12 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
 import { useUiStore } from '@/stores/ui-store';
 import { usePermissions } from '@/lib/hooks/use-permissions';
+import { useTranslation } from '@/lib/i18n';
 import { ROUTES } from '@/lib/constants/routes';
 import { hasMinRole } from '@/lib/constants/roles';
 import { CompanySwitcher } from './company-switcher';
 import type { CompanyRole } from '@/lib/types/company';
 import { logout as logoutApi } from '@/lib/api/auth';
-import { toast } from 'sonner';
 
 interface NavItemDef {
   href:     string;
@@ -59,9 +60,10 @@ function NavItem({
   return (
     <Link
       href={item.href}
+      aria-label={collapsed ? item.label : undefined}
       title={collapsed ? item.label : undefined}
       className={`
-        flex items-center gap-3 rounded-xl transition-colors
+        flex items-center gap-3 rounded-xl transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16]
         ${collapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}
         ${isActive
           ? 'bg-[#2563EB]/15 text-[#93BBFC]'
@@ -82,24 +84,26 @@ export function Sidebar() {
   const { activeCompany, clearCompany } = useCompanyStore();
   const { sidebarCollapsed, toggleSidebar } = useUiStore();
   const { role } = usePermissions();
+  const t = useTranslation();
 
   const companyId = activeCompany?.id;
 
   const mainNav: NavItemDef[] = companyId ? [
-    { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: 'Dashboard',   exact: true },
-    { href: ROUTES.employees(companyId),  icon: Users,           label: 'Empleados',   minRole: 'MANAGER' },
-    { href: ROUTES.attendance(companyId), icon: Clock,           label: 'Asistencia',  minRole: 'MANAGER' },
-    { href: ROUTES.overtime(companyId),   icon: Timer,           label: 'Horas extra', minRole: 'MANAGER' },
-    { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: 'Feriados' },
-    { href: ROUTES.concepts(companyId),   icon: Tags,            label: 'Conceptos',   minRole: 'MANAGER' },
-    { href: ROUTES.payroll(companyId),    icon: Receipt,         label: 'Nómina',      minRole: 'MANAGER' },
+    { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: t.sidebar.dashboard,   exact: true },
+    { href: ROUTES.employees(companyId),  icon: Users,           label: t.sidebar.employees,   minRole: 'MANAGER' },
+    { href: ROUTES.attendance(companyId), icon: Clock,           label: t.sidebar.attendance,  minRole: 'MANAGER' },
+    { href: ROUTES.overtime(companyId),   icon: Timer,           label: t.sidebar.overtime,    minRole: 'MANAGER' },
+    { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
+    { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
+    { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips },
   ] : [
-    { href: ROUTES.companies, icon: Building2, label: 'Mis empresas', exact: true },
+    { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
 
   const adminNav: NavItemDef[] = companyId ? [
-    { href: ROUTES.companyMembers(companyId),  icon: UserCog,  label: 'Miembros',       minRole: 'ADMIN' },
-    { href: ROUTES.companySettings(companyId), icon: Settings2, label: 'Configuración', minRole: 'ADMIN' },
+    { href: ROUTES.companyMembers(companyId),  icon: UserCog,  label: t.sidebar.members,   minRole: 'ADMIN' },
+    { href: ROUTES.companySettings(companyId), icon: Settings2, label: t.sidebar.settings, minRole: 'ADMIN' },
   ] : [];
 
   async function handleLogout() {
@@ -113,7 +117,7 @@ export function Sidebar() {
     router.push(ROUTES.login);
   }
 
-  const displayName = user?.name ?? user?.email ?? 'Usuario';
+  const displayName = user?.name ?? user?.email ?? t.sidebar.user;
   const initials    = displayName
     .split(' ')
     .slice(0, 2)
@@ -123,14 +127,14 @@ export function Sidebar() {
 
   return (
     <aside
-      className="flex flex-col h-screen bg-[#060B16] border-r border-white/[0.06] transition-all duration-200 ease-in-out shrink-0"
+      className="flex flex-col h-screen bg-[#060B16] border-r border-white/[0.06] transition-[width] duration-200 ease-in-out shrink-0"
       style={{ width: sidebarCollapsed ? 64 : 240 }}
     >
       {/* Logo */}
       <div className={`flex items-center border-b border-white/[0.06] h-14 shrink-0 ${sidebarCollapsed ? 'justify-center px-0' : 'px-4 gap-2.5'}`}>
-        <Link href={ROUTES.companies} className="flex items-center gap-2.5">
+        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-lg focus-visible:outline-none">
           <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center shrink-0">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
@@ -177,8 +181,9 @@ export function Sidebar() {
       <div className="border-t border-white/[0.06] p-2 shrink-0 flex flex-col gap-1">
         <Link
           href={ROUTES.profile}
+          aria-label={sidebarCollapsed ? displayName : undefined}
           title={sidebarCollapsed ? displayName : undefined}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          className={`flex items-center gap-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
         >
           <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
             {initials}
@@ -187,7 +192,7 @@ export function Sidebar() {
             <div className="min-w-0">
               <p className="text-sm font-medium text-white truncate leading-none">{displayName}</p>
               {user?.email && (
-                <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                <p className="text-xs text-slate-400 truncate">{user.email}</p>
               )}
             </div>
           )}
@@ -195,21 +200,23 @@ export function Sidebar() {
 
         <button
           onClick={handleLogout}
-          title={sidebarCollapsed ? 'Cerrar sesión' : undefined}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          aria-label={sidebarCollapsed ? t.sidebar.logout : undefined}
+          title={sidebarCollapsed ? t.sidebar.logout : undefined}
+          className={`flex items-center gap-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          {!sidebarCollapsed && <span className="text-sm">Salir</span>}
+          {!sidebarCollapsed && <span className="text-sm">{t.sidebar.logoutShort}</span>}
         </button>
 
         <button
           onClick={toggleSidebar}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-600 hover:text-slate-400 hover:bg-white/[0.03] transition-colors ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
-          title={sidebarCollapsed ? 'Expandir' : 'Colapsar'}
+          aria-label={sidebarCollapsed ? t.sidebar.expand : t.sidebar.collapse}
+          className={`flex items-center gap-2.5 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          title={sidebarCollapsed ? t.sidebar.expandShort : t.sidebar.collapseShort}
         >
           {sidebarCollapsed
             ? <ChevronRight className="w-3.5 h-3.5" />
-            : <><ChevronLeft className="w-3.5 h-3.5" /><span className="text-xs">Colapsar</span></>
+            : <><ChevronLeft className="w-3.5 h-3.5" /><span className="text-xs">{t.sidebar.collapseShort}</span></>
           }
         </button>
       </div>
@@ -225,27 +232,29 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
   const { user, logout } = useAuthStore();
   const { activeCompany, clearCompany } = useCompanyStore();
   const { role } = usePermissions();
+  const t = useTranslation();
 
   const companyId = activeCompany?.id;
 
   const mainNav: NavItemDef[] = companyId ? [
-    { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: 'Dashboard',   exact: true },
-    { href: ROUTES.employees(companyId),  icon: Users,           label: 'Empleados',   minRole: 'MANAGER' },
-    { href: ROUTES.attendance(companyId), icon: Clock,           label: 'Asistencia',  minRole: 'MANAGER' },
-    { href: ROUTES.overtime(companyId),   icon: Timer,           label: 'Horas extra', minRole: 'MANAGER' },
-    { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: 'Feriados' },
-    { href: ROUTES.concepts(companyId),   icon: Tags,            label: 'Conceptos',   minRole: 'MANAGER' },
-    { href: ROUTES.payroll(companyId),    icon: Receipt,         label: 'Nómina',      minRole: 'MANAGER' },
+    { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: t.sidebar.dashboard,   exact: true },
+    { href: ROUTES.employees(companyId),  icon: Users,           label: t.sidebar.employees,   minRole: 'MANAGER' },
+    { href: ROUTES.attendance(companyId), icon: Clock,           label: t.sidebar.attendance,  minRole: 'MANAGER' },
+    { href: ROUTES.overtime(companyId),   icon: Timer,           label: t.sidebar.overtime,    minRole: 'MANAGER' },
+    { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
+    { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
+    { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips },
   ] : [
-    { href: ROUTES.companies, icon: Building2, label: 'Mis empresas', exact: true },
+    { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
 
   const adminNav: NavItemDef[] = companyId ? [
-    { href: ROUTES.companyMembers(companyId),  icon: UserCog,   label: 'Miembros',       minRole: 'ADMIN' },
-    { href: ROUTES.companySettings(companyId), icon: Settings2, label: 'Configuración',  minRole: 'ADMIN' },
+    { href: ROUTES.companyMembers(companyId),  icon: UserCog,   label: t.sidebar.members,   minRole: 'ADMIN' },
+    { href: ROUTES.companySettings(companyId), icon: Settings2, label: t.sidebar.settings,  minRole: 'ADMIN' },
   ] : [];
 
-  const displayName = user?.name ?? user?.email ?? 'Usuario';
+  const displayName = user?.name ?? user?.email ?? t.sidebar.user;
   const initials    = displayName.split(' ').slice(0, 2).map((w: string) => w[0]).join('').toUpperCase();
 
   async function handleLogout() {
@@ -260,9 +269,9 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     <aside className="flex flex-col h-screen w-[240px] bg-[#060B16] border-r border-white/[0.06]">
       {/* Logo + close */}
       <div className="flex items-center justify-between border-b border-white/[0.06] h-14 px-4 shrink-0">
-        <Link href={ROUTES.companies} className="flex items-center gap-2.5" onClick={onClose}>
+        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-lg focus-visible:outline-none" onClick={onClose}>
           <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center shrink-0">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
@@ -270,7 +279,8 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
         </Link>
         <button
           onClick={onClose}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors"
+          aria-label={t.sidebar.closeMenu}
+          className="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16]"
         >
           <X className="w-4 h-4" />
         </button>
@@ -305,22 +315,23 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
         <Link
           href={ROUTES.profile}
           onClick={onClose}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] focus-visible:outline-none"
         >
           <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
             <p className="text-sm font-medium text-white truncate leading-none">{displayName}</p>
-            {user?.email && <p className="text-[11px] text-slate-500 truncate">{user.email}</p>}
+            {user?.email && <p className="text-xs text-slate-400 truncate">{user.email}</p>}
           </div>
         </Link>
         <button
           onClick={handleLogout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+          aria-label={t.sidebar.logout}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] focus-visible:outline-none"
         >
           <LogOut className="w-4 h-4 shrink-0" />
-          <span className="text-sm">Salir</span>
+          <span className="text-sm">{t.sidebar.logoutShort}</span>
         </button>
       </div>
     </aside>

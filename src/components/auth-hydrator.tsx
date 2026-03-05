@@ -2,14 +2,12 @@
 
 import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { refreshTokens } from '@/lib/api/auth';
+import { refreshTokens, getMe } from '@/lib/api/auth';
 
 export function AuthHydrator() {
   useEffect(() => {
     async function hydrateAuth() {
-      // Leer desde getState() garantiza el estado más reciente,
-      // incluyendo el ya rehidratado desde localStorage por Zustand persist.
-      const { refreshToken, setTokens, logout, hydrate } = useAuthStore.getState();
+      const { refreshToken, setTokens, setUser, logout, hydrate } = useAuthStore.getState();
 
       if (!refreshToken) {
         hydrate();
@@ -18,8 +16,17 @@ export function AuthHydrator() {
 
       try {
         const data = await refreshTokens(refreshToken);
-        setTokens(data.accessToken, data.refreshToken);
+        setTokens(data.accessToken, data.refreshToken ?? '');
         document.cookie = 'auth-token=1; path=/; SameSite=Lax';
+
+        // Sync mustChangePassword from server
+        const user = await getMe();
+        setUser(user);
+        if (user.mustChangePassword) {
+          document.cookie = 'must-change-pwd=1; path=/; SameSite=Lax';
+        } else {
+          document.cookie = 'must-change-pwd=; path=/; max-age=0; SameSite=Lax';
+        }
       } catch {
         logout();
       } finally {

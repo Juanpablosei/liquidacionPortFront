@@ -11,10 +11,11 @@ import type {
 } from '@/lib/types/auth';
 
 export interface LoginResponse {
-  user:         User;
-  accessToken:  string;
-  refreshToken: string;
-  expiresIn:    number;
+  user:                User;
+  accessToken:         string;
+  refreshToken:        string;
+  expiresIn:           number;
+  mustChangePassword?: boolean;
 }
 
 /** Backend devuelve doble anidación: apiFetch retorna data; los tokens están en data.data. */
@@ -28,10 +29,11 @@ function unwrapLoginResponse(raw: unknown): LoginResponse {
         : obj;
   const payload = (inner ?? obj) as Record<string, unknown>;
   return {
-    user:         payload.user as User,
-    accessToken:  String(payload.accessToken ?? ''),
-    refreshToken: String(payload.refreshToken ?? ''),
-    expiresIn:   Number(payload.expiresIn ?? 0),
+    user:                payload.user as User,
+    accessToken:         String(payload.accessToken ?? ''),
+    refreshToken:        String(payload.refreshToken ?? ''),
+    expiresIn:           Number(payload.expiresIn ?? 0),
+    mustChangePassword:  Boolean(payload.mustChangePassword ?? false),
   };
 }
 
@@ -152,5 +154,12 @@ export async function changePassword(dto: ChangePasswordDto): Promise<void> {
   return apiFetch<void>(API.auth.changePassword, {
     method: 'POST',
     body:   JSON.stringify(dto),
+  });
+}
+
+export async function updateLocale(locale: string): Promise<void> {
+  await apiFetch<unknown>(API.auth.locale, {
+    method: 'PATCH',
+    body:   JSON.stringify({ locale }),
   });
 }

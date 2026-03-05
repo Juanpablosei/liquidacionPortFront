@@ -95,6 +95,12 @@ export function removeMember(companyId: string, userId: string): Promise<void> {
   });
 }
 
+export function leaveCompany(companyId: string): Promise<void> {
+  return apiFetch(API.companies.leaveCompany(companyId), {
+    method: 'DELETE',
+  });
+}
+
 export function transferOwnership(
   companyId:      string,
   newOwnerUserId: string,

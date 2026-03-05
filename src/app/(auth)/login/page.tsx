@@ -12,38 +12,44 @@ import { login as loginApi, sendConfirmationEmail } from '@/lib/api/auth';
 import { useAuthStore } from '@/stores/auth-store';
 import { ApiRequestError } from '@/lib/api/client';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from '@/lib/i18n';
 
 export default function LoginPage() {
   const router = useRouter();
   const loginStore = useAuthStore((s) => s.login);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const t = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(loginSchema(t.validators)),
   });
 
   async function onSubmit(data: LoginFormData) {
     setIsLoading(true);
     try {
       const res = await loginApi(data);
-      loginStore(res.user, res.accessToken, res.refreshToken);
-      router.push(ROUTES.companies);
+      loginStore(res.user, res.accessToken, res.refreshToken, res.mustChangePassword);
+      if (res.mustChangePassword) {
+        router.push('/change-password');
+      } else {
+        router.push(ROUTES.companies);
+      }
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.status === 401) {
-          toast.error('Credenciales inválidas');
+          toast.error(t.auth.login.invalidCreds);
         } else if (err.status === 403) {
-          toast.error('Debés confirmar tu email antes de ingresar', {
+          toast.error(t.auth.login.mustConfirm, {
             action: {
-              label: 'Reenviar',
+              label: t.auth.login.resend,
               onClick: () => {
                 sendConfirmationEmail(data.email).catch(() => {});
-                toast.success('Email de confirmación reenviado');
+                toast.success(t.auth.login.resendSuccess);
               },
             },
           });
@@ -51,7 +57,7 @@ export default function LoginPage() {
           toast.error(err.message);
         }
       } else {
-        toast.error('Ocurrió un error inesperado');
+        toast.error(t.auth.login.unexpectedError);
       }
     } finally {
       setIsLoading(false);
@@ -63,10 +69,10 @@ export default function LoginPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
-          Bienvenido de vuelta
+          {t.auth.login.title}
         </h1>
         <p className="text-sm text-slate-400">
-          Ingresá tus credenciales para continuar
+          {t.auth.login.subtitle}
         </p>
       </div>
 
@@ -75,14 +81,14 @@ export default function LoginPage() {
         {/* Email */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium text-slate-300">
-            Email
+            {t.auth.login.email}
           </label>
           <input
             id="email"
             type="email"
             autoComplete="email"
             placeholder="tu@email.com"
-            className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/20"
+            className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
             {...register('email')}
           />
           {errors.email && (
@@ -94,13 +100,13 @@ export default function LoginPage() {
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
             <label htmlFor="password" className="text-sm font-medium text-slate-300">
-              Contraseña
+              {t.auth.login.password}
             </label>
             <Link
               href={ROUTES.forgotPassword}
               className="text-xs text-[#2563EB] hover:text-[#93BBFC] transition-colors"
             >
-              ¿Olvidaste tu contraseña?
+              {t.auth.login.forgotPassword}
             </Link>
           </div>
           <div className="relative">
@@ -109,13 +115,14 @@ export default function LoginPage() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/20"
+              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
               {...register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              aria-label={showPassword ? t.auth.login.hidePassword : t.auth.login.showPassword}
               tabIndex={-1}
             >
               {showPassword
@@ -136,11 +143,11 @@ export default function LoginPage() {
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Ingresando...
+              <Loader2 className="w-4 h-4 motion-safe:animate-spin" />
+              {t.auth.login.submitting}
             </>
           ) : (
-            'Ingresar'
+            t.auth.login.submit
           )}
         </button>
       </form>
@@ -148,18 +155,18 @@ export default function LoginPage() {
       {/* Divider */}
       <div className="flex items-center gap-3 my-6">
         <div className="flex-1 h-px bg-white/[0.07]" />
-        <span className="text-xs text-slate-600">o</span>
+        <span className="text-xs text-slate-400">{t.common.or}</span>
         <div className="flex-1 h-px bg-white/[0.07]" />
       </div>
 
       {/* Register link */}
       <p className="text-center text-sm text-slate-500">
-        ¿No tenés cuenta?{' '}
+        {t.auth.login.noAccount}{' '}
         <Link
           href={ROUTES.register}
           className="text-[#2563EB] hover:text-[#93BBFC] font-medium transition-colors"
         >
-          Registrarse gratis
+          {t.auth.login.registerLink}
         </Link>
       </p>
 

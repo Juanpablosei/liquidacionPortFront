@@ -12,16 +12,31 @@ export default function proxy(request: NextRequest) {
 
   const isProtected = PROTECTED_PREFIXES.some((r) => pathname.startsWith(r));
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname === r);
+  const isChangePwd = pathname === '/change-password';
 
-  const authCookie = request.cookies.get('auth-token');
+  const authCookie     = request.cookies.get('auth-token');
+  const mustChangePwd  = request.cookies.get('must-change-pwd');
 
   // Ruta protegida sin sesión → redirigir a login
-  if (isProtected && !authCookie) {
+  if ((isProtected || isChangePwd) && !authCookie) {
     return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Tiene mustChangePassword → forzar a /change-password (bloquear dashboard)
+  if (isProtected && authCookie && mustChangePwd) {
+    return NextResponse.redirect(new URL('/change-password', request.url));
+  }
+
+  // Ya cambió la contraseña, no dejar en /change-password
+  if (isChangePwd && authCookie && !mustChangePwd) {
+    return NextResponse.redirect(new URL('/companies', request.url));
   }
 
   // Ya autenticado intentando entrar a login/register → redirigir al dashboard
   if (isAuthRoute && authCookie) {
+    if (mustChangePwd) {
+      return NextResponse.redirect(new URL('/change-password', request.url));
+    }
     return NextResponse.redirect(new URL('/companies', request.url));
   }
 

@@ -1,16 +1,18 @@
 export interface User {
-  id:              string;
-  email:           string;
-  name:            string | null;
-  isActive:        boolean;
-  emailVerifiedAt: string | null;
-  createdAt:       string;
+  id:                  string;
+  email:               string;
+  name:                string | null;
+  isActive:            boolean;
+  emailVerifiedAt:     string | null;
+  mustChangePassword:  boolean;
+  locale:              string | null;
+  createdAt:           string;
 }
 
 export interface TokenResponse {
-  accessToken:  string;
-  refreshToken: string;
-  expiresIn:    number;
+  accessToken:   string;
+  refreshToken?: string;
+  expiresIn:     number;
 }
 
 export interface UserSession {

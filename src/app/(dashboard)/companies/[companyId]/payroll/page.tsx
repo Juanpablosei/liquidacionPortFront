@@ -22,6 +22,7 @@ import { FormField }     from '@/components/shared/form-field';
 import { EmptyState }    from '@/components/shared/empty-state';
 import { RoleGate }      from '@/components/shared/role-gate';
 import { usePermissions } from '@/lib/hooks/use-permissions';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
 import {
   Sheet,
   SheetContent,
@@ -34,22 +35,15 @@ import type { PayrollPeriod, PayrollRun, PayrollPeriodType } from '@/lib/types/p
 
 const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
 
-const PERIOD_TYPE_LABELS: Record<PayrollPeriodType, string> = {
-  MONTHLY:   'Mensual',
-  BIWEEKLY:  'Quincenal',
-  WEEKLY:    'Semanal',
-  CUSTOM:    'Personalizado',
-};
-
-function formatDate(d: string) {
+function formatDate(d: string, locale: string) {
   const iso = d.includes('T') ? d : d + 'T00:00:00';
-  return new Date(iso).toLocaleDateString('es-AR', {
+  return new Date(iso).toLocaleDateString(locale, {
     day: '2-digit', month: 'short', year: 'numeric',
   });
 }
 
-function formatDateTime(d: string) {
-  return new Date(d).toLocaleDateString('es-AR', {
+function formatDateTime(d: string, locale: string) {
+  return new Date(d).toLocaleDateString(locale, {
     day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
   });
 }
@@ -58,6 +52,15 @@ export default function PayrollPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const router = useRouter();
   const { isManager, canEdit } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
+
+  const periodTypeLabels: Record<PayrollPeriodType, string> = {
+    MONTHLY:   t.payroll.periodTypes.MONTHLY,
+    BIWEEKLY:  t.payroll.periodTypes.BIWEEKLY,
+    WEEKLY:    t.payroll.periodTypes.WEEKLY,
+    CUSTOM:    t.payroll.periodTypes.CUSTOM,
+  };
 
   const [periods,      setPeriods]      = useState<PayrollPeriod[]>([]);
   const [runsMap,      setRunsMap]      = useState<Record<string, PayrollRun[]>>({});
@@ -68,7 +71,7 @@ export default function PayrollPage() {
   const [creatingRun,  setCreatingRun]  = useState<string | null>(null);
 
   const { register, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<CreatePeriodInput>({
-    resolver: zodResolver(createPeriodSchema),
+    resolver: zodResolver(createPeriodSchema(t.validators)),
     defaultValues: { periodType: 'MONTHLY' },
   });
 
@@ -77,9 +80,9 @@ export default function PayrollPage() {
     setIsLoading(true);
     listPeriods(companyId)
       .then(setPeriods)
-      .catch((err: Error) => toast.error(err.message ?? 'Error al cargar períodos'))
+      .catch((err: Error) => toast.error(err.message ?? t.payroll.periodsLoadError))
       .finally(() => setIsLoading(false));
-  }, [companyId]);
+  }, [companyId, t.payroll.periodsLoadError]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -105,14 +108,14 @@ export default function PayrollPage() {
     setCreatingRun(periodId);
     try {
       const run = await createRun(companyId, { periodId });
-      toast.success('Run creado');
+      toast.success(t.payroll.runCreated);
       setRunsMap((prev) => ({
         ...prev,
         [periodId]: [...(prev[periodId] ?? []), run],
       }));
       setExpandedIds((prev) => new Set([...prev, periodId]));
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al crear run');
+      toast.error((err as Error).message ?? t.payroll.runCreateError);
     } finally {
       setCreatingRun(null);
     }
@@ -127,11 +130,11 @@ export default function PayrollPage() {
         endDate:    data.endDate,
         name:       data.name || undefined,
       });
-      toast.success('Período creado');
+      toast.success(t.payroll.periodCreated);
       setSheetOpen(false);
       load();
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? 'Error al crear período');
+      toast.error((err as Error).message ?? t.payroll.periodCreateError);
     } finally {
       setIsSaving(false);
     }
@@ -140,7 +143,7 @@ export default function PayrollPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">No tenés permisos para ver esta sección.</p>
+        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -148,8 +151,8 @@ export default function PayrollPage() {
   return (
     <>
       <PageHeader
-        title="Nómina"
-        description="Períodos de liquidación y runs de pago."
+        title={t.payroll.title}
+        description={t.payroll.description}
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
@@ -158,7 +161,7 @@ export default function PayrollPage() {
               className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
-              Nuevo período
+              {t.payroll.newPeriod}
             </button>
           </RoleGate>
         }
@@ -167,7 +170,13 @@ export default function PayrollPage() {
       {isLoading ? (
         <PeriodsSkeleton />
       ) : periods.length === 0 ? (
-        <EmptyPeriods onNew={() => setSheetOpen(true)} canEdit={canEdit()} />
+        <EmptyPeriods
+          onNew={() => setSheetOpen(true)}
+          canEdit={canEdit()}
+          emptyTitle={t.payroll.emptyTitle}
+          emptyDesc={t.payroll.emptyDesc}
+          emptyAction={t.payroll.emptyAction}
+        />
       ) : (
         <div className="flex flex-col gap-3">
           {periods.map((period) => {
@@ -186,43 +195,43 @@ export default function PayrollPage() {
                   tabIndex={0}
                   onClick={() => toggleExpand(period.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(period.id); } }}
-                  className="w-full flex items-center gap-4 px-5 py-4 text-left hover:bg-white/[0.02] transition-colors group cursor-pointer"
+                  className="w-full text-left flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors duration-150 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]/50"
                 >
                   <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
-                    <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-slate-300" />
+                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-300" />
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 mb-1">
                       <span className="text-sm font-medium text-white">
-                        {period.name ?? `${PERIOD_TYPE_LABELS[period.periodType]} — ${formatDate(period.startDate)}`}
+                        {period.name ?? `${periodTypeLabels[period.periodType]} — ${formatDate(period.startDate, localeId)}`}
                       </span>
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-500 border border-white/[0.06]">
-                        {PERIOD_TYPE_LABELS[period.periodType]}
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-400 border border-white/[0.06]">
+                        {periodTypeLabels[period.periodType]}
                       </span>
                       {isClosed && (
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                          Cerrado
+                          {t.payroll.closed}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500 font-mono">
-                      {formatDate(period.startDate)} → {formatDate(period.endDate)}
+                    <p className="text-xs text-slate-400 font-mono">
+                      {formatDate(period.startDate, localeId)} → {formatDate(period.endDate, localeId)}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
                     {isExpanded && (
-                      <span className="text-xs text-slate-600 font-mono">{runs.length} run{runs.length !== 1 ? 's' : ''}</span>
+                      <span className="text-xs text-slate-500 font-mono">{runs.length} run{runs.length !== 1 ? 's' : ''}</span>
                     )}
                     {canEdit() && !isClosed && (
                       <button
                         onClick={(e) => { e.stopPropagation(); handleCreateRun(period.id); }}
                         disabled={creatingRun === period.id}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB]/15 border border-[#2563EB]/25 text-[#93BBFC] text-xs font-medium hover:bg-[#2563EB]/25 transition-colors disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB]/15 border border-[#2563EB]/25 text-[#93BBFC] text-xs font-medium hover:bg-[#2563EB]/25 transition-colors duration-150 disabled:opacity-50 cursor-pointer"
                       >
                         <Play className="w-3 h-3" />
-                        {creatingRun === period.id ? 'Creando...' : 'Nuevo run'}
+                        {creatingRun === period.id ? t.common.creating : t.payroll.newRun}
                       </button>
                     )}
                   </div>
@@ -232,7 +241,7 @@ export default function PayrollPage() {
                 {isExpanded && (
                   <div className="border-t border-white/[0.05] px-5 py-3 flex flex-col gap-2">
                     {runs.length === 0 ? (
-                      <p className="text-xs text-slate-600 py-2 text-center">Sin runs para este período.</p>
+                      <p className="text-xs text-slate-500 py-2 text-center">{t.payroll.noRuns}</p>
                     ) : (
                       runs.map((run) => (
                         <button
@@ -243,15 +252,15 @@ export default function PayrollPage() {
                           <div className="relative flex-shrink-0">
                             <Receipt className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
                             {run.status === 'RUNNING' && (
-                              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-yellow-400 animate-pulse" />
+                              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-yellow-400 motion-safe:animate-pulse" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-slate-400 font-mono truncate">
-                              Run #{run.id.slice(-8).toUpperCase()}
+                              {t.payroll.run.replace('{id}', run.id.slice(-8).toUpperCase())}
                             </p>
                             {run.runAt && (
-                              <p className="text-[11px] text-slate-600">{formatDateTime(run.runAt)}</p>
+                              <p className="text-[11px] text-slate-600">{formatDateTime(run.runAt, localeId)}</p>
                             )}
                           </div>
                           <StatusBadge status={run.status} />
@@ -267,49 +276,50 @@ export default function PayrollPage() {
         </div>
       )}
 
-      {/* Sheet: crear período */}
+      {/* Sheet: crear periodo */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
           className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
           style={{ width: 440, maxWidth: '100vw' }}
         >
           <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">Nuevo período</SheetTitle>
+            <SheetTitle className="text-white">{t.payroll.periodForm.title}</SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
-            <FormField label="Tipo de período" name="periodType" error={errors.periodType?.message} required>
+            <FormField label={t.payroll.periodForm.type} name="periodType" error={errors.periodType?.message} required>
               <div className="grid grid-cols-2 gap-2">
                 {(['MONTHLY', 'BIWEEKLY', 'WEEKLY', 'CUSTOM'] as const).map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => setValue('periodType', type)}
-                    className={`py-2 rounded-lg text-sm font-medium border transition-all ${
+                    aria-pressed={watch('periodType') === type}
+                    className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                       watch('periodType') === type
                         ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
                         : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
                     }`}
                   >
-                    {PERIOD_TYPE_LABELS[type]}
+                    {periodTypeLabels[type]}
                   </button>
                 ))}
               </div>
             </FormField>
 
-            <FormField label="Nombre (opcional)" name="name" error={errors.name?.message}>
+            <FormField label={t.payroll.periodForm.name} name="name" error={errors.name?.message}>
               <Input
                 {...register('name')}
-                placeholder="ej. Enero 2026"
+                placeholder={t.payroll.periodForm.namePlaceholder}
                 className={INPUT_CLASS}
               />
             </FormField>
 
             <div className="grid grid-cols-2 gap-3">
-              <FormField label="Inicio" name="startDate" error={errors.startDate?.message} required>
+              <FormField label={t.payroll.periodForm.start} name="startDate" error={errors.startDate?.message} required>
                 <Input type="date" {...register('startDate')} className={INPUT_CLASS} />
               </FormField>
-              <FormField label="Fin" name="endDate" error={errors.endDate?.message} required>
+              <FormField label={t.payroll.periodForm.end} name="endDate" error={errors.endDate?.message} required>
                 <Input type="date" {...register('endDate')} className={INPUT_CLASS} />
               </FormField>
             </div>
@@ -320,14 +330,14 @@ export default function PayrollPage() {
                 onClick={() => setSheetOpen(false)}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
               >
-                Cancelar
+                {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
                 className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
               >
-                {isSaving ? 'Creando...' : 'Crear'}
+                {isSaving ? t.common.creating : t.payroll.periodForm.submit}
               </button>
             </SheetFooter>
           </form>
@@ -341,7 +351,7 @@ function PeriodsSkeleton() {
   return (
     <div className="flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-[#0B1220] border border-white/[0.07] rounded-2xl px-5 py-4 animate-pulse">
+        <div key={i} className="bg-[#0B1220] border border-white/[0.07] rounded-2xl px-5 py-4 motion-safe:animate-pulse">
           <div className="flex items-center gap-4">
             <div className="w-4 h-4 bg-white/[0.06] rounded" />
             <div className="flex-1">
@@ -355,12 +365,18 @@ function PeriodsSkeleton() {
   );
 }
 
-function EmptyPeriods({ onNew, canEdit }: { onNew: () => void; canEdit: boolean }) {
+function EmptyPeriods({ onNew, canEdit, emptyTitle, emptyDesc, emptyAction }: {
+  onNew: () => void;
+  canEdit: boolean;
+  emptyTitle: string;
+  emptyDesc: string;
+  emptyAction: string;
+}) {
   return (
     <EmptyState
       icon={<CalendarRange className="w-6 h-6" />}
-      title="Sin períodos de nómina"
-      description="Creá el primer período para comenzar a procesar la nómina de tus empleados."
+      title={emptyTitle}
+      description={emptyDesc}
       action={
         canEdit ? (
           <button
@@ -368,7 +384,7 @@ function EmptyPeriods({ onNew, canEdit }: { onNew: () => void; canEdit: boolean 
             className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
-            Crear primer período
+            {emptyAction}
           </button>
         ) : undefined
       }

@@ -34,8 +34,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Spinner solo mientras se verifica la sesión (isLoading).
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A0F1C] flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0A0F1C] flex items-center justify-center" role="status" aria-label="Loading">
+        <div className="w-6 h-6 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full motion-safe:animate-spin" />
       </div>
     );
   }

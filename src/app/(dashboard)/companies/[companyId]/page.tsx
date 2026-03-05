@@ -24,20 +24,15 @@ import { PageHeader } from '@/components/shared/page-header';
 import { StatCard } from '@/components/shared/stat-card';
 import { StatusBadge } from '@/components/shared/status-badge';
 import { usePermissions } from '@/lib/hooks/use-permissions';
+import { useTranslation, useLocaleId } from '@/lib/i18n';
+import type { Translations } from '@/lib/i18n/es';
 import type { Company, CompanyUser } from '@/lib/types/company';
 import type { PayrollRun, PayrollPeriod } from '@/lib/types/payroll';
 
-const RUN_STATUS_LABELS: Record<string, string> = {
-  DRAFT:     'Borrador',
-  RUNNING:   'Calculando',
-  COMPLETED: 'Calculado',
-  CLOSED:    'Cerrado',
-};
-
-function formatPeriodRange(start: string, end: string): string {
+function formatPeriodRange(start: string, end: string, locale: string): string {
   const fmt = (d: string) => {
     const iso = d.includes('T') ? d : d + 'T00:00:00';
-    return new Date(iso).toLocaleDateString('es-AR', { day: '2-digit', month: 'short' });
+    return new Date(iso).toLocaleDateString(locale, { day: '2-digit', month: 'short' });
   };
   return `${fmt(start)} → ${fmt(end)}`;
 }
@@ -46,6 +41,15 @@ export default function CompanyDashboardPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { setActiveCompany } = useCompanyStore();
   const { role } = usePermissions();
+  const t = useTranslation();
+  const localeId = useLocaleId();
+
+  const RUN_STATUS_LABELS: Record<string, string> = {
+    DRAFT:     t.companies.overview.statusDraft,
+    RUNNING:   t.companies.overview.statusCalc,
+    COMPLETED: t.companies.overview.statusCalced,
+    CLOSED:    t.companies.overview.statusClosed,
+  };
 
   const [company,       setCompany]       = useState<Company | null>(null);
   const [members,       setMembers]       = useState<CompanyUser[]>([]);
@@ -78,7 +82,7 @@ export default function CompanyDashboardPage() {
         }
       })
       .catch((err: Error) => {
-        toast.error(err.message ?? 'No se pudo cargar la empresa');
+        toast.error(err.message ?? t.companies.overview.loadError);
       })
       .finally(() => setIsLoading(false));
   }, [companyId, setActiveCompany]);
@@ -90,7 +94,7 @@ export default function CompanyDashboardPage() {
     <>
       <PageHeader
         title={company.name}
-        description={[company.taxId && `CUIT ${company.taxId}`, company.address].filter(Boolean).join(' — ') || undefined}
+        description={[company.taxId && `${t.companies.cuit} ${company.taxId}`, company.address].filter(Boolean).join(' — ') || undefined}
         actions={
           <StatusBadge status={company.isActive ? 'active' : 'inactive'} />
         }
@@ -100,41 +104,41 @@ export default function CompanyDashboardPage() {
       {/* KPI stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <StatCard
-          title="Miembros"
+          title={t.companies.overview.members}
           value={members.length}
           icon={<Users className="w-4 h-4" />}
-          description={role ? `Tu rol: ${role.toLowerCase()}` : undefined}
+          description={role ? `${t.companies.overview.yourRole} ${role.toLowerCase()}` : undefined}
           href={ROUTES.companyMembers(companyId)}
         />
         <StatCard
-          title="Empleados activos"
+          title={t.companies.overview.activeEmployees}
           value={activeEmpCount ?? '—'}
           icon={<UserCog className="w-4 h-4" />}
           href={ROUTES.employees(companyId)}
         />
         <StatCard
-          title="Última liquidación"
-          value={lastRun ? RUN_STATUS_LABELS[lastRun.status] : 'Sin runs'}
+          title={t.companies.overview.lastRun}
+          value={lastRun ? RUN_STATUS_LABELS[lastRun.status] : t.companies.overview.noRuns}
           icon={<Receipt className="w-4 h-4" />}
-          description={lastRunPeriod?.name ?? (lastRunPeriod ? formatPeriodRange(lastRunPeriod.startDate, lastRunPeriod.endDate) : undefined)}
+          description={lastRunPeriod?.name ?? (lastRunPeriod ? formatPeriodRange(lastRunPeriod.startDate, lastRunPeriod.endDate, localeId) : undefined)}
           href={ROUTES.payroll(companyId)}
         />
         <StatCard
-          title="Desde"
-          value={new Date(company.createdAt).toLocaleDateString('es-AR', { month: 'short', year: 'numeric' })}
+          title={t.companies.overview.since}
+          value={new Date(company.createdAt).toLocaleDateString(localeId, { month: 'short', year: 'numeric' })}
           icon={<CalendarDays className="w-4 h-4" />}
         />
       </div>
 
       {/* Quick access */}
       <div className="mb-2">
-        <p className="text-xs font-medium text-slate-500 uppercase tracking-widest mb-4">
-          Acceso rápido
+        <p className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-4">
+          {t.companies.overview.quickAccess}
         </p>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-        {QUICK_LINKS(companyId, role).map((link) => (
+        {QUICK_LINKS(companyId, role, t).map((link) => (
           <Link
             key={link.href}
             href={link.href}
@@ -157,61 +161,61 @@ export default function CompanyDashboardPage() {
   );
 }
 
-function QUICK_LINKS(cid: string, role: string | null) {
+function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
   const links = [
     {
       href:        ROUTES.employees(cid),
       icon:        <Users className="w-4 h-4" />,
-      label:       'Empleados',
-      description: 'Gestión de personal y contratos',
+      label:       t.companies.overview.employees,
+      description: t.companies.overview.employeesDesc,
       minRole:     'MANAGER',
     },
     {
       href:        ROUTES.attendance(cid),
       icon:        <Clock className="w-4 h-4" />,
-      label:       'Asistencia',
-      description: 'Registro de entradas y salidas',
+      label:       t.companies.overview.attendance,
+      description: t.companies.overview.attendanceDesc,
       minRole:     'MANAGER',
     },
     {
       href:        ROUTES.overtime(cid),
       icon:        <Timer className="w-4 h-4" />,
-      label:       'Horas extra',
-      description: 'OT 50% y OT 100%',
+      label:       t.companies.overview.overtime,
+      description: t.companies.overview.overtimeDesc,
       minRole:     'MANAGER',
     },
     {
       href:        ROUTES.holidays(cid),
       icon:        <CalendarDays className="w-4 h-4" />,
-      label:       'Feriados',
-      description: 'Obligatorios y optativos',
+      label:       t.companies.overview.holidays,
+      description: t.companies.overview.holidaysDesc,
     },
     {
       href:        ROUTES.concepts(cid),
       icon:        <Tags className="w-4 h-4" />,
-      label:       'Conceptos',
-      description: 'Haberes y deducciones',
+      label:       t.companies.overview.concepts,
+      description: t.companies.overview.conceptsDesc,
       minRole:     'MANAGER',
     },
     {
       href:        ROUTES.payroll(cid),
       icon:        <Receipt className="w-4 h-4" />,
-      label:       'Nómina',
-      description: 'Períodos, runs y payslips',
+      label:       t.companies.overview.payroll,
+      description: t.companies.overview.payrollDesc,
       minRole:     'MANAGER',
     },
     {
       href:        ROUTES.companyMembers(cid),
       icon:        <UserCog className="w-4 h-4" />,
-      label:       'Miembros',
-      description: 'Roles y permisos del equipo',
+      label:       t.companies.overview.members2,
+      description: t.companies.overview.membersDesc,
       minRole:     'ADMIN',
     },
     {
       href:        ROUTES.companySettings(cid),
       icon:        <Settings2 className="w-4 h-4" />,
-      label:       'Configuración',
-      description: 'Datos y ajustes de empresa',
+      label:       t.companies.overview.settings,
+      description: t.companies.overview.settingsDesc,
       minRole:     'ADMIN',
     },
   ];
@@ -232,13 +236,13 @@ function DashboardSkeleton() {
     <>
       <div className="flex items-start gap-4 mb-8">
         <div className="flex-1">
-          <div className="h-6 bg-white/[0.06] rounded w-48 mb-2 animate-pulse" />
-          <div className="h-4 bg-white/[0.04] rounded w-72 animate-pulse" />
+          <div className="h-6 bg-white/[0.06] rounded w-48 mb-2 motion-safe:animate-pulse" />
+          <div className="h-4 bg-white/[0.04] rounded w-72 motion-safe:animate-pulse" />
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 animate-pulse">
+          <div key={i} className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 motion-safe:animate-pulse">
             <div className="h-4 bg-white/[0.06] rounded w-24 mb-4" />
             <div className="h-7 bg-white/[0.08] rounded w-16" />
           </div>

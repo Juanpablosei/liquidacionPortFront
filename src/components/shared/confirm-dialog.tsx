@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { useTranslation } from '@/lib/i18n';
 
 interface ConfirmDialogProps {
   open:          boolean;
@@ -33,11 +34,13 @@ export function ConfirmDialog({
   onConfirm,
   title,
   description,
-  confirmLabel = 'Confirmar',
-  cancelLabel  = 'Cancelar',
+  confirmLabel,
+  cancelLabel,
   variant      = 'default',
   isLoading    = false,
 }: ConfirmDialogProps) {
+  const t = useTranslation();
+
   const handleConfirm = async () => {
     await onConfirm();
   };
@@ -53,16 +56,17 @@ export function ConfirmDialog({
           <button
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
           >
-            {cancelLabel}
+            {cancelLabel ?? t.confirmDialog.cancel}
           </button>
           <button
             onClick={handleConfirm}
             disabled={isLoading}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${CONFIRM_STYLES[variant]}`}
+            aria-busy={isLoading}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none ${CONFIRM_STYLES[variant]}`}
           >
-            {isLoading ? 'Procesando...' : confirmLabel}
+            {isLoading ? t.confirmDialog.processing : (confirmLabel ?? t.confirmDialog.confirm)}
           </button>
         </DialogFooter>
       </DialogContent>

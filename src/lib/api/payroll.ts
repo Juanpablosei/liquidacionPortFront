@@ -6,7 +6,9 @@ import type {
   Payslip,
   PayslipLine,
   PayrollPeriodType,
+  SignaturesSummary,
 } from '@/lib/types/payroll';
+import type { PaginatedResponse } from '@/lib/types/api';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -90,8 +92,23 @@ export function closeRun(companyId: string, runId: string): Promise<PayrollRun> 
 
 // ─── Payslips ────────────────────────────────────────────────────────────────
 
-export function listPayslips(companyId: string, runId: string): Promise<Payslip[]> {
-  return apiFetch<unknown>(API.payroll.payslips(companyId, runId)).then((r) => toArray<Payslip>(r));
+export interface ListPayslipsParams {
+  page?:       number;
+  limit?:      number;
+  employeeId?: string;
+}
+
+export function listPayslips(
+  companyId: string,
+  runId:     string,
+  params:    ListPayslipsParams = {},
+): Promise<Payslip[]> {
+  const query = new URLSearchParams();
+  if (params.page)       query.set('page',       String(params.page));
+  if (params.limit)      query.set('limit',      String(params.limit));
+  if (params.employeeId) query.set('employeeId', params.employeeId);
+  const qs = query.toString();
+  return apiFetch<unknown>(`${API.payroll.payslips(companyId, runId)}${qs ? `?${qs}` : ''}`).then((r) => toArray<Payslip>(r));
 }
 
 export function getPayslip(companyId: string, runId: string, payslipId: string): Promise<Payslip> {
@@ -111,7 +128,70 @@ export function patchPayslipLine(
   }).then((r) => unwrapObject<PayslipLine>(r, 'id'));
 }
 
+export function getPayslipSignatures(companyId: string, runId: string): Promise<SignaturesSummary> {
+  return apiFetch<unknown>(API.payroll.signatures(companyId, runId)).then(
+    (r) => unwrapObject<SignaturesSummary>(r, 'total'),
+  );
+}
+
 export async function exportPayslipsCsv(companyId: string, runId: string): Promise<Blob> {
   const blob = await apiFetch<Blob>(API.payroll.exportCsv(companyId, runId));
   return blob;
+}
+
+export async function exportPayslipsPdf(companyId: string, runId: string): Promise<Blob> {
+  return apiFetch<Blob>(API.payroll.exportPdf(companyId, runId));
+}
+
+export async function exportPayslipPdf(companyId: string, runId: string, payslipId: string): Promise<Blob> {
+  return apiFetch<Blob>(API.payroll.payslipPdf(companyId, runId, payslipId));
+}
+
+// ─── My Payslips (employee portal) ──────────────────────────────────────────
+
+function toPaginated<T>(raw: unknown): PaginatedResponse<T> {
+  const obj =
+    raw && typeof raw === 'object' && 'items' in (raw as object)
+      ? raw
+      : raw && typeof raw === 'object' && 'data' in (raw as object)
+        ? (raw as { data: unknown }).data
+        : raw;
+  const o = (obj && typeof obj === 'object' ? obj : {}) as Record<string, unknown>;
+  const items = Array.isArray(o.items) ? (o.items as T[]) : [];
+  return {
+    items,
+    total:  Number(o.total ?? items.length),
+    page:   Number(o.page ?? 1),
+    limit:  Number(o.limit ?? 20),
+    pages:  Number(o.pages ?? 1),
+  };
+}
+
+export interface ListMyPayslipsParams {
+  page?:  number;
+  limit?: number;
+}
+
+export function listMyPayslips(
+  companyId: string,
+  params: ListMyPayslipsParams = {},
+): Promise<PaginatedResponse<Payslip>> {
+  const query = new URLSearchParams();
+  if (params.page  !== undefined) query.set('page',  String(params.page));
+  if (params.limit !== undefined) query.set('limit', String(params.limit));
+  const qs = query.toString();
+  return apiFetch<unknown>(
+    `${API.myPayslips.list(companyId)}${qs ? `?${qs}` : ''}`,
+  ).then(toPaginated<Payslip>);
+}
+
+export function getMyPayslip(companyId: string, payslipId: string): Promise<Payslip> {
+  return apiFetch<unknown>(API.myPayslips.detail(companyId, payslipId)).then((r) => unwrapObject<Payslip>(r, 'id'));
+}
+
+export function signPayslip(companyId: string, payslipId: string, comment?: string): Promise<Payslip> {
+  return apiFetch<unknown>(API.myPayslips.sign(companyId, payslipId), {
+    method: 'POST',
+    body:   JSON.stringify(comment ? { comment } : {}),
+  }).then((r) => unwrapObject<Payslip>(r, 'id'));
 }

@@ -43,6 +43,12 @@ export interface PayrollRun {
   updatedAt: string;
 }
 
+export interface PayslipSignature {
+  id:        string;
+  signedAt:  string;
+  comment:   string | null;
+}
+
 export interface Payslip {
   id:              string;
   runId:           string;
@@ -54,6 +60,24 @@ export interface Payslip {
   updatedAt:       string;
   employee?:       Pick<import('./employee').Employee, 'id' | 'firstName' | 'lastName' | 'documentNumber'>;
   lines?:          PayslipLine[];
+  signature?:      PayslipSignature | null;
+  run?:            Pick<PayrollRun, 'id' | 'status'> & { period?: Pick<PayrollPeriod, 'id' | 'name' | 'periodType' | 'startDate' | 'endDate'> };
+}
+
+export interface SignatureDetail {
+  employeeId: string;
+  firstName:  string;
+  lastName:   string;
+  signed:     boolean;
+  signedAt:   string | null;
+  comment:    string | null;
+}
+
+export interface SignaturesSummary {
+  total:   number;
+  signed:  number;
+  pending: number;
+  details: SignatureDetail[];
 }
 
 export interface PayslipLine {

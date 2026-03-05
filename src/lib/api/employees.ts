@@ -102,3 +102,29 @@ export function terminateEmployee(
     body:   JSON.stringify(data),
   });
 }
+
+// ─── Import ───────────────────────────────────────────────────────────────────
+
+export function getImportTemplate(companyId: string): Promise<Blob> {
+  return apiFetch<Blob>(API.employees.importTemplate(companyId));
+}
+
+export interface ImportResult {
+  imported:  number;
+  employees: Array<{ id: string; firstName: string; lastName: string; documentNumber: string }>;
+}
+
+export interface ImportError {
+  row:     number;
+  field:   string;
+  message: string;
+}
+
+export function importEmployees(companyId: string, file: File): Promise<ImportResult> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiFetch<ImportResult>(API.employees.import(companyId), {
+    method: 'POST',
+    body:   formData,
+  });
+}

@@ -8,17 +8,19 @@ import { Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validators/auth';
 import { forgotPassword as forgotPasswordApi } from '@/lib/api/auth';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from '@/lib/i18n';
 
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const t = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(forgotPasswordSchema(t.validators)),
   });
 
   async function onSubmit(data: ForgotPasswordFormData) {
@@ -40,9 +42,9 @@ export default function ForgotPasswordPage() {
           <CheckCircle2 className="w-7 h-7 text-emerald-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-white mb-2">Revisá tu correo</h1>
+          <h1 className="text-2xl font-semibold text-white mb-2">{t.auth.forgotPassword.successTitle}</h1>
           <p className="text-sm text-slate-400 leading-relaxed max-w-[300px]">
-            Si el email está registrado, recibirás instrucciones para restablecer tu contraseña.
+            {t.auth.forgotPassword.successMessage}
           </p>
         </div>
         <Link
@@ -50,7 +52,7 @@ export default function ForgotPasswordPage() {
           className="inline-flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors mt-2"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver al inicio de sesión
+          {t.auth.forgotPassword.backToLogin}
         </Link>
         <style>{`
           @keyframes fadeUp {
@@ -66,17 +68,17 @@ export default function ForgotPasswordPage() {
     <div style={{ animation: 'fadeUp 0.5s ease both' }}>
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
-          Olvidé mi contraseña
+          {t.auth.forgotPassword.title}
         </h1>
         <p className="text-sm text-slate-400">
-          Ingresá tu email y te enviaremos instrucciones
+          {t.auth.forgotPassword.subtitle}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <label htmlFor="email" className="text-sm font-medium text-slate-300">
-            Email
+            {t.auth.forgotPassword.email}
           </label>
           <input
             id="email"
@@ -98,11 +100,11 @@ export default function ForgotPasswordPage() {
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Enviando...
+              <Loader2 className="w-4 h-4 motion-safe:animate-spin" />
+              {t.auth.forgotPassword.submitting}
             </>
           ) : (
-            'Enviar instrucciones'
+            t.auth.forgotPassword.submit
           )}
         </button>
       </form>
@@ -113,7 +115,7 @@ export default function ForgotPasswordPage() {
           className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Volver al inicio de sesión
+          {t.auth.forgotPassword.backToLogin}
         </Link>
       </div>
 

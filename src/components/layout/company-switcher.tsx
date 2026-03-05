@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronDown, Plus, Building2 } from 'lucide-react';
 import { useCompanyStore } from '@/stores/company-store';
+import { useTranslation } from '@/lib/i18n';
 import { ROUTES } from '@/lib/constants/routes';
 import {
   Popover,
@@ -30,6 +31,7 @@ export function CompanySwitcher({ collapsed }: CompanySwitcherProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { activeCompany, companies, role } = useCompanyStore();
+  const t = useTranslation();
 
   function handleSelect(companyId: string) {
     setOpen(false);
@@ -44,8 +46,9 @@ export function CompanySwitcher({ collapsed }: CompanySwitcherProps) {
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <button
-              className="w-10 h-10 rounded-xl bg-[#2563EB]/20 border border-[#2563EB]/30 flex items-center justify-center text-sm font-semibold text-[#93BBFC] hover:bg-[#2563EB]/30 transition-colors"
-              title={activeCompany?.name ?? 'Seleccionar empresa'}
+              className="w-10 h-10 rounded-xl bg-[#2563EB]/20 border border-[#2563EB]/30 flex items-center justify-center text-sm font-semibold text-[#93BBFC] hover:bg-[#2563EB]/30 transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16]"
+              aria-label={activeCompany?.name ?? t.companies.select}
+              title={activeCompany?.name ?? t.companies.select}
             >
               {activeCompany ? initials : <Building2 className="w-4 h-4" />}
             </button>
@@ -76,10 +79,10 @@ export function CompanySwitcher({ collapsed }: CompanySwitcherProps) {
             </div>
             <div className="flex-1 text-left min-w-0">
               <p className="text-sm font-medium text-white truncate leading-none mb-0.5">
-                {activeCompany?.name ?? 'Sin empresa'}
+                {activeCompany?.name ?? t.companies.noCompany}
               </p>
               {role && (
-                <p className="text-[11px] text-slate-500 leading-none capitalize">
+                <p className="text-xs text-slate-400 leading-none capitalize">
                   {role.toLowerCase()}
                 </p>
               )}
@@ -111,6 +114,7 @@ function CompanyList({
   activeId?: string;
   onSelect:  (id: string) => void;
 }) {
+  const t = useTranslation();
   return (
     <>
       {companies.length > 0 ? (
@@ -119,9 +123,9 @@ function CompanyList({
             <button
               key={c.id}
               onClick={() => onSelect(c.id)}
-              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-left"
+              className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-left cursor-pointer"
             >
-              <div className="w-7 h-7 rounded-lg bg-[#2563EB]/15 flex items-center justify-center text-[11px] font-semibold text-[#93BBFC] shrink-0">
+              <div className="w-7 h-7 rounded-lg bg-[#2563EB]/15 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
                 {getInitials(c.name)}
               </div>
               <span className="text-sm text-white truncate flex-1">{c.name}</span>
@@ -132,23 +136,23 @@ function CompanyList({
           ))}
         </div>
       ) : (
-        <p className="text-xs text-slate-500 px-2.5 py-2">Sin empresas</p>
+        <p className="text-xs text-slate-400 px-2.5 py-2">{t.companies.noCompanies}</p>
       )}
 
       <div className="border-t border-white/[0.06] pt-1 mt-1 flex flex-col gap-0.5">
         <Link
           href={ROUTES.companies}
-          className="flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-sm text-slate-400 hover:text-white"
+          className="flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-sm text-slate-400 hover:text-white cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg"
         >
           <Building2 className="w-3.5 h-3.5" />
-          Ver todas las empresas
+          {t.companies.viewAll}
         </Link>
         <Link
           href={ROUTES.newCompany}
-          className="flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-sm text-[#2563EB] hover:text-blue-400"
+          className="flex items-center gap-2 px-2.5 py-2 rounded-lg hover:bg-white/[0.05] transition-colors text-sm text-[#2563EB] hover:text-blue-400 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg"
         >
           <Plus className="w-3.5 h-3.5" />
-          Nueva empresa
+          {t.companies.newCompany}
         </Link>
       </div>
     </>

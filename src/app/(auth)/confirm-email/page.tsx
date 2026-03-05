@@ -7,6 +7,7 @@ import { Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { confirmEmail as confirmEmailApi } from '@/lib/api/auth';
 import { ApiRequestError } from '@/lib/api/client';
 import { ROUTES } from '@/lib/constants/routes';
+import { useTranslation } from '@/lib/i18n';
 
 type State = 'loading' | 'success' | 'error';
 
@@ -15,11 +16,12 @@ function ConfirmEmailContent() {
   const token = searchParams.get('token') ?? '';
   const [state, setState] = useState<State>('loading');
   const [errorMessage, setErrorMessage] = useState('');
+  const t = useTranslation();
 
   useEffect(() => {
     if (!token) {
       setState('error');
-      setErrorMessage('El enlace es inválido o ya fue usado.');
+      setErrorMessage(t.auth.confirmEmail.errorInvalid);
       return;
     }
 
@@ -28,9 +30,9 @@ function ConfirmEmailContent() {
       .catch((err) => {
         setState('error');
         if (err instanceof ApiRequestError && err.status === 400) {
-          setErrorMessage('El enlace es inválido, ya fue usado o expiró.');
+          setErrorMessage(t.auth.confirmEmail.errorExpired);
         } else {
-          setErrorMessage('Ocurrió un error al confirmar tu email.');
+          setErrorMessage(t.auth.confirmEmail.errorGeneric);
         }
       });
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -42,11 +44,11 @@ function ConfirmEmailContent() {
       {state === 'loading' && (
         <>
           <div className="w-14 h-14 rounded-2xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center">
-            <Loader2 className="w-6 h-6 animate-spin text-[#2563EB]" />
+            <Loader2 className="w-6 h-6 motion-safe:animate-spin text-[#2563EB]" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">Confirmando...</h1>
-            <p className="text-sm text-slate-400">Verificando tu email, un momento</p>
+            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.loading}</h1>
+            <p className="text-sm text-slate-400">{t.auth.confirmEmail.loadingSubtitle}</p>
           </div>
         </>
       )}
@@ -57,16 +59,16 @@ function ConfirmEmailContent() {
             <CheckCircle2 className="w-7 h-7 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">¡Email confirmado!</h1>
+            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.successTitle}</h1>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Tu cuenta fue verificada exitosamente.
+              {t.auth.confirmEmail.successSubtitle}
             </p>
           </div>
           <Link
             href={ROUTES.login}
             className="h-11 px-6 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] flex items-center"
           >
-            Iniciar sesión
+            {t.auth.confirmEmail.loginLink}
           </Link>
         </>
       )}
@@ -77,14 +79,14 @@ function ConfirmEmailContent() {
             <XCircle className="w-7 h-7 text-red-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">Error de confirmación</h1>
+            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.errorTitle}</h1>
             <p className="text-sm text-slate-400 leading-relaxed max-w-[280px]">{errorMessage}</p>
           </div>
           <Link
             href={ROUTES.forgotPassword}
             className="text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors"
           >
-            Solicitar un nuevo enlace
+            {t.auth.confirmEmail.requestNewLink}
           </Link>
         </>
       )}
@@ -103,7 +105,7 @@ export default function ConfirmEmailPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-32">
-        <Loader2 className="h-5 w-5 animate-spin text-slate-500" />
+        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-slate-500" />
       </div>
     }>
       <ConfirmEmailContent />

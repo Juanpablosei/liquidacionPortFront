@@ -5,24 +5,26 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Building2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { createCompany } from '@/lib/api/companies';
 import { createCompanySchema, type CreateCompanyInput } from '@/lib/validators/company';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { FormField } from '@/components/shared/form-field';
 import { Input } from '@/components/ui/input';
+import { useTranslation } from '@/lib/i18n';
 
 export default function NewCompanyPage() {
   const router     = useRouter();
   const [loading, setLoading] = useState(false);
+  const t = useTranslation();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<CreateCompanyInput>({
-    resolver: zodResolver(createCompanySchema),
+    resolver: zodResolver(createCompanySchema(t.validators)),
   });
 
   async function onSubmit(data: CreateCompanyInput) {
@@ -35,10 +37,10 @@ export default function NewCompanyPage() {
         phone:   data.phone   || undefined,
       };
       const company = await createCompany(payload);
-      toast.success('Empresa creada correctamente');
+      toast.success(t.companies.new.submit);
       router.push(ROUTES.company(company.id));
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Error al crear la empresa';
+      const msg = err instanceof Error ? err.message : t.companies.new.submit;
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -48,48 +50,54 @@ export default function NewCompanyPage() {
   return (
     <>
       <PageHeader
-        title="Nueva empresa"
-        description="Completá los datos básicos. Podés editarlos después en configuración."
+        title={t.companies.new.title}
+        description={t.companies.new.description}
         backHref={ROUTES.companies}
       />
 
-      <div className="max-w-lg">
+      <div className="max-w-2xl">
         <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 
-            <FormField label="Nombre de la empresa" name="name" error={errors.name?.message} required>
+            <FormField label={t.companies.new.companyName} name="name" error={errors.name?.message} required>
               <Input
                 {...register('name')}
-                placeholder="Ej: Acme S.A."
+                maxLength={100}
+                placeholder={t.companies.new.namePlaceholder}
                 className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
               />
             </FormField>
 
             <FormField
-              label="CUIT"
+              label={t.companies.new.cuit}
               name="taxId"
               error={errors.taxId?.message}
-              hint="Número de identificación fiscal. Sin guiones."
+              hint={t.companies.new.cuitHint}
             >
               <Input
                 {...register('taxId')}
-                placeholder="Ej: 30712345678"
+                maxLength={13}
+                inputMode="numeric"
+                placeholder={t.companies.new.cuitPlaceholder}
                 className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
               />
             </FormField>
 
-            <FormField label="Dirección" name="address" error={errors.address?.message}>
+            <FormField label={t.companies.new.address} name="address" error={errors.address?.message}>
               <Input
                 {...register('address')}
-                placeholder="Ej: Av. Corrientes 1234, CABA"
+                maxLength={200}
+                placeholder={t.companies.new.addressPlaceholder}
                 className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
               />
             </FormField>
 
-            <FormField label="Teléfono" name="phone" error={errors.phone?.message}>
+            <FormField label={t.companies.new.phone} name="phone" error={errors.phone?.message}>
               <Input
                 {...register('phone')}
-                placeholder="Ej: +54 11 1234-5678"
+                type="tel"
+                maxLength={20}
+                placeholder={t.companies.new.phonePlaceholder}
                 className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
               />
             </FormField>
@@ -98,16 +106,17 @@ export default function NewCompanyPage() {
               <button
                 type="submit"
                 disabled={loading}
+                aria-busy={loading}
                 className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
-                {loading ? 'Creando...' : 'Crear empresa'}
+                {loading ? (<span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.companies.new.submitting}</span>) : t.companies.new.submit}
               </button>
             </div>
           </form>
         </div>
 
         <p className="text-xs text-slate-600 mt-4 text-center">
-          Al crear la empresa quedás como <span className="text-slate-400">propietario</span> y podés agregar miembros después.
+          {t.companies.new.ownerNote}
         </p>
       </div>
     </>
