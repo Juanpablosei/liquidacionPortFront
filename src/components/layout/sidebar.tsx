@@ -25,7 +25,7 @@ import { useUiStore } from '@/stores/ui-store';
 import { usePermissions } from '@/lib/hooks/use-permissions';
 import { useTranslation } from '@/lib/i18n';
 import { ROUTES } from '@/lib/constants/routes';
-import { hasMinRole } from '@/lib/constants/roles';
+import { hasMinRole, ROLE_HIERARCHY } from '@/lib/constants/roles';
 import { CompanySwitcher } from './company-switcher';
 import type { CompanyRole } from '@/lib/types/company';
 import { logout as logoutApi } from '@/lib/api/auth';
@@ -36,6 +36,7 @@ interface NavItemDef {
   label:    string;
   exact?:   boolean;
   minRole?: CompanyRole;
+  maxRole?: CompanyRole;
 }
 
 function NavItem({
@@ -50,6 +51,7 @@ function NavItem({
   role:      CompanyRole | null;
 }) {
   if (item.minRole && !hasMinRole(role ?? 'MEMBER', item.minRole)) return null;
+  if (item.maxRole && ROLE_HIERARCHY[role ?? 'MEMBER'] > ROLE_HIERARCHY[item.maxRole]) return null;
 
   const isActive = item.exact
     ? pathname === item.href
@@ -96,7 +98,7 @@ export function Sidebar() {
     { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
     { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
-    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
@@ -244,7 +246,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
     { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
-    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];

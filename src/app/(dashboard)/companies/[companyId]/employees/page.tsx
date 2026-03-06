@@ -183,11 +183,11 @@ export default function EmployeesPage() {
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={handleDownloadTemplate}
                 disabled={downloading}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {downloading ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Download className="w-4 h-4" />}
                 {downloading ? t.employees.import.downloading : t.employees.import.downloadTemplate}
@@ -195,7 +195,7 @@ export default function EmployeesPage() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={importing}
-                className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
               >
                 {importing ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Upload className="w-4 h-4" />}
                 {importing ? t.employees.import.importing : t.employees.import.importEmployees}
@@ -213,7 +213,8 @@ export default function EmployeesPage() {
                 className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
-                {t.employees.newEmployee}
+                <span className="hidden sm:inline">{t.employees.newEmployee}</span>
+                <span className="sm:hidden">{t.employees.newEmployeeShort ?? t.employees.newEmployee}</span>
               </Link>
             </div>
           </RoleGate>

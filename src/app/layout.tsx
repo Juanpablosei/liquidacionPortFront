@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import { Toaster } from 'sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { AuthHydrator } from '@/components/auth-hydrator';
+import { ToasterProvider } from '@/components/toaster-provider';
 import './globals.css';
 
 const geistSans = Geist({
@@ -35,16 +35,7 @@ export default function RootLayout({
           <AuthHydrator />
           {children}
         </TooltipProvider>
-        <Toaster
-          position="bottom-right"
-          richColors
-          closeButton
-          toastOptions={{
-            style: {
-              fontFamily: 'var(--font-geist-sans)',
-            },
-          }}
-        />
+        <ToasterProvider />
       </body>
     </html>
   );

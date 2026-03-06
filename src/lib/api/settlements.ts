@@ -36,6 +36,10 @@ export function createSettlement(
   });
 }
 
-export function getSettlement(companyId: string, employeeId: string) {
-  return apiFetch<Settlement>(API.settlements.detail(companyId, employeeId));
+export async function getSettlement(companyId: string, employeeId: string): Promise<Settlement | null> {
+  try {
+    return await apiFetch<Settlement>(API.settlements.detail(companyId, employeeId));
+  } catch {
+    return null;
+  }
 }

@@ -34,8 +34,9 @@ const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - 1 + i);
 
 function formatDate(d: string, locale: string): string {
-  const iso = d.includes('T') ? d : d + 'T00:00:00';
-  return new Date(iso).toLocaleDateString(locale, {
+  const dateOnly = d.substring(0, 10);
+  const [y, m, day] = dateOnly.split('-').map(Number);
+  return new Date(y, m - 1, day).toLocaleDateString(locale, {
     day: '2-digit', month: '2-digit', year: 'numeric',
   });
 }

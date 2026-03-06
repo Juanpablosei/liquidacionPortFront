@@ -276,19 +276,19 @@ export default function RunDetailPage() {
     {
       header: t.payroll.runDetail.earnings,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-emerald-400">{fmt(row.original.grossPay)}</span>
+        <span className="font-mono text-sm text-emerald-400 whitespace-nowrap">{fmt(row.original.grossPay)}</span>
       ),
     },
     {
       header: t.payroll.runDetail.deductions,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-red-400">{fmt(row.original.totalDeductions)}</span>
+        <span className="font-mono text-sm text-red-400 whitespace-nowrap">{fmt(row.original.totalDeductions)}</span>
       ),
     },
     {
       header: t.payroll.runDetail.net,
       cell: ({ row }) => (
-        <span className="font-mono text-sm font-semibold text-white">{fmt(row.original.netPay)}</span>
+        <span className="font-mono text-sm font-semibold text-white whitespace-nowrap">{fmt(row.original.netPay)}</span>
       ),
     },
     {
@@ -401,7 +401,7 @@ export default function RunDetailPage() {
 
       {/* Summary cards */}
       {payslips.length > 0 && (
-        <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
           {[
             { label: t.payroll.runDetail.totalEarnings,   value: totals.gross,      icon: <TrendingUp className="w-4 h-4" />,  color: 'text-emerald-400', bg: 'bg-emerald-500/10 border-emerald-500/20' },
             { label: t.payroll.runDetail.totalDeductions, value: totals.deductions,  icon: <TrendingDown className="w-4 h-4" />, color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20' },

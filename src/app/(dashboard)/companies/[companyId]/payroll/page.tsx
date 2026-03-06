@@ -36,8 +36,9 @@ import type { PayrollPeriod, PayrollRun, PayrollPeriodType } from '@/lib/types/p
 const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
 
 function formatDate(d: string, locale: string) {
-  const iso = d.includes('T') ? d : d + 'T00:00:00';
-  return new Date(iso).toLocaleDateString(locale, {
+  const dateOnly = d.substring(0, 10);
+  const [y, m, day] = dateOnly.split('-').map(Number);
+  return new Date(y, m - 1, day).toLocaleDateString(locale, {
     day: '2-digit', month: 'short', year: 'numeric',
   });
 }
@@ -209,9 +210,13 @@ export default function PayrollPage() {
                       <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-400 border border-white/[0.06]">
                         {periodTypeLabels[period.periodType]}
                       </span>
-                      {isClosed && (
+                      {isClosed ? (
                         <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
                           {t.payroll.closed}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-yellow-500/10 text-yellow-400 border border-yellow-500/20">
+                          {t.status.draft}
                         </span>
                       )}
                     </div>

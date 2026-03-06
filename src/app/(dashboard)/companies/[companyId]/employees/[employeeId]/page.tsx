@@ -128,13 +128,9 @@ export default function EmployeeDetailPage() {
         }
       }
 
-      // Try to load existing settlement
-      try {
-        const s = await getSettlement(companyId, employeeId);
-        setSettlement(s);
-      } catch {
-        setSettlement(null);
-      }
+      // Try to load existing settlement (returns null if not found)
+      const s = await getSettlement(companyId, employeeId);
+      setSettlement(s);
     } catch (err: Error | unknown) {
       const msg = err instanceof Error ? err.message : t.employees.detail.loadError;
       toast.error(msg);
