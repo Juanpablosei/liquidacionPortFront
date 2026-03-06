@@ -6,13 +6,14 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
 import { Sidebar, MobileSidebar } from '@/components/layout/sidebar';
 import { Header } from '@/components/layout/header';
+import { ForcePasswordModal } from '@/components/shared/force-password-modal';
 import { listCompanies } from '@/lib/api/companies';
 import { useUiStore } from '@/stores/ui-store';
 import { ROUTES } from '@/lib/constants/routes';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router           = useRouter();
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading, mustChangePassword } = useAuthStore();
   const { setCompanies } = useCompanyStore();
   const { mobileSidebarOpen, closeMobileSidebar } = useUiStore();
 
@@ -48,6 +49,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="flex h-screen bg-[#0A0F1C] overflow-hidden">
+      {/* Force password change modal */}
+      {mustChangePassword && <ForcePasswordModal />}
+
       {/* Mobile sidebar drawer */}
       {mobileSidebarOpen && (
         <>

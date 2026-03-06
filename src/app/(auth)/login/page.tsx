@@ -34,11 +34,7 @@ export default function LoginPage() {
     try {
       const res = await loginApi(data);
       loginStore(res.user, res.accessToken, res.refreshToken, res.mustChangePassword);
-      if (res.mustChangePassword) {
-        router.push('/change-password');
-      } else {
-        router.push(ROUTES.companies);
-      }
+      router.push(ROUTES.companies);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.status === 401) {

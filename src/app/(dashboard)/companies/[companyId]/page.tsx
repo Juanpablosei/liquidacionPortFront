@@ -13,6 +13,7 @@ import {
   Tags,
   UserCog,
   Settings2,
+  FileText,
   ArrowRight,
 } from 'lucide-react';
 import { useCompanyStore } from '@/stores/company-store';
@@ -41,6 +42,7 @@ export default function CompanyDashboardPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { setActiveCompany } = useCompanyStore();
   const { role } = usePermissions();
+  const isMember = role === 'MEMBER';
   const t = useTranslation();
   const localeId = useLocaleId();
 
@@ -102,27 +104,38 @@ export default function CompanyDashboardPage() {
       />
 
       {/* KPI stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard
-          title={t.companies.overview.members}
-          value={members.length}
-          icon={<Users className="w-4 h-4" />}
-          description={role ? `${t.companies.overview.yourRole} ${role.toLowerCase()}` : undefined}
-          href={ROUTES.companyMembers(companyId)}
-        />
-        <StatCard
-          title={t.companies.overview.activeEmployees}
-          value={activeEmpCount ?? '—'}
-          icon={<UserCog className="w-4 h-4" />}
-          href={ROUTES.employees(companyId)}
-        />
-        <StatCard
-          title={t.companies.overview.lastRun}
-          value={lastRun ? RUN_STATUS_LABELS[lastRun.status] : t.companies.overview.noRuns}
-          icon={<Receipt className="w-4 h-4" />}
-          description={lastRunPeriod?.name ?? (lastRunPeriod ? formatPeriodRange(lastRunPeriod.startDate, lastRunPeriod.endDate, localeId) : undefined)}
-          href={ROUTES.payroll(companyId)}
-        />
+      <div className={`grid grid-cols-2 ${isMember ? '' : 'lg:grid-cols-4'} gap-4 mb-8`}>
+        {!isMember && (
+          <>
+            <StatCard
+              title={t.companies.overview.members}
+              value={members.length}
+              icon={<Users className="w-4 h-4" />}
+              description={role ? `${t.companies.overview.yourRole} ${role.toLowerCase()}` : undefined}
+              href={ROUTES.companyMembers(companyId)}
+            />
+            <StatCard
+              title={t.companies.overview.activeEmployees}
+              value={activeEmpCount ?? '—'}
+              icon={<UserCog className="w-4 h-4" />}
+              href={ROUTES.employees(companyId)}
+            />
+            <StatCard
+              title={t.companies.overview.lastRun}
+              value={lastRun ? RUN_STATUS_LABELS[lastRun.status] : t.companies.overview.noRuns}
+              icon={<Receipt className="w-4 h-4" />}
+              description={lastRunPeriod?.name ?? (lastRunPeriod ? formatPeriodRange(lastRunPeriod.startDate, lastRunPeriod.endDate, localeId) : undefined)}
+              href={ROUTES.payroll(companyId)}
+            />
+          </>
+        )}
+        {isMember && (
+          <StatCard
+            title={t.companies.overview.yourRole}
+            value={role?.toLowerCase() ?? 'member'}
+            icon={<Users className="w-4 h-4" />}
+          />
+        )}
         <StatCard
           title={t.companies.overview.since}
           value={new Date(company.createdAt).toLocaleDateString(localeId, { month: 'short', year: 'numeric' })}
@@ -162,7 +175,14 @@ export default function CompanyDashboardPage() {
 }
 
 function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
-  const links = [
+  const links: {
+    href: string;
+    icon: React.ReactNode;
+    label: string;
+    description?: string;
+    minRole?: string;
+    maxRole?: string;
+  }[] = [
     {
       href:        ROUTES.employees(cid),
       icon:        <Users className="w-4 h-4" />,
@@ -205,6 +225,13 @@ function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
       minRole:     'MANAGER',
     },
     {
+      href:        ROUTES.myPayslips(cid),
+      icon:        <FileText className="w-4 h-4" />,
+      label:       t.companies.overview.myPayslips,
+      description: t.companies.overview.myPayslipsDesc,
+      maxRole:     'MEMBER',
+    },
+    {
       href:        ROUTES.companyMembers(cid),
       icon:        <UserCog className="w-4 h-4" />,
       label:       t.companies.overview.members2,
@@ -218,6 +245,13 @@ function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
       description: t.companies.overview.settingsDesc,
       minRole:     'ADMIN',
     },
+    {
+      href:        ROUTES.profile,
+      icon:        <UserCog className="w-4 h-4" />,
+      label:       t.companies.overview.profile,
+      description: t.companies.overview.profileDesc,
+      maxRole:     'MEMBER',
+    },
   ];
 
   const ROLE_HIERARCHY: Record<string, number> = {
@@ -226,8 +260,9 @@ function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
   const userLevel = ROLE_HIERARCHY[role ?? 'MEMBER'] ?? 1;
 
   return links.filter((l) => {
-    if (!l.minRole) return true;
-    return userLevel >= (ROLE_HIERARCHY[l.minRole] ?? 1);
+    if (l.minRole && userLevel < (ROLE_HIERARCHY[l.minRole] ?? 1)) return false;
+    if (l.maxRole && userLevel > (ROLE_HIERARCHY[l.maxRole] ?? 1)) return false;
+    return true;
   });
 }
 
