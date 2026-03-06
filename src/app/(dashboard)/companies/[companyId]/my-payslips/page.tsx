@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { FileText, CheckCircle2, Clock } from 'lucide-react';
 import { listMyPayslips } from '@/lib/api/payroll';

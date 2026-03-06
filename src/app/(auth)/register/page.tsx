@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { registerSchema, type RegisterFormData } from '@/lib/validators/auth';
 import { register as registerApi } from '@/lib/api/auth';

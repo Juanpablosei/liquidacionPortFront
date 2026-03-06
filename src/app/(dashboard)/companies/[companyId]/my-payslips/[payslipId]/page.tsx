@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { CheckCircle2, Clock, Loader2, PenLine } from 'lucide-react';
 import { getMyPayslip, signPayslip } from '@/lib/api/payroll';
 import { ROUTES } from '@/lib/constants/routes';

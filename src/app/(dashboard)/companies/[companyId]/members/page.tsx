@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Plus, UserMinus, ChevronDown, AlertTriangle } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { usePermissions } from '@/lib/hooks/use-permissions';

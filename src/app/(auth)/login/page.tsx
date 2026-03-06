@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, Eye, EyeOff } from 'lucide-react';
 import { loginSchema, type LoginFormData } from '@/lib/validators/auth';
 import { login as loginApi, sendConfirmationEmail } from '@/lib/api/auth';
@@ -44,15 +44,10 @@ export default function LoginPage() {
         if (err.status === 401) {
           toast.error(t.auth.login.invalidCreds);
         } else if (err.status === 403) {
-          toast.error(t.auth.login.mustConfirm, {
-            action: {
-              label: t.auth.login.resend,
-              onClick: () => {
-                sendConfirmationEmail(data.email).catch(() => {});
-                toast.success(t.auth.login.resendSuccess);
-              },
-            },
-          });
+          toast.error(t.auth.login.mustConfirm);
+          sendConfirmationEmail(data.email)
+            .then(() => toast.success(t.auth.login.resendSuccess))
+            .catch(() => {});
         } else {
           toast.error(err.message);
         }

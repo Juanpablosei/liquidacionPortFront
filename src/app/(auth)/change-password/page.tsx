@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, Eye, EyeOff, ShieldAlert } from 'lucide-react';
 import { changePassword } from '@/lib/api/auth';
 import { useAuthStore } from '@/stores/auth-store';

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Loader2 } from 'lucide-react';
 import { createEmployee } from '@/lib/api/employees';
 import { createEmployeeSchema, type CreateEmployeeInput } from '@/lib/validators/employee';

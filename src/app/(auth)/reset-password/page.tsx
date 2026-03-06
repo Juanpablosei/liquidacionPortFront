@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { resetPasswordSchema, type ResetPasswordFormData } from '@/lib/validators/auth';
 import { resetPassword as resetPasswordApi } from '@/lib/api/auth';

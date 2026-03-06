@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Pencil, Trash2, CalendarDays } from 'lucide-react';
 import { listHolidays, createHoliday, updateHoliday, deleteHoliday } from '@/lib/api/holidays';

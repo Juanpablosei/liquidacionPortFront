@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { UserPlus, Search, Download, Upload, Loader2, AlertTriangle, X } from 'lucide-react';
 import { listEmployees, getImportTemplate, importEmployees } from '@/lib/api/employees';
@@ -213,8 +213,7 @@ export default function EmployeesPage() {
                 className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
-                <span className="hidden sm:inline">{t.employees.newEmployee}</span>
-                <span className="sm:hidden">{t.employees.newEmployeeShort ?? t.employees.newEmployee}</span>
+                {t.employees.newEmployee}
               </Link>
             </div>
           </RoleGate>

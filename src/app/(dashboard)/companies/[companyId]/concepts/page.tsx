@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Pencil, Trash2, Hash, TrendingUp, Clock, Sliders, Tags } from 'lucide-react';
 import { listConcepts, createConcept, updateConcept, deleteConcept } from '@/lib/api/concepts';

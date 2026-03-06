@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import {
   Play,

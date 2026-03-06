@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
 import { Plus, Pencil, Trash2, Clock } from 'lucide-react';
 import { listAttendance, createAttendance, updateAttendance, deleteAttendance } from '@/lib/api/attendance';
