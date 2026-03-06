@@ -31,9 +31,6 @@ export const useAuthStore = create<AuthState>()(
       login: (user, accessToken, refreshToken, mustChangePassword) => {
         if (typeof document !== 'undefined') {
           document.cookie = 'auth-token=1; path=/; SameSite=Lax';
-          if (mustChangePassword) {
-            document.cookie = 'must-change-pwd=1; path=/; SameSite=Lax';
-          }
         }
         set({
           user, accessToken, refreshToken,
@@ -45,7 +42,6 @@ export const useAuthStore = create<AuthState>()(
       logout: () => {
         if (typeof document !== 'undefined') {
           document.cookie = 'auth-token=; path=/; max-age=0; SameSite=Lax';
-          document.cookie = 'must-change-pwd=; path=/; max-age=0; SameSite=Lax';
         }
         set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false, mustChangePassword: false });
       },
@@ -57,9 +53,6 @@ export const useAuthStore = create<AuthState>()(
         set({ user, mustChangePassword: user?.mustChangePassword ?? false }),
 
       clearMustChangePassword: () => {
-        if (typeof document !== 'undefined') {
-          document.cookie = 'must-change-pwd=; path=/; max-age=0; SameSite=Lax';
-        }
         set({ mustChangePassword: false });
       },
 

@@ -33,6 +33,9 @@ export default function LoginPage() {
     setIsLoading(true);
     try {
       const res = await loginApi(data);
+      if (res.mustChangePassword) {
+        sessionStorage.setItem('_tmp_pwd', data.password);
+      }
       loginStore(res.user, res.accessToken, res.refreshToken, res.mustChangePassword);
       router.push(ROUTES.companies);
     } catch (err) {

@@ -191,6 +191,7 @@ const en: Translations = {
     forceChangePassword: {
       title:           'Password change required',
       subtitle:        'Your account has a temporary password. Create a new one to continue.',
+      currentPassword: 'Current password',
       newPassword:     'New password',
       confirmPassword: 'Confirm password',
       passwordHint:    'At least 8 characters, one uppercase, one lowercase, and one number',

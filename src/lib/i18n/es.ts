@@ -189,6 +189,7 @@ const es = {
     forceChangePassword: {
       title:           'Cambio de contraseña obligatorio',
       subtitle:        'Tu cuenta tiene una contraseña temporal. Creá una nueva para continuar.',
+      currentPassword: 'Contraseña actual',
       newPassword:     'Nueva contraseña',
       confirmPassword: 'Confirmar contraseña',
       passwordHint:    'Mínimo 8 caracteres, una mayúscula, una minúscula y un número',

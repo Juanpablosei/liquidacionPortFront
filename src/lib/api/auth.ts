@@ -49,6 +49,10 @@ export async function login(dto: LoginDto): Promise<LoginResponse> {
     useAuthStore.getState().setTokens(res.accessToken, res.refreshToken);
     res.user = await getMe();
   }
+  // Backend may not include mustChangePassword in login body; fall back to user object
+  if (!res.mustChangePassword && res.user?.mustChangePassword) {
+    res.mustChangePassword = true;
+  }
   return res;
 }
 

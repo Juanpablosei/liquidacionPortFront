@@ -40,7 +40,9 @@ export function ForcePasswordModal() {
   async function onSubmit(data: FormData) {
     setIsLoading(true);
     try {
-      await changePassword({ currentPassword: '', newPassword: data.newPassword });
+      const currentPassword = sessionStorage.getItem('_tmp_pwd') ?? '';
+      await changePassword({ currentPassword, newPassword: data.newPassword });
+      sessionStorage.removeItem('_tmp_pwd');
       clearMustChangePassword();
       toast.success(txt.success);
     } catch (err: unknown) {
