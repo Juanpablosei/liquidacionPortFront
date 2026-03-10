@@ -55,7 +55,7 @@ export default function AdminConveniosPage() {
       .then(setConvenios)
       .catch((err: unknown) => toast.error(err instanceof Error ? err.message : String(err)))
       .finally(() => setIsLoading(false));
-  }, [t.convenios.loadError]);
+  }, []);
 
   useEffect(() => { load(); }, [load]);
 

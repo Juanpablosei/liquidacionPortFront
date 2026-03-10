@@ -77,8 +77,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Quote */}
         <div className="border border-white/[0.06] rounded-xl p-5">
           <p className="text-sm text-slate-300 leading-relaxed mb-4">
-            "Antes tardábamos 4 horas en cerrar la nómina.
-            Ahora son <span className="text-white font-medium">20 minutos</span>."
+            &quot;Antes tardábamos 4 horas en cerrar la nómina.
+            Ahora son <span className="text-white font-medium">20 minutos</span>.&quot;
           </p>
           <div className="flex items-center gap-2.5">
             <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#2563EB]">

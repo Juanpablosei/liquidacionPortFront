@@ -4,3 +4,6 @@ export type * from './company';
 export type * from './employee';
 export type * from './attendance';
 export type * from './payroll';
+export type * from './settlement';
+export type * from './convenio';
+export type * from './admin';

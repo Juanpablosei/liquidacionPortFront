@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
 import { getCompany, listCompanies } from '@/lib/api/companies';
-import { getCompanySubscription } from '@/lib/api/subscription';
+import { getCompanySubscription } from '@/lib/api/admin';
 import { SubscriptionWarningBanner } from '@/components/shared/subscription-warning-banner';
 import type { SubscriptionStatus } from '@/lib/types/admin';
 

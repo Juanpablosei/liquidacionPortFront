@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CurrencyDisplay } from '@/components/shared/currency-display';
-import { getCompanySubscription, getCompanyPayments } from '@/lib/api/subscription';
+import { getCompanySubscription, getCompanyPayments } from '@/lib/api/admin';
 import { getSubscriptionStatusColor } from '@/lib/utils/status-color';
 import { cn } from '@/lib/utils';
 import { useTranslation, useLocaleId } from '@/lib/i18n';

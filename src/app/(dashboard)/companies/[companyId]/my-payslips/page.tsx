@@ -9,7 +9,6 @@ import { listMyPayslips } from '@/lib/api/payroll';
 import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
-import { StatusBadge } from '@/components/shared/status-badge';
 import { CurrencyDisplay } from '@/components/shared/currency-display';
 import { useTranslation, useLocaleId } from '@/lib/i18n';
 import type { Payslip } from '@/lib/types/payroll';

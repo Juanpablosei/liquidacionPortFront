@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { toArray } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
 import type { Contract, ContractScheduleEntry } from '@/lib/types/employee';
 
@@ -87,16 +88,6 @@ export function setSchedule(
 }
 
 // ─── Contract Concepts ───────────────────────────────────────────────────────
-
-function toArray<T>(raw: unknown): T[] {
-  if (Array.isArray(raw)) return raw as T[];
-  if (raw && typeof raw === 'object') {
-    const o = raw as Record<string, unknown>;
-    if (Array.isArray(o.items)) return o.items as T[];
-    if (Array.isArray(o.data))  return o.data  as T[];
-  }
-  return [];
-}
 
 export function listContractConcepts(
   companyId:  string,

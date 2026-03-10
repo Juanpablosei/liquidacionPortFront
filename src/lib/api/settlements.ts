@@ -1,4 +1,4 @@
-import { apiFetch } from './client';
+import { apiFetch, ApiRequestError } from './client';
 import { API } from '@/lib/constants/api-endpoints';
 import type {
   SettlementConfig,
@@ -39,7 +39,10 @@ export function createSettlement(
 export async function getSettlement(companyId: string, employeeId: string): Promise<Settlement | null> {
   try {
     return await apiFetch<Settlement>(API.settlements.detail(companyId, employeeId));
-  } catch {
-    return null;
+  } catch (err: unknown) {
+    if (err instanceof ApiRequestError && err.status === 404) {
+      return null;
+    }
+    throw err;
   }
 }

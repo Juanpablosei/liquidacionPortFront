@@ -305,7 +305,7 @@ export default function HomePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.05]">
-          {FEATURES.map((f, i) => (
+          {FEATURES.map((f) => (
             <div key={f.title}
               className="bg-[#0A0F1C] p-7 hover:bg-[#0F172A] transition-colors group">
               <div className="w-9 h-9 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB] mb-5 group-hover:bg-[#2563EB]/20 transition-colors">
@@ -321,7 +321,7 @@ export default function HomePage() {
       {/* QUOTE / TESTIMONIAL */}
       <section className="relative z-10 border-y border-white/[0.06] bg-white/[0.02]">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20 text-center">
-          <div className="text-5xl text-[#2563EB]/30 font-serif mb-6">"</div>
+          <div className="text-5xl text-[#2563EB]/30 font-serif mb-6">&quot;</div>
           <p className="text-xl text-white leading-relaxed font-light mb-8">
             {t.landing.testimonial}
           </p>

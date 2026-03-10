@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { toArray } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
 import type { Holiday } from '@/lib/types/attendance';
 
@@ -16,14 +17,6 @@ export interface UpdateHolidayDto {
 
 export interface ListHolidaysParams {
   year?: number;
-}
-
-function toArray<T>(raw: unknown): T[] {
-  if (Array.isArray(raw)) return raw as T[];
-  if (raw && typeof raw === 'object' && 'items' in (raw as object)) {
-    return ((raw as { items: T[] }).items);
-  }
-  return [];
 }
 
 export function listHolidays(

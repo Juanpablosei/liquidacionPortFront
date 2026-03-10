@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/utils/toast';
@@ -22,7 +22,6 @@ import { SubscriptionSection } from './_components/subscription-section';
 
 export default function CompanySettingsPage() {
   const { companyId } = useParams<{ companyId: string }>();
-  const router = useRouter();
   const { updateCompany: updateStore } = useCompanyStore();
   const { canEdit, isOwner } = usePermissions();
   const t = useTranslation();
@@ -208,7 +207,7 @@ export default function CompanySettingsPage() {
 type Translations = ReturnType<typeof useTranslation>;
 
 function SettlementConfigSection({ companyId, t }: { companyId: string; t: Translations }) {
-  const [config, setConfig]   = useState<SettlementConfig | null>(null);
+  const [, setConfig]   = useState<SettlementConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving]   = useState(false);
 

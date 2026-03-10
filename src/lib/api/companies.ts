@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { toArray, unwrapObject } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
 import type { Company, CompanyUser, CompanyRole } from '@/lib/types/company';
 
@@ -23,26 +24,6 @@ export interface AddMemberDto {
 
 export interface UpdateMemberDto {
   role: CompanyRole;
-}
-
-/** Backend puede devolver T[] o { items: T[] } o { data: T[] }; normalizamos a array. */
-function toArray<T>(raw: unknown): T[] {
-  if (Array.isArray(raw)) return raw as T[];
-  if (raw && typeof raw === 'object') {
-    const o = raw as Record<string, unknown>;
-    if (Array.isArray(o.items)) return o.items as T[];
-    if (Array.isArray(o.data)) return o.data as T[];
-  }
-  return [];
-}
-
-/** Backend devuelve doble anidación para objetos individuales: apiFetch retorna data; el objeto real está en data.data. */
-function unwrapObject<T extends object>(raw: unknown, key: keyof T): T {
-  const obj = raw as Record<string, unknown>;
-  if (obj?.data && typeof obj.data === 'object' && key in (obj.data as object)) {
-    return obj.data as T;
-  }
-  return raw as T;
 }
 
 export function listCompanies(): Promise<Company[]> {

@@ -1,4 +1,5 @@
 import { apiFetch } from './client';
+import { toArray, unwrapObject } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
 import type { PayrollConcept } from '@/lib/types/payroll';
 
@@ -15,24 +16,6 @@ export interface CreateConceptDto {
 }
 
 export type UpdateConceptDto = Partial<CreateConceptDto> & { isActive?: boolean };
-
-function toArray<T>(raw: unknown): T[] {
-  if (Array.isArray(raw)) return raw as T[];
-  if (raw && typeof raw === 'object') {
-    const o = raw as Record<string, unknown>;
-    if (Array.isArray(o.items)) return o.items as T[];
-    if (Array.isArray(o.data))  return o.data  as T[];
-  }
-  return [];
-}
-
-function unwrapObject<T extends object>(raw: unknown, key: keyof T): T {
-  const obj = raw as Record<string, unknown>;
-  if (obj?.data && typeof obj.data === 'object' && key in (obj.data as object)) {
-    return obj.data as T;
-  }
-  return raw as T;
-}
 
 export function listConcepts(companyId: string): Promise<PayrollConcept[]> {
   return apiFetch<unknown>(API.concepts.list(companyId)).then((r) => toArray<PayrollConcept>(r));

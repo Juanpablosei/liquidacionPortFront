@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -52,12 +52,6 @@ export default function MembersPage() {
   const t = useTranslation();
   const localeId = useLocaleId();
 
-  const ROLE_LABELS: Record<CompanyRole, string> = {
-    OWNER:   t.members.owner,
-    ADMIN:   t.members.admin,
-    MANAGER: t.members.manager,
-    MEMBER:  t.members.memberRole,
-  };
 
   const ASSIGNABLE_ROLES: { value: CompanyRole; label: string }[] = [
     { value: 'ADMIN',   label: t.members.admin },
@@ -74,7 +68,7 @@ export default function MembersPage() {
   const [transferTarget, setTransferTarget] = useState<CompanyUser | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  async function fetchMembers() {
+  const fetchMembers = useCallback(async () => {
     try {
       const data = await listMembers(companyId);
       setMembers(Array.isArray(data) ? data : []);
@@ -83,9 +77,9 @@ export default function MembersPage() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [companyId, t.members.removeError]);
 
-  useEffect(() => { fetchMembers(); }, [companyId]);
+  useEffect(() => { fetchMembers(); }, [fetchMembers]);
 
   async function handleChangeRole(memberId: string, role: CompanyRole) {
     try {
@@ -128,7 +122,6 @@ export default function MembersPage() {
   }
 
   const memberList = Array.isArray(members) ? members : [];
-  const currentUserRole = memberList.find((m) => m.userId === user?.id)?.role;
 
   return (
     <>
