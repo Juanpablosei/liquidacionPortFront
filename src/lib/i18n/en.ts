@@ -93,6 +93,7 @@ const en: Translations = {
     holidays:      'Holidays',
     concepts:      'Concepts',
     payroll:       'Payroll',
+    payslips:      'Payslips',
     convenios:     'Agreements',
     myPayslips:    'My payslips',
     members:       'Members',
@@ -335,6 +336,8 @@ const en: Translations = {
       conceptsDesc:    'Earnings and deductions',
       payroll:         'Payroll',
       payrollDesc:     'Periods, runs, and payslips',
+      payslipsLink:    'Payslips',
+      payslipsLinkDesc:'Search payslips by employee or date',
       members2:        'Members',
       membersDesc:     'Team roles and permissions',
       settings:        'Settings',
@@ -836,6 +839,29 @@ const en: Translations = {
     ctaDesc:             'No credit card. No contract. Create your company and run your first payroll in minutes.',
     ctaButton:           'Start for free',
     footer:              '© {year} — Payroll management system',
+  },
+
+  // ─── Cross-Run Payslips (admin/manager view) ────────────────────────────────
+
+  payslips: {
+    title:           'Payslips',
+    description:     'Search payslips for any employee, by date or period.',
+    employee:        'Employee',
+    period:          'Period',
+    gross:           'Gross',
+    deductions:      'Deductions',
+    net:             'Net',
+    signed:          'Signed',
+    pending:         'Pending',
+    allEmployees:    'All employees',
+    fromDate:        'From',
+    toDate:          'To',
+    search:          'Search',
+    clear:           'Clear',
+    noResults:       'No payslips found with the applied filters.',
+    loadError:       'Error loading payslips',
+    viewRun:         'View run',
+    signedAt:        'Signed on {date}',
   },
 
   // ─── My Payslips (employee portal) ──────────────────────────────────────────

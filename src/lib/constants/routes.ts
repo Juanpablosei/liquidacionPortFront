@@ -21,6 +21,7 @@ export const ROUTES = {
   holidays:       (cid: string) => `/companies/${cid}/holidays`,
   concepts:       (cid: string) => `/companies/${cid}/concepts`,
   payroll:        (cid: string) => `/companies/${cid}/payroll`,
+  payslips:       (cid: string) => `/companies/${cid}/payslips`,
   payrollRun:     (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}`,
   myPayslips:     (cid: string) => `/companies/${cid}/my-payslips`,
   myPayslip:      (cid: string, pid: string) => `/companies/${cid}/my-payslips/${pid}`,

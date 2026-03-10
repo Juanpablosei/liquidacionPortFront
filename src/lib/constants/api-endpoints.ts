@@ -81,6 +81,7 @@ export const API = {
     signatures:  (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/payslips/signatures`,
     exportPdf:   (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/payslips/export-pdf`,
     payslipPdf:  (cid: string, rid: string, pid: string) => `/companies/${cid}/payroll/runs/${rid}/payslips/${pid}/export-pdf`,
+    crossRunPayslips: (cid: string) => `/companies/${cid}/payroll/payslips`,
   },
   myPayslips: {
     list:   (cid: string) => `/companies/${cid}/my-payslips`,

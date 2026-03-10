@@ -91,6 +91,7 @@ const es = {
     holidays:      'Feriados',
     concepts:      'Conceptos',
     payroll:       'Nómina',
+    payslips:      'Recibos',
     convenios:     'Convenios',
     myPayslips:    'Mis recibos',
     members:       'Miembros',
@@ -333,6 +334,8 @@ const es = {
       conceptsDesc:    'Haberes y deducciones',
       payroll:         'Nómina',
       payrollDesc:     'Períodos, runs y payslips',
+      payslipsLink:    'Recibos',
+      payslipsLinkDesc:'Buscar recibos por empleado o fecha',
       members2:        'Miembros',
       membersDesc:     'Roles y permisos del equipo',
       settings:        'Configuración',
@@ -834,6 +837,29 @@ const es = {
     ctaDesc:             'Sin tarjeta de crédito. Sin contrato. Creá tu empresa y liquidá tu primera nómina en minutos.',
     ctaButton:           'Comenzar gratis',
     footer:              '© {year} — Sistema de gestión de nómina',
+  },
+
+  // ─── Cross-Run Payslips (admin/manager view) ────────────────────────────────
+
+  payslips: {
+    title:           'Recibos de sueldo',
+    description:     'Buscá recibos de cualquier empleado, por fecha o período.',
+    employee:        'Empleado',
+    period:          'Período',
+    gross:           'Bruto',
+    deductions:      'Deducciones',
+    net:             'Neto',
+    signed:          'Firmado',
+    pending:         'Pendiente',
+    allEmployees:    'Todos los empleados',
+    fromDate:        'Desde',
+    toDate:          'Hasta',
+    search:          'Buscar',
+    clear:           'Limpiar',
+    noResults:       'No se encontraron recibos con los filtros aplicados.',
+    loadError:       'Error al cargar recibos',
+    viewRun:         'Ver corrida',
+    signedAt:        'Firmado el {date}',
   },
 
   // ─── My Payslips (employee portal) ──────────────────────────────────────────

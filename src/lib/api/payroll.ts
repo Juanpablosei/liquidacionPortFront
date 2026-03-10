@@ -147,7 +147,7 @@ export async function exportPayslipPdf(companyId: string, runId: string, payslip
   return apiFetch<Blob>(API.payroll.payslipPdf(companyId, runId, payslipId));
 }
 
-// ─── My Payslips (employee portal) ──────────────────────────────────────────
+// ─── helpers (paginated) ─────────────────────────────────────────────────────
 
 function toPaginated<T>(raw: unknown): PaginatedResponse<T> {
   const obj =
@@ -166,6 +166,34 @@ function toPaginated<T>(raw: unknown): PaginatedResponse<T> {
     pages:  Number(o.pages ?? 1),
   };
 }
+
+// ─── Cross-Run Payslips (admin/manager view) ────────────────────────────────
+
+export interface ListCrossRunPayslipsParams {
+  page?:       number;
+  limit?:      number;
+  employeeId?: string;
+  fromDate?:   string;
+  toDate?:     string;
+}
+
+export function listCrossRunPayslips(
+  companyId: string,
+  params: ListCrossRunPayslipsParams = {},
+): Promise<PaginatedResponse<Payslip>> {
+  const query = new URLSearchParams();
+  if (params.page       !== undefined) query.set('page',       String(params.page));
+  if (params.limit      !== undefined) query.set('limit',      String(params.limit));
+  if (params.employeeId)               query.set('employeeId', params.employeeId);
+  if (params.fromDate)                 query.set('fromDate',   params.fromDate);
+  if (params.toDate)                   query.set('toDate',     params.toDate);
+  const qs = query.toString();
+  return apiFetch<unknown>(
+    `${API.payroll.crossRunPayslips(companyId)}${qs ? `?${qs}` : ''}`,
+  ).then(toPaginated<Payslip>);
+}
+
+// ─── My Payslips (employee portal) ──────────────────────────────────────────
 
 export interface ListMyPayslipsParams {
   page?:  number;

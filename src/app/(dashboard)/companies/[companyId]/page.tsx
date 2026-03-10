@@ -64,14 +64,17 @@ export default function CompanyDashboardPage() {
   const company = activeCompany?.id === companyId ? activeCompany : null;
 
   useEffect(() => {
-    if (!companyId) return;
+    if (!companyId || !role) return;
+
+    const isAdmin = role === 'OWNER' || role === 'ADMIN';
+    const isManager = role === 'MANAGER';
 
     setIsLoading(true);
     Promise.all([
-      listMembers(companyId).catch(() => []),
-      listEmployees(companyId, { limit: 1, isActive: true }).catch(() => null),
-      listRuns(companyId).catch(() => []),
-      listPeriods(companyId).catch(() => []),
+      isAdmin ? listMembers(companyId).catch(() => []) : Promise.resolve([]),
+      (isAdmin || isManager) ? listEmployees(companyId, { limit: 1, isActive: true }).catch(() => null) : Promise.resolve(null),
+      (isAdmin || isManager) ? listRuns(companyId).catch(() => []) : Promise.resolve([]),
+      (isAdmin || isManager) ? listPeriods(companyId).catch(() => []) : Promise.resolve([]),
     ])
       .then(([mems, empRes, runs, periods]) => {
         setMembers(Array.isArray(mems) ? mems : []);
@@ -87,7 +90,7 @@ export default function CompanyDashboardPage() {
         toast.error(err.message ?? t.companies.overview.loadError);
       })
       .finally(() => setIsLoading(false));
-  }, [companyId, t]);
+  }, [companyId, role, t]);
 
   if (isLoading) return <DashboardSkeleton />;
   if (!company) return null;
@@ -222,6 +225,13 @@ function QUICK_LINKS(cid: string, role: string | null, t: Translations) {
       icon:        <Receipt className="w-4 h-4" />,
       label:       t.companies.overview.payroll,
       description: t.companies.overview.payrollDesc,
+      minRole:     'MANAGER',
+    },
+    {
+      href:        ROUTES.payslips(cid),
+      icon:        <FileText className="w-4 h-4" />,
+      label:       t.companies.overview.payslipsLink,
+      description: t.companies.overview.payslipsLinkDesc,
       minRole:     'MANAGER',
     },
     {

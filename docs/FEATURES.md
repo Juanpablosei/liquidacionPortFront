@@ -274,7 +274,14 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 | POST | `/companies/:cid/payroll/runs/:rid/calculate` | Calcular nomina |
 | POST | `/companies/:cid/payroll/runs/:rid/close` | Cerrar corrida (irreversible) |
 
-#### Endpoints — Payslips
+#### Endpoints — Payslips (Cross-Run)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/payroll/payslips` | Listar recibos cross-run (filtros: employeeId, fromDate, toDate). Solo COMPLETED/CLOSED. |
+
+> Incluye info del run y periodo en cada item. Filtros por `fromDate`/`toDate` aplican sobre `period.startDate`.
+
+#### Endpoints — Payslips (por Run)
 | Metodo | Ruta | Descripcion |
 |--------|------|-------------|
 | GET | `/companies/:cid/payroll/runs/:rid/payslips` | Listar recibos |
