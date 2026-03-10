@@ -117,6 +117,7 @@ Login form fields: `email` input + `password` input + submit button.
 
 | Role | Email | Password |
 |------|-------|----------|
+| SUPER_ADMIN | superadmin@nomina.app | Password123! |
 | OWNER | owner@tecavanzada.com | Password123! |
 | ADMIN | admin@tecavanzada.com | Password123! |
 | MANAGER | manager@tecavanzada.com | Password123! |
@@ -132,7 +133,7 @@ Login form fields: `email` input + `password` input + submit button.
 
 ### Which user to use
 - Default: `owner@tecavanzada.com` (has access to everything)
-- For admin panel (`/admin/*`): use owner (needs SUPER_ADMIN systemRole)
+- For admin panel (`/admin/*`): use `superadmin@nomina.app` (has SUPER_ADMIN systemRole)
 - For company pages: use owner or admin
 - For restricted views: use manager or rrhh to test permission gates
 - If `$ARGUMENTS` includes a role hint (e.g. `/visual-qa /admin as admin`), use that role

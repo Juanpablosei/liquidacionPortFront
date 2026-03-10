@@ -3,9 +3,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/utils/toast';
-import { CreditCard } from 'lucide-react';
+import { CreditCard, Plus } from 'lucide-react';
 import { listSubscriptions } from '@/lib/api/admin';
 import { ROUTES } from '@/lib/constants/routes';
+import { Button } from '@/components/ui/button';
 import { PageHeader }     from '@/components/shared/page-header';
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton';
 import { EmptyState }      from '@/components/shared/empty-state';
@@ -13,8 +14,22 @@ import { CurrencyDisplay } from '@/components/shared/currency-display';
 import { useTranslation }  from '@/lib/i18n';
 import { cn }              from '@/lib/utils/cn';
 import { getSubscriptionStatusColor } from '@/lib/utils/status-color';
+import { SubscriptionFormSheet } from './subscription-form-sheet';
 import type { Subscription } from '@/lib/types/admin';
 import type { PaginatedResponse } from '@/lib/types/api';
+
+const STATUS_LABELS: Record<string, (t: ReturnType<typeof useTranslation>) => string> = {
+  TRIAL:     (t) => t.admin.statusTrial,
+  ACTIVE:    (t) => t.admin.statusActive,
+  PAST_DUE:  (t) => t.admin.statusPastDue,
+  BLOCKED:   (t) => t.admin.statusBlocked,
+  CANCELLED: (t) => t.admin.statusCancelled,
+};
+
+const CYCLE_LABELS: Record<string, (t: ReturnType<typeof useTranslation>) => string> = {
+  MONTHLY: (t) => t.admin.cycleMonthly,
+  ANNUAL:  (t) => t.admin.cycleAnnual,
+};
 
 export default function SubscriptionsPage() {
   const t = useTranslation();
@@ -22,6 +37,7 @@ export default function SubscriptionsPage() {
   const [data, setData] = useState<PaginatedResponse<Subscription> | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -44,6 +60,12 @@ export default function SubscriptionsPage() {
       <PageHeader
         title={t.admin.subscriptions}
         description={t.admin.subscriptionsDesc}
+        actions={
+          <Button onClick={() => setSheetOpen(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            {t.admin.newSubscription}
+          </Button>
+        }
       />
 
       {!data || data.items.length === 0 ? (
@@ -72,13 +94,13 @@ export default function SubscriptionsPage() {
                 >
                   <td className="px-4 py-3 font-medium text-white">{sub.company?.name ?? '—'}</td>
                   <td className="px-4 py-3">{sub.plan?.name ?? '—'}</td>
-                  <td className="px-4 py-3">{sub.billingCycle}</td>
+                  <td className="px-4 py-3">{CYCLE_LABELS[sub.billingCycle]?.(t) ?? sub.billingCycle}</td>
                   <td className="px-4 py-3">
                     <span className={cn(
                       'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium',
                       getSubscriptionStatusColor(sub.status)
                     )}>
-                      {sub.status}
+                      {STATUS_LABELS[sub.status]?.(t) ?? sub.status}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono">
@@ -112,6 +134,12 @@ export default function SubscriptionsPage() {
           )}
         </div>
       )}
+
+      <SubscriptionFormSheet
+        open={sheetOpen}
+        onOpenChange={setSheetOpen}
+        onSuccess={load}
+      />
     </div>
   );
 }

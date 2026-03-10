@@ -13,6 +13,14 @@ import { getSubscriptionStatusColor } from '@/lib/utils/status-color';
 import type { AdminCompany } from '@/lib/types/admin';
 import type { PaginatedResponse } from '@/lib/types/api';
 
+const STATUS_LABELS: Record<string, (t: ReturnType<typeof useTranslation>) => string> = {
+  TRIAL:     (t) => t.admin.statusTrial,
+  ACTIVE:    (t) => t.admin.statusActive,
+  PAST_DUE:  (t) => t.admin.statusPastDue,
+  BLOCKED:   (t) => t.admin.statusBlocked,
+  CANCELLED: (t) => t.admin.statusCancelled,
+};
+
 export default function AdminCompaniesPage() {
   const t = useTranslation();
   const [data, setData] = useState<PaginatedResponse<AdminCompany> | null>(null);
@@ -68,7 +76,7 @@ export default function AdminCompaniesPage() {
                       'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium',
                       getSubscriptionStatusColor(company.subscription?.status)
                     )}>
-                      {company.subscription?.status ?? 'N/A'}
+                      {company.subscription?.status ? (STATUS_LABELS[company.subscription.status]?.(t) ?? company.subscription.status) : 'N/A'}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono">{company._count.employees}</td>

@@ -19,6 +19,9 @@ import {
   LogOut,
   X,
   Scale,
+  Shield,
+  CreditCard,
+  ScrollText,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -90,8 +93,18 @@ export function Sidebar() {
   const t = useTranslation();
 
   const companyId = activeCompany?.id;
+  const isSuperAdmin = user?.systemRole === 'SUPER_ADMIN' || user?.systemRole === 'SUPER_VIEWER';
+  const isOnAdminRoute = pathname.startsWith('/admin');
 
-  const mainNav: NavItemDef[] = companyId ? [
+  const adminPanelNav: NavItemDef[] = [
+    { href: ROUTES.admin,              icon: LayoutDashboard, label: t.sidebar.adminDashboard, exact: true },
+    { href: ROUTES.adminConvenios,     icon: Scale,           label: t.sidebar.adminConvenios },
+    { href: ROUTES.adminPlans,         icon: CreditCard,      label: t.sidebar.adminPlans },
+    { href: ROUTES.adminSubscriptions, icon: ScrollText,      label: t.sidebar.adminSubs },
+    { href: ROUTES.adminCompanies,     icon: Building2,       label: t.sidebar.adminCompanies },
+  ];
+
+  const mainNav: NavItemDef[] = (isSuperAdmin && isOnAdminRoute) ? adminPanelNav : companyId ? [
     { href: ROUTES.company(companyId),    icon: LayoutDashboard, label: t.sidebar.dashboard,   exact: true },
     { href: ROUTES.employees(companyId),  icon: Users,           label: t.sidebar.employees,   minRole: 'MANAGER' },
     { href: ROUTES.attendance(companyId), icon: Clock,           label: t.sidebar.attendance,  minRole: 'MANAGER' },
@@ -105,7 +118,7 @@ export function Sidebar() {
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
 
-  const adminNav: NavItemDef[] = companyId ? [
+  const adminNav: NavItemDef[] = (isSuperAdmin && isOnAdminRoute) ? [] : companyId ? [
     { href: ROUTES.companyMembers(companyId),  icon: UserCog,  label: t.sidebar.members,   minRole: 'ADMIN' },
     { href: ROUTES.companySettings(companyId), icon: Settings2, label: t.sidebar.settings, minRole: 'ADMIN' },
   ] : [];
@@ -148,9 +161,25 @@ export function Sidebar() {
         </Link>
       </div>
 
-      {/* Company switcher */}
+      {/* Company switcher or Admin badge */}
       <div className="pt-3 shrink-0">
-        <CompanySwitcher collapsed={sidebarCollapsed} />
+        {isSuperAdmin && isOnAdminRoute ? (
+          <div className={`px-3 mb-4 ${sidebarCollapsed ? 'px-2' : ''}`}>
+            <Link
+              href={ROUTES.admin}
+              className={`flex items-center gap-2.5 rounded-xl transition-colors duration-150 ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-2.5 py-2'}`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                <Shield className="w-4 h-4 text-amber-400" />
+              </div>
+              {!sidebarCollapsed && (
+                <span className="text-sm font-medium text-amber-400">{t.sidebar.adminPanel}</span>
+              )}
+            </Link>
+          </div>
+        ) : (
+          <CompanySwitcher collapsed={sidebarCollapsed} />
+        )}
       </div>
 
       {/* Main nav */}
