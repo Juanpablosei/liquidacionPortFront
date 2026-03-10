@@ -1,4 +1,5 @@
 import es, { type Translations } from './es';
+export type { Translations };
 import en from './en';
 import { useAuthStore } from '@/stores/auth-store';
 

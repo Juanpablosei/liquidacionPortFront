@@ -1,3 +1,5 @@
+export type SystemRole = 'USER' | 'SUPER_ADMIN' | 'SUPER_VIEWER';
+
 export interface User {
   id:                  string;
   email:               string;
@@ -6,6 +8,7 @@ export interface User {
   emailVerifiedAt:     string | null;
   mustChangePassword:  boolean;
   locale:              string | null;
+  systemRole:          SystemRole;
   createdAt:           string;
 }
 

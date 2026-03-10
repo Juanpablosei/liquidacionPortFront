@@ -13,6 +13,10 @@ export interface Employee {
   hireDate:        string;
   terminationDate: string | null;
   isActive:        boolean;
+  convenioId?:         string | null;
+  convenioCategoryId?: string | null;
+  convenioName?:       string | null;
+  convenioCategoryName?: string | null;
   createdAt:       string;
   updatedAt:       string;
 }

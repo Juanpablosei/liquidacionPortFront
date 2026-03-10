@@ -24,4 +24,13 @@ export const ROUTES = {
   payrollRun:     (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}`,
   myPayslips:     (cid: string) => `/companies/${cid}/my-payslips`,
   myPayslip:      (cid: string, pid: string) => `/companies/${cid}/my-payslips/${pid}`,
+  convenios:      (cid: string) => `/companies/${cid}/convenios`,
+
+  // Admin routes
+  admin:              '/admin',
+  adminConvenios:     '/admin/convenios',
+  adminPlans:         '/admin/plans',
+  adminSubscriptions: '/admin/subscriptions',
+  adminSubscription:  (id: string) => `/admin/subscriptions/${id}`,
+  adminCompanies:     '/admin/companies',
 } as const;

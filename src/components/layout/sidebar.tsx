@@ -18,6 +18,7 @@ import {
   ChevronRight,
   LogOut,
   X,
+  Scale,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -98,6 +99,7 @@ export function Sidebar() {
     { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
     { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
+    { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
@@ -246,6 +248,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.holidays(companyId),   icon: CalendarDays,    label: t.sidebar.holidays },
     { href: ROUTES.concepts(companyId),   icon: Tags,            label: t.sidebar.concepts,    minRole: 'MANAGER' },
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
+    { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },

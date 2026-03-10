@@ -1,5 +1,6 @@
 import { useAuthStore } from '@/stores/auth-store';
 import { getTranslations } from '@/lib/i18n';
+import { mapBackendError } from '@/lib/utils/api-error-messages';
 import type { ApiResponse, ApiError } from '@/lib/types/api';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1';
@@ -113,10 +114,10 @@ async function parseResponse<T>(response: Response): Promise<T> {
 
   if (!response.ok) {
     const err = json as ApiError;
-    throw new ApiRequestError(
-      Array.isArray(err.message) ? err.message.join(', ') : err.message,
-      response.status,
-    );
+    const rawMessage = Array.isArray(err.message) ? err.message.join(', ') : err.message;
+    const t = getTranslations(useAuthStore.getState().user?.locale);
+    const translated = mapBackendError(rawMessage, t);
+    throw new ApiRequestError(translated ?? rawMessage, response.status);
   }
 
   const envelope = json as ApiResponse<T>;

@@ -92,4 +92,40 @@ export const API = {
     create:     (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/settlement`,
     detail:     (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/settlement`,
   },
+  convenios: {
+    // Company-scoped
+    list:          (cid: string) => `/companies/${cid}/convenios`,
+    create:        (cid: string) => `/companies/${cid}/convenios`,
+    update:        (cid: string, id: string) => `/companies/${cid}/convenios/${id}`,
+    delete:        (cid: string, id: string) => `/companies/${cid}/convenios/${id}`,
+    clone:         (cid: string, id: string) => `/companies/${cid}/convenios/${id}/clone`,
+    addCategory:   (cid: string, id: string) => `/companies/${cid}/convenios/${id}/categories`,
+    updateCategory:(cid: string, catId: string) => `/companies/${cid}/convenios/categories/${catId}`,
+    deleteCategory:(cid: string, catId: string) => `/companies/${cid}/convenios/categories/${catId}`,
+    // Assign to employee
+    assign:        (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/convenio`,
+  },
+  admin: {
+    dashboard:     '/admin/dashboard',
+    companies:     '/admin/companies',
+    plans:         '/admin/plans',
+    plan:          (id: string) => `/admin/plans/${id}`,
+    subscriptions: '/admin/subscriptions',
+    subscription:  (id: string) => `/admin/subscriptions/${id}`,
+    payments:      (subId: string) => `/admin/subscriptions/${subId}/payments`,
+    payment:       (subId: string, payId: string) => `/admin/subscriptions/${subId}/payments/${payId}`,
+  },
+  companySubscription: {
+    detail:   (cid: string) => `/companies/${cid}/subscription`,
+    payments: (cid: string) => `/companies/${cid}/subscription/payments`,
+  },
+  adminConvenios: {
+    list:           '/admin/convenios',
+    create:         '/admin/convenios',
+    update:         (id: string) => `/admin/convenios/${id}`,
+    delete:         (id: string) => `/admin/convenios/${id}`,
+    addCategory:    (id: string) => `/admin/convenios/${id}/categories`,
+    updateCategory: (catId: string) => `/admin/convenios/categories/${catId}`,
+    deleteCategory: (catId: string) => `/admin/convenios/categories/${catId}`,
+  },
 } as const;

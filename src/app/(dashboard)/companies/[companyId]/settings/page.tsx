@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useTranslation, useLocaleId } from '@/lib/i18n';
 import type { Company } from '@/lib/types/company';
 import type { RuleBracket, SettlementConfig } from '@/lib/types/settlement';
+import { SubscriptionSection } from './_components/subscription-section';
 
 export default function CompanySettingsPage() {
   const { companyId } = useParams<{ companyId: string }>();
@@ -154,6 +155,11 @@ export default function CompanySettingsPage() {
         {/* Settlement config — OWNER/ADMIN */}
         {canEdit() && (
           <SettlementConfigSection companyId={companyId} t={t} />
+        )}
+
+        {/* Subscription — OWNER/ADMIN */}
+        {canEdit() && (
+          <SubscriptionSection companyId={companyId} />
         )}
 
         {/* Danger zone - only OWNER */}

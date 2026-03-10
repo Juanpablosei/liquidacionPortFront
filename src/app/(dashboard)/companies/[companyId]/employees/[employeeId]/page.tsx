@@ -19,9 +19,12 @@ import {
   BookOpen,
   FileText,
   Loader2,
+  ScrollText,
 } from 'lucide-react';
 import { getEmployee, updateEmployee, terminateEmployee } from '@/lib/api/employees';
 import { listContracts, createContract, updateContract, getSchedule, listContractConcepts, assignContractConcepts, removeContractConcept } from '@/lib/api/contracts';
+import { listCompanyConvenios, assignConvenio } from '@/lib/api/convenios';
+import type { Convenio } from '@/lib/types/convenio';
 import type { ContractConcept } from '@/lib/api/contracts';
 import { listConcepts } from '@/lib/api/concepts';
 import { createSettlement, getSettlement } from '@/lib/api/settlements';
@@ -107,6 +110,13 @@ export default function EmployeeDetailPage() {
   const [generatingSettlement, setGeneratingSettlement] = useState(false);
   const [loadingSettlement, setLoadingSettlement] = useState(false);
 
+  // Convenio assignment
+  const [convenios, setConvenios] = useState<Convenio[]>([]);
+  const [selectedConvenioId, setSelectedConvenioId] = useState<string>('');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
+  const [editingConvenio, setEditingConvenio] = useState(false);
+  const [savingConvenio, setSavingConvenio] = useState(false);
+
   const load = useCallback(async () => {
     if (!companyId || !employeeId) return;
     setIsLoading(true);
@@ -147,6 +157,58 @@ export default function EmployeeDetailPage() {
       .then((concepts) => setCompanyConcepts(concepts.filter((c) => c.isActive)))
       .catch(() => {});
   }, [companyId]);
+
+  // Load convenios for assignment
+  useEffect(() => {
+    if (!companyId) return;
+    listCompanyConvenios(companyId)
+      .then((res) => setConvenios([...res.own, ...res.global]))
+      .catch(() => {});
+  }, [companyId]);
+
+  // Sync selected convenio/category when employee data loads or editing starts
+  useEffect(() => {
+    if (editingConvenio && employee) {
+      setSelectedConvenioId(employee.convenioId ?? '');
+      setSelectedCategoryId(employee.convenioCategoryId ?? '');
+    }
+  }, [editingConvenio, employee]);
+
+  async function onSaveConvenio() {
+    if (!employee) return;
+    setSavingConvenio(true);
+    try {
+      await assignConvenio(companyId, employeeId, {
+        convenioId: selectedConvenioId || null,
+        convenioCategoryId: selectedCategoryId || null,
+      });
+      toast.success(t.convenios.assigned);
+      setEditingConvenio(false);
+      load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t.convenios.assignError);
+    } finally {
+      setSavingConvenio(false);
+    }
+  }
+
+  async function onClearConvenio() {
+    if (!employee) return;
+    setSavingConvenio(true);
+    try {
+      await assignConvenio(companyId, employeeId, {
+        convenioId: null,
+        convenioCategoryId: null,
+      });
+      toast.success(t.convenios.assigned);
+      setEditingConvenio(false);
+      load();
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : t.convenios.assignError);
+    } finally {
+      setSavingConvenio(false);
+    }
+  }
 
   // --- Edit employee form ---
   const editForm = useForm<UpdateEmployeeInput>({
@@ -949,6 +1011,118 @@ export default function EmployeeDetailPage() {
             );
           })()}
         </div>
+      </div>
+
+      {/* Convenio assignment */}
+      <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 mt-6">
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <ScrollText className="w-4 h-4 text-slate-500" />
+            <h2 className="text-sm font-semibold text-white">{t.convenios.assignTitle}</h2>
+          </div>
+          <RoleGate roles={['OWNER', 'ADMIN']}>
+            {!editingConvenio && (
+              <button
+                onClick={() => setEditingConvenio(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-lg text-xs text-slate-300 transition-colors cursor-pointer"
+              >
+                <Pencil className="w-3 h-3" />
+                {t.common.edit}
+              </button>
+            )}
+          </RoleGate>
+        </div>
+
+        {editingConvenio ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-xs text-slate-400">{t.convenios.assignDesc}</p>
+
+            <div>
+              <label className="text-xs font-medium text-slate-400 block mb-1.5">{t.convenios.title}</label>
+              <Select
+                value={selectedConvenioId}
+                onValueChange={(v) => {
+                  setSelectedConvenioId(v);
+                  setSelectedCategoryId('');
+                }}
+              >
+                <SelectTrigger className={INPUT_CLASS}>
+                  <SelectValue placeholder={t.convenios.selectConvenio} />
+                </SelectTrigger>
+                <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  {convenios.map((c) => (
+                    <SelectItem key={c.id} value={c.id} className="focus:bg-white/[0.06] focus:text-white">
+                      {c.name} ({c.code})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {selectedConvenioId && (() => {
+              const conv = convenios.find((c) => c.id === selectedConvenioId);
+              const cats = conv?.categories ?? [];
+              if (cats.length === 0) return null;
+              return (
+                <div>
+                  <label className="text-xs font-medium text-slate-400 block mb-1.5">{t.convenios.categories}</label>
+                  <Select
+                    value={selectedCategoryId}
+                    onValueChange={setSelectedCategoryId}
+                  >
+                    <SelectTrigger className={INPUT_CLASS}>
+                      <SelectValue placeholder={t.convenios.selectCategory} />
+                    </SelectTrigger>
+                    <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                      {cats.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id} className="focus:bg-white/[0.06] focus:text-white">
+                          {cat.name} ({cat.code})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              );
+            })()}
+
+            <div className="flex gap-2 justify-end">
+              {employee?.convenioId && (
+                <button
+                  onClick={onClearConvenio}
+                  disabled={savingConvenio}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-400 hover:text-red-300 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 transition-colors disabled:opacity-50 cursor-pointer"
+                >
+                  {t.common.delete}
+                </button>
+              )}
+              <button
+                onClick={() => setEditingConvenio(false)}
+                disabled={savingConvenio}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {t.common.cancel}
+              </button>
+              <button
+                onClick={onSaveConvenio}
+                disabled={savingConvenio || !selectedConvenioId}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors disabled:opacity-50 cursor-pointer"
+              >
+                {savingConvenio ? t.common.saving : t.common.save}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <DataRow
+              label={t.convenios.title}
+              value={employee?.convenioName ?? t.convenios.noConvenio}
+            />
+            <DataRow
+              label={t.convenios.categories}
+              value={employee?.convenioCategoryName ?? '—'}
+            />
+          </div>
+        )}
       </div>
 
       {/* Settlement detail */}

@@ -17,7 +17,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useCompanyStore } from '@/stores/company-store';
-import { getCompany, listMembers } from '@/lib/api/companies';
+import { listMembers } from '@/lib/api/companies';
 import { listEmployees } from '@/lib/api/employees';
 import { listRuns, listPeriods } from '@/lib/api/payroll';
 import { ROUTES } from '@/lib/constants/routes';
@@ -27,7 +27,7 @@ import { StatusBadge } from '@/components/shared/status-badge';
 import { usePermissions } from '@/lib/hooks/use-permissions';
 import { useTranslation, useLocaleId } from '@/lib/i18n';
 import type { Translations } from '@/lib/i18n/es';
-import type { Company, CompanyUser } from '@/lib/types/company';
+import type { CompanyUser } from '@/lib/types/company';
 import type { PayrollRun, PayrollPeriod } from '@/lib/types/payroll';
 
 function formatPeriodRange(start: string, end: string, locale: string): string {
@@ -40,7 +40,7 @@ function formatPeriodRange(start: string, end: string, locale: string): string {
 
 export default function CompanyDashboardPage() {
   const { companyId } = useParams<{ companyId: string }>();
-  const { setActiveCompany } = useCompanyStore();
+  // company data comes from the parent layout via company-store
   const { role } = usePermissions();
   const isMember = role === 'MEMBER';
   const t = useTranslation();
@@ -53,27 +53,27 @@ export default function CompanyDashboardPage() {
     CLOSED:    t.companies.overview.statusClosed,
   };
 
-  const [company,       setCompany]       = useState<Company | null>(null);
+  const { activeCompany } = useCompanyStore();
   const [members,       setMembers]       = useState<CompanyUser[]>([]);
   const [activeEmpCount, setActiveEmpCount] = useState<number | null>(null);
   const [lastRun,       setLastRun]       = useState<PayrollRun | null>(null);
   const [lastRunPeriod, setLastRunPeriod] = useState<PayrollPeriod | null>(null);
   const [isLoading,     setIsLoading]     = useState(true);
 
+  // activeCompany is set by the parent layout — use it directly
+  const company = activeCompany?.id === companyId ? activeCompany : null;
+
   useEffect(() => {
     if (!companyId) return;
 
     setIsLoading(true);
-    getCompany(companyId)
-      .then(async (co) => {
-        setCompany(co);
-        if (co.myRole) setActiveCompany(co, co.myRole);
-        const [mems, empRes, runs, periods] = await Promise.all([
-          listMembers(companyId).catch(() => []),
-          listEmployees(companyId, { limit: 1, isActive: true }).catch(() => null),
-          listRuns(companyId).catch(() => []),
-          listPeriods(companyId).catch(() => []),
-        ]);
+    Promise.all([
+      listMembers(companyId).catch(() => []),
+      listEmployees(companyId, { limit: 1, isActive: true }).catch(() => null),
+      listRuns(companyId).catch(() => []),
+      listPeriods(companyId).catch(() => []),
+    ])
+      .then(([mems, empRes, runs, periods]) => {
         setMembers(Array.isArray(mems) ? mems : []);
         if (empRes) setActiveEmpCount(empRes.total);
         if (runs.length > 0) {
@@ -87,7 +87,7 @@ export default function CompanyDashboardPage() {
         toast.error(err.message ?? t.companies.overview.loadError);
       })
       .finally(() => setIsLoading(false));
-  }, [companyId, setActiveCompany]);
+  }, [companyId, t]);
 
   if (isLoading) return <DashboardSkeleton />;
   if (!company) return null;
