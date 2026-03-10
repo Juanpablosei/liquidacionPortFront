@@ -37,8 +37,11 @@ export function ConvenioCard({
   return (
     <div className="bg-[#111827] border border-white/[0.06] rounded-xl overflow-hidden">
       {/* Header */}
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setExpanded(!expanded)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setExpanded(!expanded); } }}
         className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-white/[0.02] transition-colors cursor-pointer"
       >
         <div className="flex items-center gap-3 min-w-0">
@@ -76,7 +79,7 @@ export function ConvenioCard({
           )}
           {expanded ? <ChevronUp className="w-4 h-4 text-slate-500" /> : <ChevronDown className="w-4 h-4 text-slate-500" />}
         </div>
-      </button>
+      </div>
 
       {/* Expanded content */}
       {expanded && (

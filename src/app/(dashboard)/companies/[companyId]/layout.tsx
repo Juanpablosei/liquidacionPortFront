@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
-import { getCompany, listMembers } from '@/lib/api/companies';
+import { getCompany, listCompanies } from '@/lib/api/companies';
 import { getCompanySubscription } from '@/lib/api/subscription';
 import { SubscriptionWarningBanner } from '@/components/shared/subscription-warning-banner';
 import type { SubscriptionStatus } from '@/lib/types/admin';
@@ -50,10 +50,10 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
           setActiveCompany(co, resolvedRole);
           return;
         }
-        // Fallback: navegar directo a la URL sin pasar por /companies
-        const mems = await listMembers(companyId).catch(() => []);
-        const me = mems.find((m) => m.userId === user?.id);
-        if (me) setActiveCompany(co, me.role);
+        // Fallback: fetch user's companies list to get myRole (works for all roles)
+        const allCompanies = await listCompanies().catch(() => []);
+        const match = allCompanies.find((c) => c.id === companyId);
+        if (match?.myRole) setActiveCompany(co, match.myRole);
       })
       .catch(() => {})
       .finally(() => {
@@ -64,9 +64,10 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
       });
   }, [companyId, activeCompany?.id, role, user?.id, setActiveCompany]);
 
-  // Fetch subscription status for warning banner
+  // Fetch subscription status for warning banner (only ADMIN+ can access this endpoint)
   useEffect(() => {
-    if (!companyId) return;
+    if (!companyId || !role) return;
+    if (role !== 'OWNER' && role !== 'ADMIN') return;
     getCompanySubscription(companyId)
       .then((sub) => {
         if (WARNING_STATUSES.includes(sub.status)) {
@@ -79,7 +80,7 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
         // No subscription or error — don't show banner
         setSubscriptionStatus(null);
       });
-  }, [companyId]);
+  }, [companyId, role]);
 
   if (loading) {
     return (

@@ -42,9 +42,12 @@ export function ConvenioCard({
   return (
     <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
       {/* Header */}
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={onToggle}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors"
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors cursor-pointer"
       >
         <Chevron className="w-4 h-4 text-slate-500 shrink-0" />
         <div className="flex-1 min-w-0">
@@ -98,7 +101,7 @@ export function ConvenioCard({
             </button>
           )}
         </div>
-      </button>
+      </div>
 
       {/* Expanded: categories table */}
       {isExpanded && (
