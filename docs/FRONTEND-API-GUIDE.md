@@ -575,7 +575,9 @@ POST /companies/:companyId/employees      [JWT + OWNER/ADMIN]
   "email": "maria@email.com",            // opcional, formato email
   "phone": "+595 981 123456",            // opcional
   "birthDate": "1990-05-15",             // opcional, ISO date
-  "hireDate": "2025-01-01"               // requerido, ISO date
+  "hireDate": "2025-01-01",              // requerido, ISO date
+  "convenioId": "uuid-convenio",         // opcional, UUID del convenio asignado
+  "convenioCategoryId": "uuid-category"  // opcional, UUID de categoria del convenio
 }
 // Response 201 - data: Employee
 ```
@@ -594,7 +596,7 @@ PATCH /companies/:companyId/employees/:id [JWT + OWNER/ADMIN]
 ```
 
 ```json
-{ "phone": "+595 981 999888" }            // todos los campos opcionales
+{ "phone": "+595 981 999888" }            // todos los campos opcionales (incluye convenioId, convenioCategoryId)
 // Response 200 - data: Employee actualizado
 ```
 
@@ -957,6 +959,8 @@ DELETE /companies/:companyId/attendance/:id  [JWT + OWNER/ADMIN]
 // Response 204
 ```
 
+> **Restriccion:** No se puede eliminar una asistencia cuya fecha cae dentro de un periodo de nomina con run en estado `COMPLETED` o `CLOSED`. El servidor responde `400` con mensaje `attendance.PAYROLL_ALREADY_CLOSED`.
+
 ---
 
 ### Overtime
@@ -1018,6 +1022,8 @@ PATCH /companies/:companyId/overtime/:id  [JWT + OWNER/ADMIN/MANAGER]
 DELETE /companies/:companyId/overtime/:id  [JWT + OWNER/ADMIN]
 // Response 204
 ```
+
+> **Restriccion:** No se puede eliminar una hora extra cuya fecha cae dentro de un periodo de nomina con run en estado `COMPLETED` o `CLOSED`. El servidor responde `400` con mensaje `overtime.PAYROLL_ALREADY_CLOSED`.
 
 ---
 
@@ -1672,6 +1678,52 @@ window.open(url);
 
 ---
 
+## Suscripcion y Headers de Estado
+
+El backend verifica el estado de suscripcion de la empresa en cada request a rutas con `:companyId`. El frontend debe manejar estos escenarios:
+
+### Headers de respuesta
+
+| Header | Valor | Significado |
+|--------|-------|-------------|
+| `X-Subscription-Warning` | `PAST_DUE` | La suscripcion esta vencida pero dentro del periodo de gracia (7 dias). Mostrar aviso al usuario. |
+
+### Errores de suscripcion
+
+| Codigo | Mensaje | Accion del frontend |
+|--------|---------|---------------------|
+| `403` | `subscription.NO_SUBSCRIPTION` | Redirigir a pantalla de contratacion de plan |
+| `403` | `subscription.BLOCKED` | Mostrar pantalla de bloqueo. Solo GET funciona (lectura). |
+| `403` | `subscription.CANCELLED` | Mostrar pantalla de suscripcion cancelada. No permite ninguna accion. |
+
+### Interceptor recomendado
+
+```typescript
+api.interceptors.response.use(
+  (res) => {
+    const warning = res.headers['x-subscription-warning'];
+    if (warning === 'PAST_DUE') {
+      // Mostrar banner/toast: "Tu suscripcion esta vencida. Renueva para evitar el bloqueo."
+      showSubscriptionWarning();
+    }
+    return res;
+  },
+  (error) => {
+    const msg = error.response?.data?.message;
+    if (msg === 'subscription.NO_SUBSCRIPTION') {
+      router.push('/plans');
+    } else if (msg === 'subscription.BLOCKED') {
+      router.push('/subscription-blocked');
+    } else if (msg === 'subscription.CANCELLED') {
+      router.push('/subscription-cancelled');
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+---
+
 ## Rate Limiting
 
 | Endpoint | Limite |
@@ -1682,5 +1734,6 @@ window.open(url);
 | `POST /auth/refresh` | 10 req/min |
 | `POST /auth/send-confirmation-email` | 3 req/hora |
 | `POST /auth/forgot-password` | 3 req/hora |
+| `POST /auth/change-password` | 5 req/min |
 
 Responde `429 Too Many Requests` si se excede.
