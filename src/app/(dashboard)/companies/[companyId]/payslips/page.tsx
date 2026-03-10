@@ -47,7 +47,7 @@ export default function PayslipsPage() {
   // Load employees for filter
   useEffect(() => {
     if (!companyId) return;
-    listEmployees(companyId, { limit: 500 })
+    listEmployees(companyId, { limit: 100 })
       .then((res) => setEmployees(res.items.map((e) => ({ id: e.id, firstName: e.firstName, lastName: e.lastName }))))
       .catch(() => {});
   }, [companyId]);
