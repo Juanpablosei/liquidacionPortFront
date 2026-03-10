@@ -43,6 +43,7 @@ export default function CompanyDashboardPage() {
   // company data comes from the parent layout via company-store
   const { role } = usePermissions();
   const isMember = role === 'MEMBER';
+  const isAdmin = role === 'OWNER' || role === 'ADMIN';
   const t = useTranslation();
   const localeId = useLocaleId();
 
@@ -107,16 +108,18 @@ export default function CompanyDashboardPage() {
       />
 
       {/* KPI stats */}
-      <div className={`grid grid-cols-2 ${isMember ? '' : 'lg:grid-cols-4'} gap-4 mb-8`}>
+      <div className={`grid grid-cols-2 ${isMember ? '' : isAdmin ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 mb-8`}>
         {!isMember && (
           <>
-            <StatCard
-              title={t.companies.overview.members}
-              value={members.length}
-              icon={<Users className="w-4 h-4" />}
-              description={role ? `${t.companies.overview.yourRole} ${role.toLowerCase()}` : undefined}
-              href={ROUTES.companyMembers(companyId)}
-            />
+            {isAdmin && (
+              <StatCard
+                title={t.companies.overview.members}
+                value={members.length}
+                icon={<Users className="w-4 h-4" />}
+                description={role ? `${t.companies.overview.yourRole} ${role.toLowerCase()}` : undefined}
+                href={ROUTES.companyMembers(companyId)}
+              />
+            )}
             <StatCard
               title={t.companies.overview.activeEmployees}
               value={activeEmpCount ?? '—'}

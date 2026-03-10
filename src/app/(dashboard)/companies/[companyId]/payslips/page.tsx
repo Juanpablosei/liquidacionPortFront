@@ -12,7 +12,6 @@ import { ROUTES } from '@/lib/constants/routes';
 import { PageHeader } from '@/components/shared/page-header';
 import { DataTable } from '@/components/shared/data-table';
 import { EmptyState } from '@/components/shared/empty-state';
-import { RoleGate } from '@/components/shared/role-gate';
 import type { ColumnDef } from '@tanstack/react-table';
 import type { Payslip } from '@/lib/types/payroll';
 
@@ -180,11 +179,8 @@ export default function PayslipsPage() {
   );
 
   if (!isManager()) {
-    return (
-      <RoleGate roles={['OWNER', 'ADMIN', 'MANAGER']}>
-        <div />
-      </RoleGate>
-    );
+    router.push(ROUTES.company(companyId));
+    return null;
   }
 
   return (
