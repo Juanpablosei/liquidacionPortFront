@@ -38,10 +38,13 @@ Claude Code tiene un limite de ~32K tokens por respuesta. Excederlo causa error 
 - El plan debe incluir: archivos a crear/modificar, dependencias, riesgos.
 - Si la tarea es ambigua, hacer MAX 3 preguntas de clarificacion y esperar respuesta.
 
-#### 2. Estrategia de Subagentes
-- Usar subagentes con frecuencia para mantener limpia la ventana de contexto principal.
-- Delegar investigacion, exploracion y analisis paralelo a subagentes.
+#### 2. Modo Orquestador (OBLIGATORIO)
+- El contexto principal es SOLO para planificar, orquestar y comunicar con el usuario.
+- NUNCA ejecutar tareas de implementacion directamente en el contexto principal.
+- TODA lectura de codigo, escritura de archivos, busqueda y ejecucion de comandos debe delegarse a subagentes.
 - Una tarea por subagente para ejecucion focalizada.
+- Lanzar subagentes en paralelo cuando las tareas sean independientes.
+- Excepciones permitidas en contexto principal: leer CLAUDE.md, tasks/, memory/, y comunicacion directa con el usuario.
 
 #### 3. Bucle de Automejora
 - Tras CUALQUIER correccion del usuario: actualizar `tasks/lessons.md` con el patron.

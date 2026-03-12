@@ -43,10 +43,12 @@ export const API = {
     concept:  (cid: string, eid: string, ctid: string, conId: string) => `/companies/${cid}/employees/${eid}/contracts/${ctid}/concepts/${conId}`,
   },
   attendance: {
-    list:   (cid: string) => `/companies/${cid}/attendance`,
-    create: (cid: string) => `/companies/${cid}/attendance`,
-    update: (cid: string, id: string) => `/companies/${cid}/attendance/${id}`,
-    delete: (cid: string, id: string) => `/companies/${cid}/attendance/${id}`,
+    list:           (cid: string) => `/companies/${cid}/attendance`,
+    create:         (cid: string) => `/companies/${cid}/attendance`,
+    update:         (cid: string, id: string) => `/companies/${cid}/attendance/${id}`,
+    delete:         (cid: string, id: string) => `/companies/${cid}/attendance/${id}`,
+    importTemplate: (cid: string) => `/companies/${cid}/attendance/import/template`,
+    import:         (cid: string) => `/companies/${cid}/attendance/import`,
   },
   overtime: {
     list:   (cid: string) => `/companies/${cid}/overtime`,

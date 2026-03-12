@@ -182,11 +182,23 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 | POST | `/companies/:cid/attendance` | Registrar asistencia |
 | PATCH | `/companies/:cid/attendance/:id` | Actualizar registro |
 | DELETE | `/companies/:cid/attendance/:id` | Eliminar registro |
+| GET | `/companies/:cid/attendance/import/template` | Descargar plantilla Excel para importacion |
+| POST | `/companies/:cid/attendance/import` | Importar asistencia desde Excel (multipart, campo `file`) |
+
+#### Reglas de negocio (importacion)
+- Columnas requeridas: `documentNumber`, `date`. Opcionales: `clockIn` (HH:mm), `clockOut` (HH:mm), `notes`
+- Empleado no encontrado o inactivo → se skipea (no falla toda la importacion)
+- Fecha en periodo de nomina cerrado → se skipea
+- Registro duplicado (empleado+fecha) → se skipea
+- Errores de formato (fecha/hora invalida) → se rechaza todo el archivo con detalle de errores
+- Max 2000 filas por importacion
+- Response: `{ imported, skipped, errors[], skippedRecords[] }`
 
 #### Frontend Files
 - `src/lib/api/attendance.ts`
 - `src/lib/types/attendance.ts`
 - `src/app/(dashboard)/companies/[companyId]/attendance/page.tsx`
+- `src/app/(dashboard)/companies/[companyId]/attendance/import/page.tsx`
 
 ---
 
@@ -372,6 +384,7 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 - Cada convenio tiene reglas de antiguedad (brackets), vacaciones y licencia
 - Las categorias definen escalas salariales dentro del convenio
 - Los empleados se asocian a un convenio via su contrato
+- POST crear convenio acepta `categories?: CreateCategoryDto[]` opcional para crear categorias inline (atomico). Los codes de categoria deben ser unicos dentro del array
 
 #### Frontend Files
 - `src/lib/api/convenios.ts`

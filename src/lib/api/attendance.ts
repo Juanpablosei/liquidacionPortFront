@@ -70,3 +70,30 @@ export function deleteAttendance(
     method: 'DELETE',
   });
 }
+
+// ─── Import ───────────────────────────────────────────────────────────────────
+
+export interface ImportAttendanceResult {
+  imported: number;
+  skipped:  number;
+  errors:   string[];
+  skippedRecords: Array<{
+    row:            number;
+    documentNumber: string;
+    date:           string;
+    reason:         string;
+  }>;
+}
+
+export function getAttendanceImportTemplate(companyId: string): Promise<Blob> {
+  return apiFetch<Blob>(API.attendance.importTemplate(companyId));
+}
+
+export function importAttendance(companyId: string, file: File): Promise<ImportAttendanceResult> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiFetch<ImportAttendanceResult>(API.attendance.import(companyId), {
+    method: 'POST',
+    body:   formData,
+  });
+}

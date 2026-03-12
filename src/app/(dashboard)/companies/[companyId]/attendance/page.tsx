@@ -6,7 +6,8 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Pencil, Trash2, Clock } from 'lucide-react';
+import Link from 'next/link';
+import { Plus, Pencil, Trash2, Clock, Upload } from 'lucide-react';
 import { listAttendance, createAttendance, updateAttendance, deleteAttendance } from '@/lib/api/attendance';
 import { listEmployees } from '@/lib/api/employees';
 import { attendanceSchema, type AttendanceInput } from '@/lib/validators/attendance';
@@ -245,13 +246,22 @@ export default function AttendancePage() {
         backHref={ROUTES.company(companyId)}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
-            <button
-              onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              {t.attendance.register}
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                href={ROUTES.attendanceImport(companyId)}
+                className="inline-flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-slate-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              >
+                <Upload className="w-4 h-4" />
+                {t.attendance.importBtn}
+              </Link>
+              <button
+                onClick={openCreate}
+                className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              >
+                <Plus className="w-4 h-4" />
+                {t.attendance.register}
+              </button>
+            </div>
           </RoleGate>
         }
       />
