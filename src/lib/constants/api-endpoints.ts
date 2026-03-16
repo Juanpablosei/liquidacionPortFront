@@ -114,6 +114,17 @@ export const API = {
     // Assign to employee
     assign:        (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/convenio`,
   },
+  unions: {
+    list:         (cid: string) => `/companies/${cid}/unions`,
+    create:       (cid: string) => `/companies/${cid}/unions`,
+    detail:       (cid: string, id: string) => `/companies/${cid}/unions/${id}`,
+    update:       (cid: string, id: string) => `/companies/${cid}/unions/${id}`,
+    delete:       (cid: string, id: string) => `/companies/${cid}/unions/${id}`,
+    dashboard:    (cid: string) => `/companies/${cid}/unions/dashboard`,
+    members:      (cid: string, id: string) => `/companies/${cid}/unions/${id}/members`,
+    addMember:    (cid: string, id: string) => `/companies/${cid}/unions/${id}/members`,
+    removeMember: (cid: string, id: string, mid: string) => `/companies/${cid}/unions/${id}/members/${mid}`,
+  },
   auditLogs: {
     list: (cid: string) => `/companies/${cid}/audit-logs`,
   },

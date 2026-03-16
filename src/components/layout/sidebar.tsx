@@ -23,6 +23,7 @@ import {
   CreditCard,
   ScrollText,
   ClipboardList,
+  Handshake,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -115,6 +116,7 @@ export function Sidebar() {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
@@ -282,6 +284,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },

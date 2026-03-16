@@ -28,6 +28,10 @@ export const ROUTES = {
   myPayslip:      (cid: string, pid: string) => `/companies/${cid}/my-payslips/${pid}`,
   convenios:      (cid: string) => `/companies/${cid}/convenios`,
   convenioUpload: (cid: string) => `/companies/${cid}/convenios/upload`,
+  unions:         (cid: string) => `/companies/${cid}/unions`,
+  newUnion:       (cid: string) => `/companies/${cid}/unions/new`,
+  union:          (cid: string, uid: string) => `/companies/${cid}/unions/${uid}`,
+  unionMembers:   (cid: string, uid: string) => `/companies/${cid}/unions/${uid}/members`,
   auditLogs:      (cid: string) => `/companies/${cid}/audit-logs`,
 
   // Admin routes
