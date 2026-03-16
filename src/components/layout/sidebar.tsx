@@ -22,6 +22,7 @@ import {
   Shield,
   CreditCard,
   ScrollText,
+  ClipboardList,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -120,6 +121,7 @@ export function Sidebar() {
   ];
 
   const adminNav: NavItemDef[] = (isSuperAdmin && isOnAdminRoute) ? [] : companyId ? [
+    { href: ROUTES.auditLogs(companyId),       icon: ClipboardList, label: t.sidebar.auditLogs, minRole: 'ADMIN' },
     { href: ROUTES.companyMembers(companyId),  icon: UserCog,  label: t.sidebar.members,   minRole: 'ADMIN' },
     { href: ROUTES.companySettings(companyId), icon: Settings2, label: t.sidebar.settings, minRole: 'ADMIN' },
   ] : [];
@@ -286,6 +288,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
   ];
 
   const adminNav: NavItemDef[] = companyId ? [
+    { href: ROUTES.auditLogs(companyId),       icon: ClipboardList, label: t.sidebar.auditLogs, minRole: 'ADMIN' },
     { href: ROUTES.companyMembers(companyId),  icon: UserCog,   label: t.sidebar.members,   minRole: 'ADMIN' },
     { href: ROUTES.companySettings(companyId), icon: Settings2, label: t.sidebar.settings,  minRole: 'ADMIN' },
   ] : [];

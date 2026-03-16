@@ -27,6 +27,7 @@ export const ROUTES = {
   myPayslips:     (cid: string) => `/companies/${cid}/my-payslips`,
   myPayslip:      (cid: string, pid: string) => `/companies/${cid}/my-payslips/${pid}`,
   convenios:      (cid: string) => `/companies/${cid}/convenios`,
+  auditLogs:      (cid: string) => `/companies/${cid}/audit-logs`,
 
   // Admin routes
   admin:              '/admin',

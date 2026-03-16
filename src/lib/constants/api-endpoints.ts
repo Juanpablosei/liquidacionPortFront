@@ -108,6 +108,9 @@ export const API = {
     // Assign to employee
     assign:        (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/convenio`,
   },
+  auditLogs: {
+    list: (cid: string) => `/companies/${cid}/audit-logs`,
+  },
   admin: {
     dashboard:     '/admin/dashboard',
     companies:     '/admin/companies',
