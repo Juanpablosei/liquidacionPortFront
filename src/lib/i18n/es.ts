@@ -1070,6 +1070,17 @@ const es = {
     noConvenio:      'Sin convenio',
     selectConvenio:  'Seleccioná un convenio',
     selectCategory:  'Seleccioná una categoría',
+    // Expiration alerts
+    alerts: {
+      title:          'Alertas de vencimiento',
+      expiresInDays:  'Vence en {days} días',
+      expiresToday:   'Vence hoy',
+      expired:        'Vencido',
+      showExpired:    'Mostrar vencidos',
+      statusActive:   'Activo',
+      statusExpired:  'Vencido',
+      alertsError:    'Error al cargar alertas de vencimiento',
+    },
   },
 
   // ─── Admin ──────────────────────────────────────────────────────────────────

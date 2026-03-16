@@ -3,9 +3,11 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { toast } from '@/lib/utils/toast';
-import { Scale, Plus } from 'lucide-react';
+import { Scale, Plus, AlertTriangle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import {
   listCompanyConvenios,
+  getExpiringConvenios,
   cloneConvenio,
   createConvenio,
   updateConvenio,
@@ -36,6 +38,8 @@ export default function ConveniosPage() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [cloning, setCloning] = useState<string | null>(null);
+  const [includeExpired, setIncludeExpired] = useState(false);
+  const [expiringConvenios, setExpiringConvenios] = useState<Convenio[]>([]);
 
   // Convenio CRUD state
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -55,14 +59,18 @@ export default function ConveniosPage() {
   const load = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await listCompanyConvenios(companyId);
+      const [res, expiring] = await Promise.all([
+        listCompanyConvenios(companyId, { includeExpired }),
+        getExpiringConvenios(companyId).catch(() => [] as Convenio[]),
+      ]);
       setData(res);
+      setExpiringConvenios(expiring);
     } catch {
       toast.error(t.convenios.loadError);
     } finally {
       setLoading(false);
     }
-  }, [companyId, t.convenios.loadError]);
+  }, [companyId, includeExpired, t.convenios.loadError]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -199,6 +207,65 @@ export default function ConveniosPage() {
           </RoleGate>
         }
       />
+
+      {/* Expiration alerts */}
+      {expiringConvenios.length > 0 && (
+        <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-yellow-400 shrink-0" />
+            <h3 className="text-sm font-semibold text-yellow-400">
+              {t.convenios.alerts.title}
+            </h3>
+          </div>
+          <div className="space-y-2">
+            {expiringConvenios.map((conv) => {
+              const days = conv.daysRemaining ?? 0;
+              const isExpired = days <= 0;
+              const urgencyClass = isExpired || days <= 7
+                ? 'text-red-400 border-red-500/20 bg-red-500/10'
+                : days <= 15
+                  ? 'text-orange-400 border-orange-500/20 bg-orange-500/10'
+                  : 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10';
+
+              const label = isExpired
+                ? t.convenios.alerts.expired
+                : days === 0
+                  ? t.convenios.alerts.expiresToday
+                  : t.convenios.alerts.expiresInDays.replace('{days}', String(days));
+
+              return (
+                <div
+                  key={conv.id}
+                  className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#111827] px-3 py-2"
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-sm font-medium text-white truncate">{conv.name}</span>
+                    <span className="text-xs text-slate-500 font-mono">{conv.code}</span>
+                  </div>
+                  <span className={cn('inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium', urgencyClass)}>
+                    {label}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Include expired toggle */}
+      <div className="flex items-center gap-2">
+        <label className="flex items-center gap-2 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            checked={includeExpired}
+            onChange={(e) => setIncludeExpired(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-600 bg-[#111827] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0"
+          />
+          <span className="text-sm text-muted-foreground">
+            {t.convenios.alerts.showExpired}
+          </span>
+        </label>
+      </div>
 
       {!hasData ? (
         <EmptyState

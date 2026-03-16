@@ -43,6 +43,8 @@ export interface Convenio {
   sickLeaveRules:      SickLeaveRule[] | null;
   clonedFromId:        string | null;
   isActive:            boolean;
+  expirationDate:      string | null;
+  daysRemaining?:      number;      // populated by GET /convenios/expiring
   createdAt:           string;
   updatedAt:           string;
   categories:          ConvenioCategory[];

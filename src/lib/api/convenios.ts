@@ -15,8 +15,19 @@ import type {
 
 // ─── Company-scoped ───────────────────────────────────────────────────────────
 
-export function listCompanyConvenios(companyId: string): Promise<CompanyConveniosResponse> {
-  return apiFetch<CompanyConveniosResponse>(API.convenios.list(companyId));
+export function listCompanyConvenios(
+  companyId: string,
+  options?: { includeExpired?: boolean },
+): Promise<CompanyConveniosResponse> {
+  const params = new URLSearchParams();
+  if (options?.includeExpired) params.set('includeExpired', 'true');
+  const qs = params.toString();
+  const url = qs ? `${API.convenios.list(companyId)}?${qs}` : API.convenios.list(companyId);
+  return apiFetch<CompanyConveniosResponse>(url);
+}
+
+export function getExpiringConvenios(companyId: string): Promise<Convenio[]> {
+  return apiFetch<Convenio[]>(API.convenios.expiring(companyId));
 }
 
 export function createConvenio(companyId: string, data: CreateConvenioInput): Promise<Convenio> {

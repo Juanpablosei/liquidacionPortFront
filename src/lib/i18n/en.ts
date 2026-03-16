@@ -1072,6 +1072,17 @@ const en: Translations = {
     noConvenio:      'No agreement',
     selectConvenio:  'Select an agreement',
     selectCategory:  'Select a category',
+    // Expiration alerts
+    alerts: {
+      title:          'Expiration alerts',
+      expiresInDays:  'Expires in {days} days',
+      expiresToday:   'Expires today',
+      expired:        'Expired',
+      showExpired:    'Show expired',
+      statusActive:   'Active',
+      statusExpired:  'Expired',
+      alertsError:    'Error loading expiration alerts',
+    },
   },
 
   // ─── Admin ──────────────────────────────────────────────────────────────────

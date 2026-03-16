@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, ChevronRight, Copy, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ChevronDown, ChevronRight, Copy, Pencil, Plus, Trash2, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { CurrencyDisplay } from '@/components/shared/currency-display';
 import { useTranslation } from '@/lib/i18n';
@@ -64,6 +64,24 @@ export function ConvenioCard({
             >
               {badgeVariant === 'global' ? t.convenios.isGlobal : t.convenios.isOwn}
             </span>
+            {convenio.expirationDate && (() => {
+              const now = new Date();
+              const exp = new Date(convenio.expirationDate);
+              const isExpired = exp < now;
+              return (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium',
+                    isExpired
+                      ? 'bg-slate-500/15 text-slate-400 border-slate-500/20'
+                      : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
+                  )}
+                >
+                  <Clock className="w-3 h-3" />
+                  {isExpired ? t.convenios.alerts.statusExpired : t.convenios.alerts.statusActive}
+                </span>
+              );
+            })()}
           </div>
           <p className="text-xs text-slate-500 mt-0.5">
             {convenio.categories.length} {t.convenios.categories.toLowerCase()}

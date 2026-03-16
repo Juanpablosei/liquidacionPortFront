@@ -98,6 +98,7 @@ export const API = {
   convenios: {
     // Company-scoped
     list:          (cid: string) => `/companies/${cid}/convenios`,
+    expiring:      (cid: string) => `/companies/${cid}/convenios/expiring`,
     create:        (cid: string) => `/companies/${cid}/convenios`,
     update:        (cid: string, id: string) => `/companies/${cid}/convenios/${id}`,
     delete:        (cid: string, id: string) => `/companies/${cid}/convenios/${id}`,
