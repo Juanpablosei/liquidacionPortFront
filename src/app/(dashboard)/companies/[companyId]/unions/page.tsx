@@ -195,7 +195,7 @@ export default function UnionsPage() {
           />
           <StatCard
             title={t.unions.estimatedMonthlyCost}
-            value={nf.format(dashboard.estimatedMonthlyCost)}
+            value={nf.format(Number(dashboard.estimatedMonthlyCost) || 0)}
             icon={<DollarSign className="w-4 h-4" />}
           />
         </div>
