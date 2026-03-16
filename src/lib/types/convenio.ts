@@ -56,3 +56,31 @@ export interface CompanyConveniosResponse {
   own:    Convenio[];
   global: Convenio[];
 }
+
+// ─── Convenio Upload (AI extraction) ──────────────────────────────────────────
+
+export interface ConvenioUploadResponse {
+  name: string;
+  description: string;
+  validFrom: string | null;
+  validTo: string | null;
+  seniorityRules: { minYears: number; maxYears: number | null; percentage: number }[];
+  vacationDays: number | null;
+  sickLeaveDays: number | null;
+  categories: { code: string; name: string; baseSalary: number }[];
+  confidence: number; // 0-1
+  rawNotes: string;
+  sourceFile: string;
+}
+
+export interface ConfirmUploadInput {
+  name: string;
+  description: string;
+  validFrom?: string;
+  validTo?: string;
+  seniorityRules?: { minYears: number; maxYears: number | null; percentage: number }[];
+  vacationDays?: number;
+  sickLeaveDays?: number;
+  categories?: { code: string; name: string; baseSalary: number }[];
+  sourceFile: string;
+}

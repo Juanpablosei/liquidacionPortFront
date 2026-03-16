@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
+import Link from 'next/link';
 import { toast } from '@/lib/utils/toast';
-import { Scale, Plus, AlertTriangle } from 'lucide-react';
+import { Scale, Plus, AlertTriangle, Upload } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   listCompanyConvenios,
@@ -23,6 +24,7 @@ import { RoleGate }        from '@/components/shared/role-gate';
 import { ConfirmDialog }   from '@/components/shared/confirm-dialog';
 import { usePermissions }  from '@/lib/hooks/use-permissions';
 import { useTranslation }  from '@/lib/i18n';
+import { ROUTES }          from '@/lib/constants/routes';
 import { ConvenioSection } from './_components/convenio-section';
 import { ConvenioFormSheet } from './convenio-form-sheet';
 import { CategoryFormSheet } from './category-form-sheet';
@@ -197,6 +199,13 @@ export default function ConveniosPage() {
         description={t.convenios.description}
         actions={
           <RoleGate roles={['OWNER', 'ADMIN']}>
+            <Link
+              href={ROUTES.convenioUpload(companyId)}
+              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.08] hover:text-white transition-colors"
+            >
+              <Upload className="w-4 h-4" />
+              {t.convenios.upload.uploadFromPdf}
+            </Link>
             <button
               onClick={openCreateConvenio}
               className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563EB]/90 transition-colors"

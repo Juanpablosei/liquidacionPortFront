@@ -107,6 +107,10 @@ export const API = {
     addCategory:   (cid: string, id: string) => `/companies/${cid}/convenios/${id}/categories`,
     updateCategory:(cid: string, catId: string) => `/companies/${cid}/convenios/categories/${catId}`,
     deleteCategory:(cid: string, catId: string) => `/companies/${cid}/convenios/categories/${catId}`,
+    // Upload (AI extraction)
+    upload:            (cid: string) => `/companies/${cid}/convenios/upload`,
+    confirmUpload:     (cid: string) => `/companies/${cid}/convenios/confirm-upload`,
+    deleteUploadedFile:(cid: string, filename: string) => `/companies/${cid}/convenios/uploaded-file/${filename}`,
     // Assign to employee
     assign:        (cid: string, eid: string) => `/companies/${cid}/employees/${eid}/convenio`,
   },

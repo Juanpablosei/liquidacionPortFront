@@ -4,6 +4,8 @@ import type {
   Convenio,
   ConvenioCategory,
   CompanyConveniosResponse,
+  ConvenioUploadResponse,
+  ConfirmUploadInput,
 } from '@/lib/types/convenio';
 import type {
   CreateConvenioInput,
@@ -82,6 +84,30 @@ export function updateCategory(
 
 export function deleteCategory(companyId: string, categoryId: string): Promise<void> {
   return apiFetch<void>(API.convenios.deleteCategory(companyId, categoryId), {
+    method: 'DELETE',
+  });
+}
+
+// ─── Upload (AI extraction) ──────────────────────────────────────────────────
+
+export function uploadConvenio(companyId: string, file: File): Promise<ConvenioUploadResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+  return apiFetch<ConvenioUploadResponse>(API.convenios.upload(companyId), {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export function confirmConvenioUpload(companyId: string, data: ConfirmUploadInput): Promise<Convenio> {
+  return apiFetch<Convenio>(API.convenios.confirmUpload(companyId), {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export function deleteUploadedFile(companyId: string, filename: string): Promise<void> {
+  return apiFetch<void>(API.convenios.deleteUploadedFile(companyId, filename), {
     method: 'DELETE',
   });
 }
