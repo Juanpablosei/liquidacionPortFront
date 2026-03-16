@@ -1,17 +1,18 @@
 import { apiFetch } from './client';
 import { toArray, unwrapObject } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
-import type { PayrollConcept } from '@/lib/types/payroll';
+import type { PayrollConcept, FormulaValidationResult } from '@/lib/types/payroll';
 
 export interface CreateConceptDto {
   code:         string;
   name:         string;
   category:     'EARNING' | 'DEDUCTION';
-  calcType:     'FIXED' | 'PERCENT' | 'HOURLY' | 'MANUAL';
+  calcType:     'FIXED' | 'PERCENT' | 'HOURLY' | 'MANUAL' | 'FORMULA';
   fixedAmount?: string;
   percentValue?: string;
   percentBase?: 'BASIC' | 'GROSS';
   hourlyRate?:  string;
+  formula?:     string;
   sortOrder?:   number;
 }
 
@@ -37,4 +38,11 @@ export function updateConcept(companyId: string, id: string, data: UpdateConcept
 
 export function deleteConcept(companyId: string, id: string): Promise<void> {
   return apiFetch<void>(API.concepts.delete(companyId, id), { method: 'DELETE' });
+}
+
+export function validateFormula(companyId: string, formula: string): Promise<FormulaValidationResult> {
+  return apiFetch<FormulaValidationResult>(API.concepts.validateFormula(companyId), {
+    method: 'POST',
+    body:   JSON.stringify({ formula }),
+  });
 }

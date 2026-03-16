@@ -10,11 +10,12 @@ export function conceptSchema(v: V) {
     code:         z.string().min(1, v.codeRequired).max(20).regex(codeRegex, v.codeFormat).transform((val) => val.toUpperCase()),
     name:         z.string().min(1, v.nameRequired).max(100),
     category:     z.enum(['EARNING', 'DEDUCTION']),
-    calcType:     z.enum(['FIXED', 'PERCENT', 'HOURLY', 'MANUAL']),
+    calcType:     z.enum(['FIXED', 'PERCENT', 'HOURLY', 'MANUAL', 'FORMULA']),
     fixedAmount:  z.string().optional().refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), v.numberMin0),
     percentValue: z.string().optional().refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0 && parseFloat(val) <= 100), v.percentRange),
     percentBase:  z.enum(['BASIC', 'GROSS']).optional(),
     hourlyRate:   z.string().optional().refine((val) => !val || (!isNaN(parseFloat(val)) && parseFloat(val) >= 0), v.numberMin0),
+    formula:      z.string().max(500).optional(),
     sortOrder:    z.string().optional().refine((val) => !val || (!isNaN(parseInt(val)) && parseInt(val) >= 0), v.integerMin0),
   });
 }

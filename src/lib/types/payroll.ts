@@ -1,4 +1,4 @@
-export type ConceptCalcType  = 'FIXED' | 'PERCENT' | 'HOURLY' | 'MANUAL';
+export type ConceptCalcType  = 'FIXED' | 'PERCENT' | 'HOURLY' | 'MANUAL' | 'FORMULA';
 export type ConceptCategory  = 'EARNING' | 'DEDUCTION';
 export type PercentBase      = 'BASIC' | 'GROSS';
 export type PayrollPeriodType = 'MONTHLY' | 'BIWEEKLY' | 'WEEKLY' | 'CUSTOM';
@@ -15,10 +15,17 @@ export interface PayrollConcept {
   percentValue: string | null;
   percentBase:  PercentBase;
   hourlyRate:   string | null;
+  formula:      string | null;
   isActive:     boolean;
   sortOrder:    number;
   createdAt:    string;
   updatedAt:    string;
+}
+
+export interface FormulaValidationResult {
+  valid:    boolean;
+  preview?: number;
+  error?:   string;
 }
 
 export interface PayrollPeriod {

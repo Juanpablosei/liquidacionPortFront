@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/utils/toast';
 import { type ColumnDef } from '@tanstack/react-table';
-import { Plus, Pencil, Trash2, Hash, TrendingUp, Clock, Sliders, Tags } from 'lucide-react';
+import { Plus, Pencil, Trash2, Hash, TrendingUp, Clock, Sliders, Tags, FunctionSquare } from 'lucide-react';
 import { listConcepts, createConcept, updateConcept, deleteConcept } from '@/lib/api/concepts';
 import { conceptSchema, type ConceptInput } from '@/lib/validators/concept';
 import { ROUTES } from '@/lib/constants/routes';
@@ -26,6 +26,7 @@ import {
   SheetFooter,
 } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
+import { FormulaEditor } from '@/components/concepts/formula-editor';
 import type { PayrollConcept, ConceptCalcType } from '@/lib/types/payroll';
 
 const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
@@ -43,6 +44,8 @@ function formatAmount(concept: PayrollConcept, locale: string): string {
       return concept.hourlyRate ? `${nf.format(Number(concept.hourlyRate))}/h` : '—';
     case 'MANUAL':
       return '—';
+    case 'FORMULA':
+      return concept.formula ? `ƒ(x)` : '—';
   }
 }
 
@@ -57,6 +60,7 @@ export default function ConceptsPage() {
     PERCENT: { label: t.concepts.percent,  icon: <TrendingUp className="w-3 h-3" />, color: 'text-violet-400' },
     HOURLY:  { label: t.concepts.hourly,   icon: <Clock  className="w-3 h-3" />, color: 'text-cyan-400' },
     MANUAL:  { label: t.concepts.manual,   icon: <Sliders className="w-3 h-3" />, color: 'text-slate-400' },
+    FORMULA: { label: t.concepts.formula,  icon: <FunctionSquare className="w-3 h-3" />, color: 'text-amber-400' },
   };
 
   const [concepts,    setConcepts]    = useState<PayrollConcept[]>([]);
@@ -97,6 +101,7 @@ export default function ConceptsPage() {
       percentValue: '',
       percentBase:  'BASIC',
       hourlyRate:   '',
+      formula:      '',
       sortOrder:    '0',
     });
     setSheetOpen(true);
@@ -113,6 +118,7 @@ export default function ConceptsPage() {
       percentValue: item.percentValue ?? '',
       percentBase:  item.percentBase,
       hourlyRate:   item.hourlyRate   ?? '',
+      formula:      item.formula      ?? '',
       sortOrder:    String(item.sortOrder),
     });
     setSheetOpen(true);
@@ -131,6 +137,7 @@ export default function ConceptsPage() {
         percentValue: data.calcType === 'PERCENT' ? data.percentValue || undefined : undefined,
         percentBase:  data.calcType === 'PERCENT' ? data.percentBase              : undefined,
         hourlyRate:   data.calcType === 'HOURLY'  ? data.hourlyRate   || undefined : undefined,
+        formula:      data.calcType === 'FORMULA' ? data.formula       || undefined : undefined,
       };
 
       if (editItem) {
@@ -412,7 +419,7 @@ export default function ConceptsPage() {
             {/* Tipo de calculo */}
             <FormField label={t.concepts.calcTypeLabel} name="calcType" error={errors.calcType?.message} required>
               <div className="grid grid-cols-2 gap-2">
-                {(['FIXED', 'PERCENT', 'HOURLY', 'MANUAL'] as const).map((type) => {
+                {(['FIXED', 'PERCENT', 'HOURLY', 'MANUAL', 'FORMULA'] as const).map((type) => {
                   const cfg = calcTypeConfig[type];
                   return (
                     <button
@@ -502,6 +509,17 @@ export default function ConceptsPage() {
                   {t.concepts.manualNote}
                 </p>
               </div>
+            )}
+
+            {watchedCalcType === 'FORMULA' && (
+              <FormField label={t.concepts.formulaLabel} name="formula" error={errors.formula?.message} required>
+                <FormulaEditor
+                  companyId={companyId}
+                  value={watch('formula') ?? ''}
+                  onChange={(v) => setValue('formula', v, { shouldValidate: true })}
+                  error={errors.formula?.message}
+                />
+              </FormField>
             )}
 
             <SheetFooter className="px-0 mt-2 flex-row gap-2">

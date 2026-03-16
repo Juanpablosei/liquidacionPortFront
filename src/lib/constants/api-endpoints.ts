@@ -67,7 +67,8 @@ export const API = {
     detail: (cid: string, id: string) => `/companies/${cid}/concepts/${id}`,
     create: (cid: string) => `/companies/${cid}/concepts`,
     update: (cid: string, id: string) => `/companies/${cid}/concepts/${id}`,
-    delete: (cid: string, id: string) => `/companies/${cid}/concepts/${id}`,
+    delete:          (cid: string, id: string) => `/companies/${cid}/concepts/${id}`,
+    validateFormula: (cid: string) => `/companies/${cid}/concepts/validate-formula`,
   },
   payroll: {
     periods:   (cid: string) => `/companies/${cid}/payroll/periods`,
