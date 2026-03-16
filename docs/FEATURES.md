@@ -283,8 +283,11 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 | GET | `/companies/:cid/payroll/runs` | Listar corridas |
 | POST | `/companies/:cid/payroll/runs` | Crear corrida |
 | GET | `/companies/:cid/payroll/runs/:rid` | Detalle |
-| POST | `/companies/:cid/payroll/runs/:rid/calculate` | Calcular nomina |
+| POST | `/companies/:cid/payroll/runs/:rid/calculate` | **Async**: encola cálculo en BullMQ → responde 202 con `{ jobId, status: 'QUEUED' }` |
+| GET | `/companies/:cid/payroll/runs/:rid/job-status` | Polling del estado del job: `waiting \| active \| completed \| failed` |
 | POST | `/companies/:cid/payroll/runs/:rid/close` | Cerrar corrida (irreversible) |
+
+> **Cambio importante (async):** `POST /calculate` ya no bloquea hasta que termina. Responde de inmediato con 202. El frontend debe hacer polling a `/job-status` para saber cuándo terminó. Ver Notas más abajo.
 
 #### Endpoints — Payslips (Cross-Run)
 | Metodo | Ruta | Descripcion |
@@ -309,6 +312,27 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 - `src/lib/types/payroll.ts`
 - `src/app/(dashboard)/companies/[companyId]/payroll/page.tsx`
 - `src/app/(dashboard)/companies/[companyId]/payroll/runs/[runId]/page.tsx`
+
+#### Notas — Cálculo async (BullMQ)
+
+El cálculo de nómina es asíncrono via Redis/BullMQ. El flujo recomendado para el frontend:
+
+1. Llamar `POST /calculate` → guardar el `jobId` de la respuesta 202
+2. Iniciar polling a `GET /job-status` cada 2-3 segundos
+3. Mostrar un indicador de progreso/spinner mientras `status` sea `waiting` o `active`
+4. Cuando `status = completed` → recargar el detalle del run y mostrar los payslips
+5. Cuando `status = failed` → mostrar `failedReason` como mensaje de error al usuario
+6. Detener el polling al llegar a `completed` o `failed`
+
+**Response de `/job-status`:**
+```typescript
+interface JobStatusResponse {
+  jobId: string;
+  status: 'waiting' | 'active' | 'completed' | 'failed';
+  progress: number;       // 0-100 (reservado, siempre 0 por ahora)
+  failedReason: string | null;
+}
+```
 
 ---
 
@@ -596,6 +620,204 @@ viewer@nomina.app / Password123!      → SUPER_VIEWER (solo lectura)
 
 ---
 
+### 15. Audit Logs
+**Status**: Listo
+**Rol minimo**: OWNER / ADMIN (empresa) | SUPER_ADMIN / SUPER_VIEWER (admin)
+
+#### Endpoints
+| Metodo | Ruta | Body | Response |
+|--------|------|------|----------|
+| GET | `/companies/:cid/audit-logs` | — | PaginatedResponse\<AuditLog\> |
+| GET | `/admin/audit-logs` | — | PaginatedResponse\<AuditLog\> |
+
+#### Query params
+| Param | Tipo | Descripcion |
+|-------|------|-------------|
+| `page` | number | Pagina (default: 1) |
+| `limit` | number | Items por pagina (default: 20, max: 100) |
+| `action` | string | Filtrar por accion (e.g. `ROLE_CHANGE`, `EMPLOYEE_TERMINATE`) |
+| `entity` | string | Filtrar por entidad (e.g. `Employee`, `CompanyUser`) |
+| `userId` | UUID | Filtrar por usuario que realizo la accion |
+| `fromDate` | date | Fecha desde (inclusive) |
+| `toDate` | date | Fecha hasta (inclusive) |
+
+#### Reglas de negocio
+- El endpoint company-scoped solo devuelve logs de esa empresa
+- El endpoint admin devuelve logs de todas las empresas
+- Cada log incluye: id, userId, companyId, action, entity, entityId, details (JSON), ip, userAgent, createdAt
+- Los logs se generan automaticamente al ejecutar acciones sensibles (cambio de rol, baja de empleado, liquidacion, payroll, etc.)
+
+#### Frontend Files
+- `src/lib/types/audit-log.ts`
+- `src/lib/api/audit-logs.ts`
+- `src/app/(dashboard)/companies/[companyId]/audit-logs/page.tsx`
+
+---
+
+---
+
+### 16. Sindicatos (Unions)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN (CRUD)
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/unions/dashboard` | Dashboard: totales, costos, distribución por sindicato |
+| GET | `/companies/:cid/unions` | Listar sindicatos (paginado, filtros: search, isActive) |
+| GET | `/companies/:cid/unions/:id` | Detalle con conteo de miembros activos |
+| POST | `/companies/:cid/unions` | Crear sindicato |
+| PATCH | `/companies/:cid/unions/:id` | Editar sindicato |
+| DELETE | `/companies/:cid/unions/:id` | Soft delete (isActive=false) |
+| GET | `/companies/:cid/unions/:id/members` | Listar afiliados (paginado, filtro: activeOnly) |
+| POST | `/companies/:cid/unions/:id/members` | Afiliar empleado |
+| PATCH | `/companies/:cid/unions/:id/members/:mid` | Desafiliar miembro (setear endDate) |
+
+#### Reglas de negocio
+- Las cuotas se descuentan automáticamente en cada liquidación
+- `PERCENTAGE`: `básico × duesValue / 100`; `FIXED_AMOUNT`: monto fijo
+- El `conceptCode` en el payslip tiene formato `CUOTA_SINDICAL_{union.code}`
+- Un empleado puede estar afiliado a más de un sindicato simultáneamente
+- Soft delete de sindicato previene descuentos futuros pero conserva historial
+
+#### Frontend Files sugeridos
+- `src/lib/api/unions.ts`
+- `src/lib/types/union.ts`
+- `src/app/(dashboard)/companies/[companyId]/unions/page.tsx`
+- `src/app/(dashboard)/companies/[companyId]/unions/[unionId]/page.tsx`
+- `src/app/(dashboard)/companies/[companyId]/unions/[unionId]/members/page.tsx`
+
+---
+
+### 17. Convenios — Subida con IA
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: OWNER/ADMIN
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/convenios/upload` | Subir PDF → extracción con IA → devuelve items (no crea convenio) |
+| POST | `/companies/:cid/convenios/confirm-upload` | Confirmar items revisados → crea convenio definitivo |
+| DELETE | `/companies/:cid/convenios/uploaded-file/:filename` | Borrar PDF si el contador cancela |
+
+#### Flujo
+1. Usuario sube PDF → el servidor llama a Claude API → devuelve datos extraídos con `confidence` (0-1)
+2. Contador revisa/edita los datos en el frontend
+3. Contador aprueba → se llama confirm-upload → convenio creado
+4. Si cancela → DELETE para limpiar el PDF del servidor
+
+#### Reglas de negocio
+- `confidence < 0.7`: mostrar advertencia de baja confianza en la extracción
+- `sourceFile` retornado por el upload debe enviarse exactamente igual en confirm-upload
+- El convenio se crea con `status: ACTIVE` y los campos `validFrom`/`validTo` opcionales
+- `rawNotes`: mostrar en sección colapsable con observaciones adicionales de la IA
+
+#### Frontend Files sugeridos
+- `src/lib/api/convenios.ts` (agregar uploadConvenio, confirmUpload, deleteUploadedFile)
+- `src/app/(dashboard)/companies/[companyId]/convenios/upload/page.tsx`
+
+---
+
+### 18. Convenios — Alertas de Vencimiento
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: OWNER/ADMIN
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/convenios/expiring` | Convenios que vencen en los próximos 30 días |
+| GET | `/companies/:cid/convenios?includeExpired=true` | Listado incluyendo convenios EXPIRED |
+
+#### Reglas de negocio
+- Cron automático (8 AM diario) envía emails a OWNER/ADMIN en ventanas de 30, 15 y 7 días antes del vencimiento
+- `daysRemaining` viene calculado en cada item del endpoint `/expiring`
+- Convenios con `validTo < hoy` se marcan automáticamente `EXPIRED`
+- El listado general solo devuelve `ACTIVE` por defecto (usar `?includeExpired=true` para ver todos)
+
+#### Frontend Files sugeridos
+- `src/lib/api/convenios.ts` (agregar getExpiringConvenios)
+- `src/app/(dashboard)/companies/[companyId]/convenios/page.tsx` (panel de alertas de vencimiento)
+
+---
+
+### 19. Conceptos — Fórmulas Personalizadas (FORMULA)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: OWNER/ADMIN
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/concepts/validate-formula` | Validar y previsualizar una fórmula antes de guardarla |
+| POST | `/companies/:cid/concepts` (con `calcType: 'FORMULA'`) | Crear concepto tipo fórmula |
+| PATCH | `/companies/:cid/concepts/:id` | Editar fórmula de un concepto |
+
+#### Variables disponibles
+`BASICO`, `BRUTO`, `HORAS_TRABAJADAS`, `VALOR_HORA`, `ANTIGUEDAD_ANOS`, `DIAS_TRABAJADOS`, `PRESENTISMO`, `HORAS_EXTRA_50`, `HORAS_EXTRA_100`
+
+#### Reglas de negocio
+- El endpoint `validate-formula` siempre devuelve HTTP 200; la validez se determina por el campo `valid` del body
+- Si `valid: true`, el campo `preview` contiene el resultado con valores de prueba
+- Si `valid: false`, el campo `error` describe el problema (variable no permitida, sintaxis inválida, etc.)
+- Fórmulas vacías o con variables fuera de whitelist son rechazadas al guardar el concepto
+- Máximo 500 caracteres por fórmula
+
+#### Frontend Files sugeridos
+- `src/lib/api/concepts.ts` (agregar validateFormula)
+- `src/app/(dashboard)/companies/[companyId]/concepts/page.tsx` (editor de fórmulas con preview en tiempo real)
+- `src/components/concepts/formula-editor.tsx`
+
+---
+
+### 20. Auditoría Global (AuditInterceptor)
+**Status**: Backend listo | Frontend sin cambios requeridos
+**Rol minimo**: OWNER/ADMIN (empresa), SUPER_ADMIN/SUPER_VIEWER (admin)
+
+#### Endpoints (sin cambios)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/audit-logs` | Logs de la empresa (paginado) |
+| GET | `/admin/audit-logs` | Logs de todas las empresas (paginado) |
+
+#### Cambio importante en backend
+Antes solo 9 endpoints generaban logs. Ahora el `AuditInterceptor` global registra **todas** las mutaciones automáticamente (POST, PATCH, PUT, DELETE). Los logs ahora cubren:
+- Sindicatos (unions)
+- Afiliaciones (memberships)
+- Convenios (subida, confirmación, categorías)
+- Conceptos (incluyendo fórmulas)
+- Liquidaciones, nómina, empleados, miembros (ampliado)
+
+El visor de logs del frontend puede mostrar las nuevas entidades: `unions`, `convenios`, `concepts`, `members`.
+
+#### Nuevas entidades disponibles como filtro `entity`
+`unions`, `convenio-categories`, `concepts`, `attendance`, `overtime`, `holidays`
+
+---
+
+### 21. Redis / BullMQ — Infraestructura async
+**Status**: Backend listo | Frontend requiere cambios en Payroll
+**Rol minimo**: N/A (infraestructura)
+
+#### Cambios que impactan al frontend
+
+| Area | Cambio | Accion requerida |
+|------|--------|-----------------|
+| Nómina: calcular | `POST /calculate` ahora devuelve 202 en lugar de 200 | Implementar polling con `/job-status` |
+| Nómina: estado | Nuevo endpoint `GET /job-status` | Ver sección 10 (Payroll) para el flujo completo |
+| Health check | `GET /health` ahora incluye `redis: { status: 'up' \| 'down' }` | Opcional: mostrar en panel de estado |
+
+#### Comportamiento si Redis no está disponible
+
+Si el backend no tiene Redis configurado o Redis cae:
+- `POST /calculate` devuelve **503 Service Unavailable** (en lugar de 202)
+- El frontend debe manejar el 503 y mostrar un mensaje: "El servicio de cálculo no está disponible temporalmente. Intentá de nuevo en unos minutos."
+
+#### Frontend Files a modificar
+- `src/lib/api/payroll.ts` — actualizar `calculatePayroll` para manejar 202 + agregar `getJobStatus`
+- `src/lib/types/payroll.ts` — agregar `JobStatusResponse`
+- `src/app/(dashboard)/companies/[companyId]/payroll/runs/[runId]/page.tsx` — implementar polling con indicador de progreso
+
+---
+
 ## Features Futuras (Pendientes de Backend)
 
 <!-- Cuando el backend implemente algo nuevo, agregar aca con el template -->
@@ -605,11 +827,6 @@ viewer@nomina.app / Password123!      → SUPER_VIEWER (solo lectura)
 **Endpoints esperados**: TBD
 **Frontend Files**: TBD
 
-### Auditoria / Logs (viewer)
-**Status**: Pendiente
-**Nota**: El backend ya registra audit logs internamente (tabla AuditLog). Falta crear endpoints para consultarlos.
-**Endpoints esperados**: TBD
-**Frontend Files**: TBD
 
 ### Documentos
 **Status**: Pendiente
