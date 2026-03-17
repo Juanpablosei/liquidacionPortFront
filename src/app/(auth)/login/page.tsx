@@ -37,7 +37,10 @@ export default function LoginPage() {
         sessionStorage.setItem('_tmp_pwd', data.password);
       }
       loginStore(res.user, res.accessToken, res.refreshToken, res.mustChangePassword);
-      router.push(ROUTES.companies);
+
+      const isSuperAdmin =
+        res.user.systemRole === 'SUPER_ADMIN' || res.user.systemRole === 'SUPER_VIEWER';
+      router.push(isSuperAdmin ? ROUTES.admin : ROUTES.companies);
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.status === 401) {
