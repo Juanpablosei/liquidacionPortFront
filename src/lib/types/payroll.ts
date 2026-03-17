@@ -95,3 +95,15 @@ export interface PayslipLine {
   category:    ConceptCategory;
   amount:      string;
 }
+
+export interface CalculateRunResponse {
+  jobId: string;
+  status: string;
+}
+
+export interface JobStatusResponse {
+  jobId: string;
+  status: 'waiting' | 'active' | 'completed' | 'failed';
+  progress: number;
+  failedReason: string | null;
+}

@@ -13,15 +13,20 @@ import {
   exportPayslipsPdf,
   exportPayslipPdf,
   getPayslipSignatures,
+  getJobStatus,
 } from '@/lib/api/payroll';
+import { ApiRequestError } from '@/lib/api/client';
 import { downloadBlob } from './payslip-columns';
 import type { PayrollRun, Payslip, SignaturesSummary } from '@/lib/types/payroll';
 
 interface RunLabels {
   loadError: string;
   calcCompleted: string;
+  calcQueued: string;
+  calcFailed: string;
   calculating: string;
   calcError: string;
+  serviceUnavailable: string;
   runClosed: string;
   closeError: string;
   exportError: string;
@@ -46,6 +51,7 @@ export function useRunActions(companyId: string, runId: string, labels: RunLabel
   const [signatures,    setSignatures]    = useState<SignaturesSummary | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isDownloadingSlipPdf, setIsDownloadingSlipPdf] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -89,39 +95,65 @@ export function useRunActions(companyId: string, runId: string, labels: RunLabel
       .finally(() => setIsLoading(false));
   }, [companyId, runId, loadRun, loadPayslips, loadSignatures]);
 
-  // Polling when RUNNING
+  // Polling job status when calculating
   useEffect(() => {
-    if (run?.status === 'RUNNING') {
-      pollRef.current = setInterval(async () => {
+    if (!companyId || !runId) return;
+    const shouldPoll = jobId || run?.status === 'RUNNING';
+    if (!shouldPoll) return;
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const job = await getJobStatus(companyId, runId);
+        if (job.status === 'completed') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
+          await loadRun();
+          await loadPayslips();
+          await loadSignatures();
+          toast.success(labels.calcCompleted);
+        } else if (job.status === 'failed') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
+          await loadRun();
+          toast.error(`${labels.calcFailed}: ${job.failedReason ?? ''}`);
+        }
+      } catch {
+        // Fallback: check run status directly
         const updated = await loadRun();
         if (updated && updated.status !== 'RUNNING') {
           if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
           loadPayslips();
           loadSignatures();
           toast.success(labels.calcCompleted);
         }
-      }, 3000);
-    } else {
-      if (pollRef.current) clearInterval(pollRef.current);
-    }
+      }
+    }, 3000);
+
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [run?.status, loadRun, loadPayslips, loadSignatures, labels.calcCompleted]);
+  }, [jobId, run?.status, companyId, runId, loadRun, loadPayslips, loadSignatures, labels.calcCompleted, labels.calcFailed]);
 
   /* ── Action handlers ──────────────────────────────────────────────────── */
 
   async function handleCalculate() {
     setIsCalculating(true);
     try {
-      const updated = await calculateRun(companyId, runId);
-      setRun(updated);
-      if (updated.status === 'COMPLETED' || updated.status === 'CLOSED') {
+      const result = await calculateRun(companyId, runId);
+      if (result.jobId) {
+        setJobId(result.jobId);
+        setRun((prev) => prev ? { ...prev, status: 'RUNNING' } : prev);
+        toast.success(labels.calcQueued);
+      } else {
+        await loadRun();
         await loadPayslips();
         toast.success(labels.calcCompleted);
-      } else {
-        toast.success(labels.calculating);
       }
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? labels.calcError);
+      if (err instanceof ApiRequestError && err.status === 503) {
+        toast.error(labels.serviceUnavailable);
+      } else {
+        toast.error((err as Error).message ?? labels.calcError);
+      }
     } finally {
       setIsCalculating(false);
     }
@@ -210,7 +242,7 @@ export function useRunActions(companyId: string, runId: string, labels: RunLabel
 
   return {
     // State
-    run, payslips, isLoading, isCalculating, isClosing, isExporting,
+    run, payslips, isLoading, isCalculating, isClosing, isExporting, jobId,
     closeConfirm, setCloseConfirm, selectedSlip, setSelectedSlip,
     slipLoading, editingLine, setEditingLine, editValue, setEditValue,
     isSavingLine, signatures, isExportingPdf, isDownloadingSlipPdf,

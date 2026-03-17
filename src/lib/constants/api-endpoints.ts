@@ -76,6 +76,7 @@ export const API = {
     runs:      (cid: string) => `/companies/${cid}/payroll/runs`,
     run:       (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}`,
     calculate: (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/calculate`,
+    jobStatus: (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/job-status`,
     close:     (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/close`,
     payslips:  (cid: string, rid: string) => `/companies/${cid}/payroll/runs/${rid}/payslips`,
     payslip:   (cid: string, rid: string, pid: string) => `/companies/${cid}/payroll/runs/${rid}/payslips/${pid}`,

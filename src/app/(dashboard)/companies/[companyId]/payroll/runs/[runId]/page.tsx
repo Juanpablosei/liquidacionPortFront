@@ -19,7 +19,9 @@ import {
   exportPayslipsPdf,
   exportPayslipPdf,
   getPayslipSignatures,
+  getJobStatus,
 } from '@/lib/api/payroll';
+import { ApiRequestError } from '@/lib/api/client';
 import { ROUTES } from '@/lib/constants/routes';
 import { useTranslation, useLocaleId } from '@/lib/i18n';
 import { PageHeader }    from '@/components/shared/page-header';
@@ -67,6 +69,7 @@ export default function RunDetailPage() {
   const [signatures,    setSignatures]     = useState<SignaturesSummary | null>(null);
   const [isExportingPdf, setIsExportingPdf] = useState(false);
   const [isDownloadingSlipPdf, setIsDownloadingSlipPdf] = useState(false);
+  const [jobId, setJobId] = useState<string | null>(null);
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -110,39 +113,67 @@ export default function RunDetailPage() {
       .finally(() => setIsLoading(false));
   }, [companyId, runId, loadRun, loadPayslips, loadSignatures]);
 
-  // Polling when RUNNING
+  // Polling job status when calculating
   useEffect(() => {
-    if (run?.status === 'RUNNING') {
-      pollRef.current = setInterval(async () => {
+    if (!companyId || !runId) return;
+    const shouldPoll = jobId || run?.status === 'RUNNING';
+    if (!shouldPoll) return;
+
+    pollRef.current = setInterval(async () => {
+      try {
+        const job = await getJobStatus(companyId, runId);
+        if (job.status === 'completed') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
+          await loadRun();
+          await loadPayslips();
+          await loadSignatures();
+          toast.success(t.payroll.runDetail.calcCompleted);
+        } else if (job.status === 'failed') {
+          if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
+          await loadRun();
+          toast.error(`${t.payroll.runDetail.calcFailed}: ${job.failedReason ?? ''}`);
+        }
+      } catch {
+        // If job-status endpoint fails, fall back to checking run status
         const updated = await loadRun();
         if (updated && updated.status !== 'RUNNING') {
           if (pollRef.current) clearInterval(pollRef.current);
+          setJobId(null);
           loadPayslips();
           loadSignatures();
           toast.success(t.payroll.runDetail.calcCompleted);
         }
-      }, 3000);
-    } else {
-      if (pollRef.current) clearInterval(pollRef.current);
-    }
+      }
+    }, 3000);
+
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
-  }, [run?.status, loadRun, loadPayslips, loadSignatures, t.payroll.runDetail.calcCompleted]);
+  }, [jobId, run?.status, companyId, runId, loadRun, loadPayslips, loadSignatures, t.payroll.runDetail.calcCompleted, t.payroll.runDetail.calcFailed]);
 
   /* ── Action handlers ──────────────────────────────────────────────────── */
 
   async function handleCalculate() {
     setIsCalculating(true);
     try {
-      const updated = await calculateRun(companyId, runId);
-      setRun(updated);
-      if (updated.status === 'COMPLETED' || updated.status === 'CLOSED') {
+      const result = await calculateRun(companyId, runId);
+      // Async response: save jobId to trigger polling
+      if (result.jobId) {
+        setJobId(result.jobId);
+        setRun((prev) => prev ? { ...prev, status: 'RUNNING' } : prev);
+        toast.success(t.payroll.runDetail.calcQueued);
+      } else {
+        // Fallback: sync response (shouldn't happen with new backend)
+        await loadRun();
         await loadPayslips();
         toast.success(t.payroll.runDetail.calcCompleted);
-      } else {
-        toast.success(t.payroll.runDetail.calculating);
       }
     } catch (err: unknown) {
-      toast.error((err as Error).message ?? t.payroll.runDetail.calcError);
+      if (err instanceof ApiRequestError && err.status === 503) {
+        toast.error(t.payroll.runDetail.serviceUnavailable);
+      } else {
+        toast.error((err as Error).message ?? t.payroll.runDetail.calcError);
+      }
     } finally {
       setIsCalculating(false);
     }
@@ -276,7 +307,7 @@ export default function RunDetailPage() {
         actions={run && (
           <HeaderActions
             run={run} isDraft={isDraft} isCompleted={isCompleted} isClosed={isClosed}
-            isCalculating={isCalculating} isClosing={isClosing} isExporting={isExporting} isExportingPdf={isExportingPdf}
+            isCalculating={isCalculating || isRunning || !!jobId} isClosing={isClosing} isExporting={isExporting} isExportingPdf={isExportingPdf}
             canEdit={canEdit()} onCalculate={handleCalculate} onClose={() => setCloseConfirm(true)} onExport={handleExport} onExportPdf={handleExportPdf}
             labels={{
               calculating: t.payroll.runDetail.calculating,
@@ -292,7 +323,7 @@ export default function RunDetailPage() {
       />
 
       {/* RUNNING banner */}
-      {isRunning && (
+      {(isRunning || jobId) && (
         <div className="flex items-center gap-3 mb-6 px-4 py-3 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
           <Loader2 className="w-4 h-4 text-yellow-400 motion-safe:animate-spin shrink-0" />
           <p className="text-sm text-yellow-300">{t.payroll.runDetail.pollingMsg}</p>

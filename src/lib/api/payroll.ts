@@ -8,6 +8,8 @@ import type {
   PayslipLine,
   PayrollPeriodType,
   SignaturesSummary,
+  CalculateRunResponse,
+  JobStatusResponse,
 } from '@/lib/types/payroll';
 import type { PaginatedResponse } from '@/lib/types/api';
 
@@ -59,10 +61,16 @@ export function getRun(companyId: string, runId: string): Promise<PayrollRun> {
   return apiFetch<unknown>(API.payroll.run(companyId, runId)).then((r) => unwrapObject<PayrollRun>(r, 'id'));
 }
 
-export function calculateRun(companyId: string, runId: string): Promise<PayrollRun> {
+export function calculateRun(companyId: string, runId: string): Promise<CalculateRunResponse> {
   return apiFetch<unknown>(API.payroll.calculate(companyId, runId), {
     method: 'POST',
-  }).then((r) => unwrapObject<PayrollRun>(r, 'id'));
+  }).then((r) => unwrapObject<CalculateRunResponse>(r, 'jobId'));
+}
+
+export function getJobStatus(companyId: string, runId: string): Promise<JobStatusResponse> {
+  return apiFetch<unknown>(API.payroll.jobStatus(companyId, runId)).then(
+    (r) => unwrapObject<JobStatusResponse>(r, 'jobId'),
+  );
 }
 
 export function closeRun(companyId: string, runId: string): Promise<PayrollRun> {
