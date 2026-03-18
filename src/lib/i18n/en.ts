@@ -115,6 +115,7 @@ const en: Translations = {
     adminPlans:    'Plans',
     adminSubs:     'Subscriptions',
     adminCompanies:'Companies',
+    adminBackups:  'Backups',
   },
 
   // ─── Header ──────────────────────────────────────────────────────────────────
@@ -1300,6 +1301,21 @@ const en: Translations = {
     paymentCreated:      'Payment recorded successfully.',
     paymentDeleted:      'Payment deleted successfully.',
     paymentAmount:       'Amount',
+    // Backups
+    backups: {
+      title:          'Backups',
+      description:    'Automatic and manual database backups.',
+      createManual:   'Create manual backup',
+      creating:       'Creating backup...',
+      created:        'Backup created successfully.',
+      createError:    'Failed to create backup.',
+      loadError:      'Failed to load backups.',
+      noBackups:      'No backups available.',
+      noBackupsDesc:  'Automatic backups will appear here.',
+      filename:       'Filename',
+      size:           'Size',
+      lastModified:   'Last modified',
+    },
   },
 
   // ─── API Errors ─────────────────────────────────────────────────────────────

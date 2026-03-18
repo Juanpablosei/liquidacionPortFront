@@ -104,3 +104,11 @@ export interface DashboardMetrics {
   recentPayments: Array<Payment & { subscription: { company: { id: string; name: string } } }>;
   expiringSoon:   Array<Subscription & { company: { id: string; name: string }; plan: SubscriptionPlan }>;
 }
+
+// ─── Backup ─────────────────────────────────────────────────────────────────
+
+export interface BackupFile {
+  filename: string;
+  size: number;
+  lastModified: string;
+}

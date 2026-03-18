@@ -138,6 +138,7 @@ export const API = {
     subscription:  (id: string) => `/admin/subscriptions/${id}`,
     payments:      (subId: string) => `/admin/subscriptions/${subId}/payments`,
     payment:       (subId: string, payId: string) => `/admin/subscriptions/${subId}/payments/${payId}`,
+    backups:       '/admin/backups',
   },
   companySubscription: {
     detail:   (cid: string) => `/companies/${cid}/subscription`,

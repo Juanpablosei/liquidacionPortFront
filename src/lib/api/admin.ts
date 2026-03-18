@@ -6,6 +6,7 @@ import type {
   Payment,
   DashboardMetrics,
   AdminCompany,
+  BackupFile,
 } from '@/lib/types/admin';
 import type { PaginatedResponse } from '@/lib/types/api';
 import type {
@@ -137,4 +138,14 @@ export function getCompanySubscription(companyId: string): Promise<Subscription 
 
 export function getCompanyPayments(companyId: string): Promise<Payment[]> {
   return apiFetch<Payment[]>(API.companySubscription.payments(companyId));
+}
+
+// ─── Backups ─────────────────────────────────────────────────────────────────
+
+export function listBackups(): Promise<BackupFile[]> {
+  return apiFetch<BackupFile[]>(API.admin.backups);
+}
+
+export function createManualBackup(): Promise<BackupFile> {
+  return apiFetch<BackupFile>(API.admin.backups, { method: 'POST' });
 }

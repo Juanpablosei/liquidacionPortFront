@@ -24,6 +24,7 @@ import {
   ScrollText,
   ClipboardList,
   Handshake,
+  HardDrive,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -104,6 +105,7 @@ export function Sidebar() {
     { href: ROUTES.adminPlans,         icon: CreditCard,      label: t.sidebar.adminPlans },
     { href: ROUTES.adminSubscriptions, icon: ScrollText,      label: t.sidebar.adminSubs },
     { href: ROUTES.adminCompanies,     icon: Building2,       label: t.sidebar.adminCompanies },
+    { href: ROUTES.adminBackups,       icon: HardDrive,       label: t.sidebar.adminBackups },
   ];
 
   const mainNav: NavItemDef[] = (isSuperAdmin && isOnAdminRoute) ? adminPanelNav : companyId ? [

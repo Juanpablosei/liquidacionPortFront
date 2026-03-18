@@ -113,6 +113,7 @@ const es = {
     adminPlans:    'Planes',
     adminSubs:     'Suscripciones',
     adminCompanies:'Empresas',
+    adminBackups:  'Backups',
   },
 
   // ─── Header ──────────────────────────────────────────────────────────────────
@@ -1298,6 +1299,21 @@ const es = {
     paymentCreated:      'Pago registrado correctamente.',
     paymentDeleted:      'Pago eliminado correctamente.',
     paymentAmount:       'Monto',
+    // Backups
+    backups: {
+      title:          'Backups',
+      description:    'Backups automáticos y manuales de la base de datos.',
+      createManual:   'Crear backup manual',
+      creating:       'Creando backup...',
+      created:        'Backup creado exitosamente.',
+      createError:    'Error al crear el backup.',
+      loadError:      'Error al cargar los backups.',
+      noBackups:      'No hay backups disponibles.',
+      noBackupsDesc:  'Los backups automáticos aparecerán aquí.',
+      filename:       'Nombre del archivo',
+      size:           'Tamaño',
+      lastModified:   'Última modificación',
+    },
   },
 
   // ─── API Errors ─────────────────────────────────────────────────────────────
