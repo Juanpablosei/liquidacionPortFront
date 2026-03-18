@@ -115,6 +115,7 @@ export function Sidebar() {
     { href: ROUTES.adminPlans,         icon: CreditCard,      label: t.sidebar.adminPlans },
     { href: ROUTES.adminSubscriptions, icon: ScrollText,      label: t.sidebar.adminSubs },
     { href: ROUTES.adminCompanies,     icon: Building2,       label: t.sidebar.adminCompanies },
+    { href: ROUTES.adminPaymentProofs, icon: FileText,        label: t.sidebar.adminPaymentProofs },
     { href: ROUTES.adminBackups,       icon: HardDrive,       label: t.sidebar.adminBackups },
   ];
 

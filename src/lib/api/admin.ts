@@ -7,6 +7,7 @@ import type {
   DashboardMetrics,
   AdminCompany,
   BackupFile,
+  AdminPaymentProof,
 } from '@/lib/types/admin';
 import type { PaginatedResponse } from '@/lib/types/api';
 import type {
@@ -148,4 +149,35 @@ export function listBackups(): Promise<BackupFile[]> {
 
 export function createManualBackup(): Promise<BackupFile> {
   return apiFetch<BackupFile>(API.admin.backups, { method: 'POST' });
+}
+
+// ── Payment Proofs ───────────────────────────────────────────────────────────
+
+export function listPaymentProofs(params?: { status?: string; page?: number; limit?: number }): Promise<PaginatedResponse<AdminPaymentProof>> {
+  const query = new URLSearchParams();
+  if (params?.status) query.set('status', params.status);
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.limit) query.set('limit', String(params.limit));
+  const qs = query.toString();
+  return apiFetch<PaginatedResponse<AdminPaymentProof>>(`${API.admin.paymentProofs}${qs ? `?${qs}` : ''}`);
+}
+
+export function getPaymentProof(id: string): Promise<AdminPaymentProof> {
+  return apiFetch<AdminPaymentProof>(API.admin.paymentProof(id));
+}
+
+export function approvePaymentProof(id: string): Promise<AdminPaymentProof> {
+  return apiFetch<AdminPaymentProof>(API.admin.paymentProofApprove(id), { method: 'POST' });
+}
+
+export function rejectPaymentProof(id: string, reason: string): Promise<AdminPaymentProof> {
+  return apiFetch<AdminPaymentProof>(API.admin.paymentProofReject(id), {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  });
+}
+
+export function getPaymentProofsPendingCount(): Promise<number> {
+  return apiFetch<PaginatedResponse<AdminPaymentProof>>(`${API.admin.paymentProofs}?status=PENDING&limit=1`)
+    .then((res) => res.total);
 }

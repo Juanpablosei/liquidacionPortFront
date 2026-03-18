@@ -41,4 +41,5 @@ export const ROUTES = {
   adminSubscription:  (id: string) => `/admin/subscriptions/${id}`,
   adminCompanies:     '/admin/companies',
   adminBackups:       '/admin/backups',
+  adminPaymentProofs: '/admin/payment-proofs',
 } as const;

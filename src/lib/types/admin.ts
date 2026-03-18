@@ -130,3 +130,29 @@ export interface PaymentProof {
   reviewedAt: string | null;
   createdAt: string;
 }
+
+// Admin Payment Proof (includes company info)
+export interface AdminPaymentProof {
+  id: string;
+  companyId: string;
+  subscriptionId: string;
+  fileUrl: string;
+  fileName: string;
+  notes: string | null;
+  status: PaymentProofStatus;
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  company: {
+    id: string;
+    name: string;
+  };
+  subscription?: {
+    id: string;
+    plan: {
+      code: string;
+      name: string;
+    };
+  };
+}

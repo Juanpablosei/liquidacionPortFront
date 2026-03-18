@@ -139,6 +139,10 @@ export const API = {
     payments:      (subId: string) => `/admin/subscriptions/${subId}/payments`,
     payment:       (subId: string, payId: string) => `/admin/subscriptions/${subId}/payments/${payId}`,
     backups:       '/admin/backups',
+    paymentProofs:        '/admin/payment-proofs',
+    paymentProof:         (id: string) => `/admin/payment-proofs/${id}`,
+    paymentProofApprove:  (id: string) => `/admin/payment-proofs/${id}/approve`,
+    paymentProofReject:   (id: string) => `/admin/payment-proofs/${id}/reject`,
   },
   plans: {
     list: '/plans',

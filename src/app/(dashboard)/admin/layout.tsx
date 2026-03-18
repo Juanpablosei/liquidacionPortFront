@@ -46,6 +46,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { label: t.admin.plans, href: ROUTES.adminPlans },
     { label: t.admin.subscriptions, href: ROUTES.adminSubscriptions },
     { label: t.admin.companies, href: ROUTES.adminCompanies },
+    { label: t.admin.paymentProofs.title, href: ROUTES.adminPaymentProofs },
     { label: t.admin.backups.title, href: ROUTES.adminBackups },
   ];
 
