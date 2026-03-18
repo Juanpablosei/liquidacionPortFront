@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Building2, Plus, ArrowRight } from 'lucide-react';
 import { useCompanyStore } from '@/stores/company-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -16,6 +17,7 @@ export default function CompaniesPage() {
   const { companies, setCompanies, clearCompany } = useCompanyStore();
   const { isAuthenticated, isLoading: authLoading } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
   const companyList = Array.isArray(companies) ? companies : [];
   const t = useTranslation();
 
@@ -25,10 +27,13 @@ export default function CompaniesPage() {
     listCompanies()
       .then((data) => {
         setCompanies(data);
+        if (data.length === 0) {
+          router.push(ROUTES.newCompany);
+        }
       })
       .catch(() => {})
       .finally(() => setIsLoading(false));
-  }, [authLoading, isAuthenticated, setCompanies, clearCompany]);
+  }, [authLoading, isAuthenticated, setCompanies, clearCompany, router]);
 
   return (
     <>

@@ -28,9 +28,20 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   useEffect(() => {
     if (isLoading || !isAuthenticated) return;
     listCompanies()
-      .then(setCompanies)
+      .then((data) => {
+        setCompanies(data);
+        // Force new users to create a company first
+        if (data.length === 0) {
+          const path = window.location.pathname;
+          const allowedPaths = ['/companies/new', '/profile', '/admin'];
+          const isAllowed = allowedPaths.some((p) => path.startsWith(p));
+          if (!isAllowed) {
+            router.replace(ROUTES.newCompany);
+          }
+        }
+      })
       .catch(() => {});
-  }, [isLoading, isAuthenticated, setCompanies]);
+  }, [isLoading, isAuthenticated, setCompanies, router]);
 
   // Spinner solo mientras se verifica la sesión (isLoading).
   if (isLoading) {

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, Check, Building2, CreditCard, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Loader2, Check, X, Building2, CreditCard, ArrowRight, ArrowLeft, Users, Briefcase, Calculator } from 'lucide-react';
 import { createCompany, getPublicPlans } from '@/lib/api/companies';
 import { createCompanySchema, type CreateCompanyInput } from '@/lib/validators/company';
 import { ROUTES } from '@/lib/constants/routes';
@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils/cn';
 import type { SubscriptionPlan } from '@/lib/types/admin';
 
 const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
+
+const FEATURE_FIELDS = ['featureExportPdf', 'featureUnions', 'featureFormulas', 'featureAiUpload'] as const;
 
 export default function NewCompanyPage() {
   const router = useRouter();
@@ -42,23 +44,24 @@ export default function NewCompanyPage() {
       .catch(() => setPlansLoading(false));
   }, []);
 
-  async function handleNext() {
-    const valid = await trigger(['name', 'taxId', 'address', 'phone']);
-    if (valid) setStep(2);
+  function handleNext() {
+    if (!selectedPlan) return;
+    setStep(2);
   }
 
   async function onSubmit() {
+    const valid = await trigger(['name', 'taxId', 'address', 'phone']);
+    if (!valid) return;
     setLoading(true);
     try {
       const data = getValues();
-      const payload = {
+      const company = await createCompany({
         name: data.name,
         taxId: data.taxId || undefined,
         address: data.address || undefined,
         phone: data.phone || undefined,
         planCode: selectedPlan || undefined,
-      };
-      const company = await createCompany(payload);
+      });
       toast.success(t.companies.new.submit);
       router.push(ROUTES.company(company.id));
     } catch (err: unknown) {
@@ -75,12 +78,27 @@ export default function NewCompanyPage() {
     return `$${n.toLocaleString()}`;
   }
 
+  function formatLimit(value: number | undefined, unit: string, feminine?: boolean): string {
+    if (!value || value === 0) {
+      const unlimitedWord = feminine ? t.companies.new.unlimitedFem : t.companies.new.unlimited;
+      return `${unlimitedWord} ${unit}`;
+    }
+    return `${t.companies.new.upTo.replace('{max}', String(value))} ${unit}`;
+  }
+
+  const featureLabels: Record<(typeof FEATURE_FIELDS)[number], string> = {
+    featureExportPdf: t.companies.new.featureExportPdf,
+    featureUnions: t.companies.new.featureUnions,
+    featureFormulas: t.companies.new.featureFormulas,
+    featureAiUpload: t.companies.new.featureAiUpload,
+  };
+
   return (
     <>
       <PageHeader
-        title={t.companies.new.title}
-        description={t.companies.new.description}
-        backHref={ROUTES.companies}
+        title={step === 1 ? t.companies.new.selectPlan : t.companies.new.title}
+        description={step === 1 ? t.companies.new.selectPlanDesc : t.companies.new.description}
+        backHref={step === 1 ? ROUTES.companies : undefined}
       />
 
       {/* Step indicator */}
@@ -89,24 +107,129 @@ export default function NewCompanyPage() {
           'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
           step === 1 ? 'bg-brand/15 text-brand-text' : 'text-muted-foreground',
         )}>
-          <Building2 className="w-4 h-4" />
-          {t.companies.new.stepCompanyData}
+          <CreditCard className="w-4 h-4" />
+          {t.companies.new.stepSelectPlan}
         </div>
         <ArrowRight className="w-4 h-4 text-muted-foreground" />
         <div className={cn(
           'flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
           step === 2 ? 'bg-brand/15 text-brand-text' : 'text-muted-foreground',
         )}>
-          <CreditCard className="w-4 h-4" />
-          {t.companies.new.stepSelectPlan}
+          <Building2 className="w-4 h-4" />
+          {t.companies.new.stepCompanyData}
         </div>
       </div>
 
-      {/* Step 1: Company Data */}
+      {/* Step 1: Plan Selection */}
       {step === 1 && (
+        <div className="max-w-5xl">
+          {plansLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              {plans.map((plan) => {
+                const isSelected = selectedPlan === plan.code;
+                const isFree = parseFloat(plan.monthlyPrice) === 0;
+                return (
+                  <button
+                    key={plan.id}
+                    type="button"
+                    onClick={() => setSelectedPlan(plan.code)}
+                    className={cn(
+                      'flex flex-col items-start p-5 rounded-xl border-2 text-left transition-all duration-150 cursor-pointer',
+                      isSelected
+                        ? 'border-brand bg-brand/[0.06] ring-1 ring-brand/30'
+                        : 'border-border bg-card hover:border-brand/40',
+                    )}
+                  >
+                    {/* Header */}
+                    <div className="flex items-center justify-between w-full mb-3">
+                      <span className="text-base font-semibold text-foreground">{plan.name}</span>
+                      {isSelected && (
+                        <span className="flex items-center gap-1 text-xs font-medium text-brand-text bg-brand/15 px-2 py-0.5 rounded-full">
+                          <Check className="w-3 h-3" />
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Price */}
+                    <div className="mb-4">
+                      <span className="text-2xl font-bold text-foreground">
+                        {formatPrice(plan.monthlyPrice)}
+                      </span>
+                      {!isFree && (
+                        <span className="text-sm text-muted-foreground">{t.companies.new.planMonthly}</span>
+                      )}
+                    </div>
+
+                    {/* Limits */}
+                    <div className="w-full space-y-1.5 mb-4 pb-4 border-b border-border">
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <Users className="w-3.5 h-3.5 shrink-0" />
+                        {plan.maxEmployees > 0
+                          ? t.companies.new.planEmployees.replace('{max}', String(plan.maxEmployees))
+                          : t.companies.new.planEmployeesUnlimited}
+                      </div>
+                      {plan.maxMembers !== undefined && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Briefcase className="w-3.5 h-3.5 shrink-0" />
+                          {formatLimit(plan.maxMembers, t.companies.new.members)}
+                        </div>
+                      )}
+                      {plan.maxRunsPerMonth !== undefined && (
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <Calculator className="w-3.5 h-3.5 shrink-0" />
+                          {formatLimit(plan.maxRunsPerMonth, t.companies.new.runsPerMonth, true)}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Features */}
+                    <div className="w-full space-y-1.5">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">{t.companies.new.planFeatures}</p>
+                      {FEATURE_FIELDS.map((field) => {
+                        const enabled = plan[field] !== false;
+                        return (
+                          <div key={field} className="flex items-center gap-2 text-xs">
+                            {enabled ? (
+                              <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            ) : (
+                              <X className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+                            )}
+                            <span className={enabled ? 'text-muted-foreground' : 'text-muted-foreground/50 line-through'}>
+                              {featureLabels[field]}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleNext}
+              disabled={!selectedPlan}
+              className="flex-1 max-w-xs inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover disabled:opacity-40 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+            >
+              {t.companies.new.next}
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Company Data */}
+      {step === 2 && (
         <div className="max-w-2xl">
           <div className="bg-card border border-border rounded-xl p-6">
-            <form onSubmit={(e) => { e.preventDefault(); handleNext(); }} className="flex flex-col gap-5">
+            <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="flex flex-col gap-5">
               <FormField label={t.companies.new.companyName} name="name" error={errors.name?.message} required>
                 <Input {...register('name')} maxLength={100} placeholder={t.companies.new.namePlaceholder} className={INPUT_CLASS} />
               </FormField>
@@ -125,96 +248,27 @@ export default function NewCompanyPage() {
 
               <div className="flex items-center gap-3 pt-1">
                 <button
-                  type="submit"
-                  className="flex-1 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
                 >
-                  {t.companies.new.next}
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowLeft className="w-4 h-4" />
+                  {t.companies.new.back}
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="flex-1 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+                >
+                  {loading ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {t.companies.new.submitting}
+                    </span>
+                  ) : t.companies.new.submit}
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Step 2: Plan Selection */}
-      {step === 2 && (
-        <div className="max-w-4xl">
-          <p className="text-sm text-muted-foreground mb-4">{t.companies.new.selectPlanDesc}</p>
-
-          {plansLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              {plans.map((plan) => {
-                const isSelected = selectedPlan === plan.code;
-                const isFree = parseFloat(plan.monthlyPrice) === 0;
-                return (
-                  <button
-                    key={plan.id}
-                    type="button"
-                    onClick={() => setSelectedPlan(plan.code)}
-                    className={cn(
-                      'flex flex-col items-start p-5 rounded-xl border-2 text-left transition-all duration-150',
-                      isSelected
-                        ? 'border-brand bg-brand/[0.06]'
-                        : 'border-border bg-card hover:border-brand/40',
-                    )}
-                  >
-                    <div className="flex items-center justify-between w-full mb-3">
-                      <span className="text-base font-semibold text-foreground">{plan.name}</span>
-                      {isSelected && (
-                        <span className="flex items-center gap-1 text-xs font-medium text-brand-text bg-brand/15 px-2 py-0.5 rounded-full">
-                          <Check className="w-3 h-3" />
-                          {t.companies.new.planCurrent}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="mb-3">
-                      <span className="text-2xl font-bold text-foreground">
-                        {formatPrice(plan.monthlyPrice)}
-                      </span>
-                      {!isFree && (
-                        <span className="text-sm text-muted-foreground">{t.companies.new.planMonthly}</span>
-                      )}
-                    </div>
-
-                    <p className="text-sm text-muted-foreground">
-                      {plan.maxEmployees > 0
-                        ? t.companies.new.planEmployees.replace('{max}', String(plan.maxEmployees))
-                        : t.companies.new.planEmployeesUnlimited}
-                    </p>
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setStep(1)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              {t.companies.new.back}
-            </button>
-            <button
-              type="button"
-              onClick={onSubmit}
-              disabled={loading}
-              className="flex-1 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
-            >
-              {loading ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {t.companies.new.submitting}
-                </span>
-              ) : t.companies.new.submit}
-            </button>
           </div>
 
           <p className="text-xs text-muted-foreground mt-4 text-center">

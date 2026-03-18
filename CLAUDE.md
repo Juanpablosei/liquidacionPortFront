@@ -3,6 +3,11 @@
 # Next.js 16 + React 19 + NestJS Backend
 # Este archivo es la fuente de verdad. Se carga en cada sesion.
 
+## SCOPE DE TRABAJO
+- **SOLO trabajar en este repositorio frontend** (`C:\Users\Pablo\Desktop\Front`).
+- **NUNCA modificar archivos del backend** (`C:\Users\Pablo\Desktop\Back`). Solo lectura para consultar endpoints o tipos.
+- Si se detectan issues en el backend, documentarlos en `tasks/todo.md` del front como referencia, pero NO corregirlos.
+
 ## IDIOMA Y COMUNICACION
 - Responder SIEMPRE en espanol.
 - Codigo, variables, nombres de archivos, commits y branches en ingles.

@@ -6,18 +6,25 @@ export type BillingCycle = 'MONTHLY' | 'ANNUAL';
 // ─── Plan ─────────────────────────────────────────────────────────────────────
 
 export interface SubscriptionPlan {
-  id:              string;
-  code:            string;
-  name:            string;
-  maxEmployees:    number;
-  monthlyPrice:    string; // Decimal from API
-  annualPrice:     string; // Decimal from API
-  trialDays:       number;
-  gracePeriodDays: number;
-  isCustom:        boolean;
-  isActive:        boolean;
-  createdAt:       string;
-  updatedAt:       string;
+  id:               string;
+  code:             string;
+  name:             string;
+  maxEmployees:     number;
+  maxCompanies?:    number;
+  maxMembers?:      number;
+  maxRunsPerMonth?: number;
+  monthlyPrice:     string;
+  annualPrice:      string;
+  trialDays:        number;
+  gracePeriodDays:  number;
+  isCustom:         boolean;
+  isActive:         boolean;
+  featureExportPdf?:  boolean;
+  featureUnions?:     boolean;
+  featureFormulas?:   boolean;
+  featureAiUpload?:   boolean;
+  createdAt:        string;
+  updatedAt:        string;
 }
 
 // ─── Payment ──────────────────────────────────────────────────────────────────
