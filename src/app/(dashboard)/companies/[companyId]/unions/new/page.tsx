@@ -13,7 +13,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { FormField } from '@/components/shared/form-field';
 import { Input } from '@/components/ui/input';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 export default function NewUnionPage() {
   const { companyId } = useParams<{ companyId: string }>();
@@ -96,8 +96,8 @@ export default function NewUnionPage() {
                   onClick={() => setValue('duesType', type)}
                   className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                     watchedDuesType === type
-                      ? 'bg-[#2563EB]/20 border-[#2563EB]/50 text-[#93BBFC]'
-                      : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                      ? 'bg-brand/20 border-brand/50 text-brand-text'
+                      : 'bg-overlay-subtle border-border text-muted-foreground hover:border-border'
                   }`}
                 >
                   {type === 'PERCENTAGE' ? t.unions.duesPercentage : t.unions.duesFixedAmount}
@@ -133,14 +133,14 @@ export default function NewUnionPage() {
             <button
               type="button"
               onClick={() => router.push(ROUTES.unions(companyId))}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
             >
               {t.common.cancel}
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
             >
               {isSaving ? t.common.saving : t.common.save}
             </button>

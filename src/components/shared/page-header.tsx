@@ -21,15 +21,15 @@ export function PageHeader({ title, description, actions, backHref }: PageHeader
           <Link
             href={backHref}
             aria-label={t.pageHeader.back}
-            className="mt-0.5 w-11 h-11 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.07] transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0F1C]"
+            className="mt-0.5 w-11 h-11 rounded-lg bg-overlay-subtle border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-overlay-strong transition-colors shrink-0 focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
           >
             <ChevronLeft className="w-4 h-4" />
           </Link>
         )}
         <div>
-          <h1 className="text-xl font-semibold text-white tracking-tight">{title}</h1>
+          <h1 className="text-xl font-semibold text-foreground tracking-tight">{title}</h1>
           {description && (
-            <p className="text-sm text-slate-400 mt-1">{description}</p>
+            <p className="text-sm text-muted-foreground mt-1">{description}</p>
           )}
         </div>
       </div>

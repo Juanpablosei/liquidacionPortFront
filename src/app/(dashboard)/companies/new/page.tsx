@@ -56,7 +56,7 @@ export default function NewCompanyPage() {
       />
 
       <div className="max-w-2xl">
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 
             <FormField label={t.companies.new.companyName} name="name" error={errors.name?.message} required>
@@ -64,7 +64,7 @@ export default function NewCompanyPage() {
                 {...register('name')}
                 maxLength={100}
                 placeholder={t.companies.new.namePlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0"
               />
             </FormField>
 
@@ -79,7 +79,7 @@ export default function NewCompanyPage() {
                 maxLength={13}
                 inputMode="numeric"
                 placeholder={t.companies.new.cuitPlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0"
               />
             </FormField>
 
@@ -88,7 +88,7 @@ export default function NewCompanyPage() {
                 {...register('address')}
                 maxLength={200}
                 placeholder={t.companies.new.addressPlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0"
               />
             </FormField>
 
@@ -98,7 +98,7 @@ export default function NewCompanyPage() {
                 type="tel"
                 maxLength={20}
                 placeholder={t.companies.new.phonePlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0"
               />
             </FormField>
 
@@ -107,7 +107,7 @@ export default function NewCompanyPage() {
                 type="submit"
                 disabled={loading}
                 aria-busy={loading}
-                className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+                className="flex-1 bg-brand hover:bg-brand-hover disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
                 {loading ? (<span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.companies.new.submitting}</span>) : t.companies.new.submit}
               </button>
@@ -115,7 +115,7 @@ export default function NewCompanyPage() {
           </form>
         </div>
 
-        <p className="text-xs text-slate-600 mt-4 text-center">
+        <p className="text-xs text-muted-foreground mt-4 text-center">
           {t.companies.new.ownerNote}
         </p>
       </div>

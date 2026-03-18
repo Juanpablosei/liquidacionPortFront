@@ -5,12 +5,14 @@ interface UiState {
   sidebarCollapsed:   boolean;
   mobileSidebarOpen:  boolean;
   theme:              'light' | 'dark' | 'system';
+  locale:             'es' | 'en';
 
   toggleSidebar:        () => void;
   setSidebar:           (collapsed: boolean) => void;
   openMobileSidebar:    () => void;
   closeMobileSidebar:   () => void;
   setTheme:             (theme: 'light' | 'dark' | 'system') => void;
+  setLocale:            (locale: 'es' | 'en') => void;
 }
 
 export const useUiStore = create<UiState>()(
@@ -18,7 +20,8 @@ export const useUiStore = create<UiState>()(
     (set) => ({
       sidebarCollapsed:  false,
       mobileSidebarOpen: false,
-      theme:             'light',
+      theme:             'dark',
+      locale:            'es',
 
       toggleSidebar: () =>
         set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
@@ -31,6 +34,9 @@ export const useUiStore = create<UiState>()(
 
       setTheme: (theme) =>
         set({ theme }),
+
+      setLocale: (locale) =>
+        set({ locale }),
     }),
     {
       name:    'ui-storage',

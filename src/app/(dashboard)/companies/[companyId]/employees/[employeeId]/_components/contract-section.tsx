@@ -103,7 +103,7 @@ export function ContractSection({
     {
       header: t.employees.detail.endDate,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-slate-400">{formatDate(row.original.endDate, localeId)}</span>
+        <span className="font-mono text-sm text-muted-foreground">{formatDate(row.original.endDate, localeId)}</span>
       ),
     },
     {
@@ -128,7 +128,7 @@ export function ContractSection({
                 setShowNewContract(false);
               }}
               aria-label={t.employees.detail.editContractLabel}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
             >
               <Pencil className="w-4 h-4" />
             </button>
@@ -141,7 +141,7 @@ export function ContractSection({
               );
             }}
             aria-label={expandedContract === row.original.id ? t.employees.detail.collapseDetail : t.employees.detail.expandDetail}
-            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-300 transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-muted-foreground transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
           >
             {expandedContract === row.original.id
               ? <ChevronUp className="w-4 h-4" />
@@ -156,14 +156,14 @@ export function ContractSection({
     <div className="lg:col-span-2 flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-slate-500" />
-          <h2 className="text-sm font-semibold text-white">{t.employees.detail.contractHistory}</h2>
-          <span className="text-xs text-slate-500">({contracts.length})</span>
+          <Calendar className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{t.employees.detail.contractHistory}</h2>
+          <span className="text-xs text-muted-foreground">({contracts.length})</span>
         </div>
         <RoleGate roles={['OWNER', 'ADMIN']}>
           <button
             onClick={() => setShowNewContract(!showNewContract)}
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors"
           >
             <FilePlus className="w-3.5 h-3.5" />
             {t.employees.detail.newContract}
@@ -264,15 +264,15 @@ function ExpandedContractDetail({
   const unassigned = companyConcepts.filter((c) => !assignedIds.has(c.id));
 
   return (
-    <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 flex flex-col gap-4">
+    <div className="bg-overlay-subtle border border-border rounded-xl p-4 flex flex-col gap-4">
       {hasSchedule && (
         <div>
-          <p className="text-xs font-medium text-slate-500 mb-3">{t.employees.detail.contractSchedule}</p>
+          <p className="text-xs font-medium text-muted-foreground mb-3">{t.employees.detail.contractSchedule}</p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {ct.weeklySchedule!.sort((a, b) => a.weekday - b.weekday).map((e) => (
               <div key={e.id} className="flex items-center gap-2 text-sm">
-                <span className="text-slate-500 w-8 text-xs font-medium">{t.employees.detail.weekdays[e.weekday]}</span>
-                <span className="text-slate-300 font-mono text-xs">{e.startTime}–{e.endTime}</span>
+                <span className="text-muted-foreground w-8 text-xs font-medium">{t.employees.detail.weekdays[e.weekday]}</span>
+                <span className="text-muted-foreground font-mono text-xs">{e.startTime}–{e.endTime}</span>
               </div>
             ))}
           </div>
@@ -281,12 +281,12 @@ function ExpandedContractDetail({
 
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-          <p className="text-xs font-medium text-slate-500">{t.employees.detail.assignedConcepts}</p>
+          <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+          <p className="text-xs font-medium text-muted-foreground">{t.employees.detail.assignedConcepts}</p>
         </div>
 
         {loadingConcepts === ct.id ? (
-          <p className="text-xs text-slate-600 motion-safe:animate-pulse">{t.employees.detail.loadingConcepts}</p>
+          <p className="text-xs text-muted-foreground motion-safe:animate-pulse">{t.employees.detail.loadingConcepts}</p>
         ) : ctConcepts && ctConcepts.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {ctConcepts.map((concept) => (
@@ -303,7 +303,7 @@ function ExpandedContractDetail({
                   <button
                     onClick={() => onRemoveConcept(ct.id, concept.id)}
                     aria-label={`${t.common.delete} ${concept.name}`}
-                    className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-white transition-colors cursor-pointer"
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-foreground transition-colors cursor-pointer"
                   >
                     <X className="w-3 h-3" />
                   </button>
@@ -312,18 +312,18 @@ function ExpandedContractDetail({
             ))}
           </div>
         ) : (
-          <p className="text-xs text-slate-600">{t.employees.detail.noAssignedConcepts}</p>
+          <p className="text-xs text-muted-foreground">{t.employees.detail.noAssignedConcepts}</p>
         )}
 
         {canEdit() && unassigned.length > 0 && (
-          <div className="mt-3 pt-3 border-t border-white/[0.04]">
-            <p className="text-[11px] text-slate-600 mb-2">{t.employees.detail.addConcept}</p>
+          <div className="mt-3 pt-3 border-t border-border">
+            <p className="text-[11px] text-muted-foreground mb-2">{t.employees.detail.addConcept}</p>
             <div className="flex flex-wrap gap-1.5">
               {unassigned.map((concept) => (
                 <button
                   key={concept.id}
                   onClick={() => onAssignConcept(ct.id, concept.id)}
-                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-500 hover:text-white hover:border-white/[0.12] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-lg bg-overlay-subtle border border-border text-muted-foreground hover:text-foreground hover:border-border transition-colors cursor-pointer"
                 >
                   <Plus className="w-3 h-3" />
                   {concept.name}

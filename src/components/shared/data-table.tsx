@@ -52,15 +52,15 @@ export function DataTable<T>({
 
   return (
     <div className="flex flex-col gap-0">
-      <div className="overflow-x-auto rounded-xl border border-white/[0.06]">
+      <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-sm">
           <thead>
             {table.getHeaderGroups().map((hg) => (
-              <tr key={hg.id} className="border-b border-white/[0.06]">
+              <tr key={hg.id} className="border-b border-border">
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider whitespace-nowrap"
+                    className="px-4 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap"
                   >
                     {header.isPlaceholder
                       ? null
@@ -74,10 +74,10 @@ export function DataTable<T>({
           <tbody>
             {isLoading ? (
               Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className="border-b border-white/[0.04]">
+                <tr key={i} className="border-b border-border">
                   {columns.map((_, j) => (
                     <td key={j} className="px-4 py-3">
-                      <div className="h-4 bg-white/[0.05] rounded motion-safe:animate-pulse" />
+                      <div className="h-4 bg-overlay rounded motion-safe:animate-pulse" />
                     </td>
                   ))}
                 </tr>
@@ -102,13 +102,13 @@ export function DataTable<T>({
                   tabIndex={onRowClick ? 0 : undefined}
                   role={onRowClick ? 'button' : undefined}
                   className={[
-                    'border-b border-white/[0.04] last:border-0 transition-colors',
-                    'even:bg-white/[0.01]',
-                    onRowClick ? 'cursor-pointer hover:bg-white/[0.04] focus-visible:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]/50' : '',
+                    'border-b border-border last:border-0 transition-colors',
+                    'even:bg-overlay-subtle',
+                    onRowClick ? 'cursor-pointer hover:bg-overlay-subtle focus-visible:bg-overlay-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/50' : '',
                   ].join(' ')}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-4 py-3 text-slate-300">
+                    <td key={cell.id} className="px-4 py-3 text-muted-foreground">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </td>
                   ))}
@@ -121,7 +121,7 @@ export function DataTable<T>({
 
       {!isLoading && total > 0 && (
         <div className="flex items-center justify-between px-1 pt-3">
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-muted-foreground">
             {total} {total === 1 ? t.dataTable.record : t.dataTable.records} · {t.dataTable.pageOf.replace('{page}', String(page)).replace('{pages}', String(pages))}
           </span>
           <div className="flex items-center gap-1">
@@ -129,7 +129,7 @@ export function DataTable<T>({
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
               aria-label={t.dataTable.prevPage}
-              className="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0F1C]"
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-overlay disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -137,7 +137,7 @@ export function DataTable<T>({
               onClick={() => onPageChange(page + 1)}
               disabled={page >= pages}
               aria-label={t.dataTable.nextPage}
-              className="w-11 h-11 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/[0.06] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A0F1C]"
+              className="w-11 h-11 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-overlay disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

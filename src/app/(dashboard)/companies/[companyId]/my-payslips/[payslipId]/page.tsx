@@ -60,7 +60,7 @@ export default function MyPayslipDetailPage() {
     return (
       <>
         <PageHeader title={t.myPayslips.detail} backHref={ROUTES.myPayslips(companyId)} />
-        <p className="text-slate-400 text-sm text-center py-10">{t.myPayslips.notLinked}</p>
+        <p className="text-muted-foreground text-sm text-center py-10">{t.myPayslips.notLinked}</p>
       </>
     );
   }
@@ -86,17 +86,17 @@ export default function MyPayslipDetailPage() {
       </div>
 
       {/* Signature status */}
-      <div className="mb-6 p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl">
+      <div className="mb-6 p-4 bg-overlay-subtle border border-border rounded-xl">
         {isSigned ? (
           <div className="flex items-start gap-3">
             <CheckCircle2 className="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-sm font-medium text-emerald-400">{t.myPayslips.signed}</p>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {t.myPayslips.signedAt.replace('{date}', formatDate(payslip.signature!.signedAt, localeId))}
               </p>
               {payslip.signature!.comment && (
-                <p className="text-xs text-slate-500 mt-1">
+                <p className="text-xs text-muted-foreground mt-1">
                   {t.myPayslips.signedComment.replace('{comment}', payslip.signature!.comment)}
                 </p>
               )}
@@ -115,12 +115,12 @@ export default function MyPayslipDetailPage() {
                 placeholder={t.myPayslips.signCommentPlaceholder}
                 maxLength={500}
                 aria-label={t.myPayslips.signComment}
-                className="flex-1 px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+                className="flex-1 px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand/50 transition-colors"
               />
               <button
                 onClick={handleSign}
                 disabled={signing}
-                className="inline-flex items-center justify-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white px-5 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50"
               >
                 {signing ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <PenLine className="w-4 h-4" />}
                 {signing ? t.myPayslips.signing : t.myPayslips.sign}
@@ -142,10 +142,10 @@ export default function MyPayslipDetailPage() {
 }
 
 function SummaryCard({ label, amount, variant }: { label: string; amount: string; variant?: 'success' | 'danger' }) {
-  const colorClass = variant === 'success' ? 'text-emerald-400' : variant === 'danger' ? 'text-red-400' : 'text-white';
+  const colorClass = variant === 'success' ? 'text-emerald-400' : variant === 'danger' ? 'text-red-400' : 'text-foreground';
   return (
-    <div className="p-4 bg-white/[0.03] border border-white/[0.06] rounded-xl">
-      <p className="text-xs text-slate-500 mb-1">{label}</p>
+    <div className="p-4 bg-overlay-subtle border border-border rounded-xl">
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <CurrencyDisplay amount={amount} className={`text-lg font-semibold ${colorClass}`} />
     </div>
   );
@@ -154,12 +154,12 @@ function SummaryCard({ label, amount, variant }: { label: string; amount: string
 function LinesSection({ title, lines }: { title: string; lines: { conceptName: string; amount: string }[] }) {
   return (
     <div className="mb-4">
-      <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">{title}</h3>
-      <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl divide-y divide-white/[0.04]">
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{title}</h3>
+      <div className="bg-overlay-subtle border border-border rounded-xl divide-y divide-border">
         {lines.map((line, i) => (
           <div key={i} className="flex items-center justify-between px-4 py-3">
-            <span className="text-sm text-slate-300">{line.conceptName}</span>
-            <CurrencyDisplay amount={line.amount} className="text-sm font-mono text-white" />
+            <span className="text-sm text-muted-foreground">{line.conceptName}</span>
+            <CurrencyDisplay amount={line.amount} className="text-sm font-mono text-foreground" />
           </div>
         ))}
       </div>

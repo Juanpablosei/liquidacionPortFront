@@ -65,10 +65,10 @@ export default function LoginPage() {
     <div style={{ animation: 'fadeUp 0.5s ease both' }}>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1.5">
           {t.auth.login.title}
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {t.auth.login.subtitle}
         </p>
       </div>
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
         {/* Email */}
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium text-slate-300">
+          <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
             {t.auth.login.email}
           </label>
           <input
@@ -85,7 +85,7 @@ export default function LoginPage() {
             type="email"
             autoComplete="email"
             placeholder="tu@email.com"
-            className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
+            className="h-11 w-full rounded-xl bg-overlay border border-border text-foreground placeholder:text-muted-foreground px-4 text-sm outline-none transition-all focus:border-brand focus:bg-overlay-strong focus:ring-2 focus:ring-brand/40"
             {...register('email')}
           />
           {errors.email && (
@@ -96,12 +96,12 @@ export default function LoginPage() {
         {/* Password */}
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between">
-            <label htmlFor="password" className="text-sm font-medium text-slate-300">
+            <label htmlFor="password" className="text-sm font-medium text-muted-foreground">
               {t.auth.login.password}
             </label>
             <Link
               href={ROUTES.forgotPassword}
-              className="text-xs text-[#2563EB] hover:text-[#93BBFC] transition-colors"
+              className="text-xs text-brand hover:text-brand-text transition-colors"
             >
               {t.auth.login.forgotPassword}
             </Link>
@@ -112,13 +112,13 @@ export default function LoginPage() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
+              className="h-11 w-full rounded-xl bg-overlay border border-border text-foreground placeholder:text-muted-foreground px-4 pr-11 text-sm outline-none transition-all focus:border-brand focus:bg-overlay-strong focus:ring-2 focus:ring-brand/40"
               {...register('password')}
             />
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               aria-label={showPassword ? t.auth.login.hidePassword : t.auth.login.showPassword}
               tabIndex={-1}
             >
@@ -136,7 +136,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-1 h-11 w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-1 h-11 w-full rounded-xl bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
@@ -151,17 +151,17 @@ export default function LoginPage() {
 
       {/* Divider */}
       <div className="flex items-center gap-3 my-6">
-        <div className="flex-1 h-px bg-white/[0.07]" />
-        <span className="text-xs text-slate-400">{t.common.or}</span>
-        <div className="flex-1 h-px bg-white/[0.07]" />
+        <div className="flex-1 h-px bg-overlay-strong" />
+        <span className="text-xs text-muted-foreground">{t.common.or}</span>
+        <div className="flex-1 h-px bg-overlay-strong" />
       </div>
 
       {/* Register link */}
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-sm text-muted-foreground">
         {t.auth.login.noAccount}{' '}
         <Link
           href={ROUTES.register}
-          className="text-[#2563EB] hover:text-[#93BBFC] font-medium transition-colors"
+          className="text-brand hover:text-brand-text font-medium transition-colors"
         >
           {t.auth.login.registerLink}
         </Link>

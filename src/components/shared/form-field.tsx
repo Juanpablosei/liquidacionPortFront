@@ -45,7 +45,7 @@ export function FormField({
       <Label
         htmlFor={name}
         className={cn(
-          'text-sm font-medium text-slate-300',
+          'text-sm font-medium text-muted-foreground',
           required && "after:content-['*'] after:ml-0.5 after:text-red-400",
         )}
       >
@@ -53,7 +53,7 @@ export function FormField({
       </Label>
       {enhanced}
       {hint && !error && (
-        <p id={`${name}-hint`} className="text-xs text-slate-400">{hint}</p>
+        <p id={`${name}-hint`} className="text-xs text-muted-foreground">{hint}</p>
       )}
       {error && (
         <p id={`${name}-error`} className="text-xs text-red-400" role="alert">{error}</p>

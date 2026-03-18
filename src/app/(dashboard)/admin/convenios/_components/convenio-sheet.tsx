@@ -18,7 +18,7 @@ import type { Convenio, SeniorityBonusRule, VacationRule, SickLeaveRule } from '
 import { SeniorityBonusEditor, DaysBracketEditor } from './bracket-rules-editor';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 interface ConvenioSheetProps {
   open: boolean;
@@ -67,11 +67,11 @@ export function ConvenioSheet({ open, onOpenChange, onSubmit, editItem, isSaving
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto w-[480px] max-w-[100vw]"
+        className="bg-sidebar border-l border-border text-foreground overflow-y-auto w-[480px] max-w-[100vw]"
         onAnimationStart={handleAnimationStart}
       >
-        <SheetHeader className="pb-4 border-b border-white/[0.06]">
-          <SheetTitle className="text-white">
+        <SheetHeader className="pb-4 border-b border-border">
+          <SheetTitle className="text-foreground">
             {editItem ? t.convenios.editTitle : t.convenios.createTitle}
           </SheetTitle>
         </SheetHeader>
@@ -97,7 +97,7 @@ export function ConvenioSheet({ open, onOpenChange, onSubmit, editItem, isSaving
           </div>
 
           {/* Bracket rules editors */}
-          <div className="border-t border-white/[0.06] pt-4 flex flex-col gap-5">
+          <div className="border-t border-border pt-4 flex flex-col gap-5">
             <SeniorityBonusEditor value={seniorityRules} onChange={setSeniorityRules} />
             <DaysBracketEditor label={t.convenios.vacationRules} value={vacationRules} onChange={setVacationRules} />
             <DaysBracketEditor label={t.convenios.sickLeaveRules} value={sickLeaveRules} onChange={setSickLeaveRules} />
@@ -107,14 +107,14 @@ export function ConvenioSheet({ open, onOpenChange, onSubmit, editItem, isSaving
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
             >
               {t.common.cancel}
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
             >
               {isSaving ? t.common.saving : t.common.save}
             </button>

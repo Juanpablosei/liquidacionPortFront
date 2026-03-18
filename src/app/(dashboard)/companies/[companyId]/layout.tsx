@@ -85,7 +85,7 @@ export default function CompanyLayout({ children }: { children: React.ReactNode 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20" role="status" aria-label="Loading">
-        <div className="w-5 h-5 border-2 border-[#2563EB] border-t-transparent rounded-full motion-safe:animate-spin" />
+        <div className="w-5 h-5 border-2 border-brand border-t-transparent rounded-full motion-safe:animate-spin" />
       </div>
     );
   }

@@ -21,7 +21,7 @@ const FORMULA_VARIABLES = [
 ] as const;
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 interface FormulaEditorProps {
   companyId: string;
@@ -85,7 +85,7 @@ export function FormulaEditor({ companyId, value, onChange, error }: FormulaEdit
         <div className="flex items-center justify-between mt-1">
           <div className="flex items-center gap-1.5">
             {isValidating && (
-              <span className="flex items-center gap-1 text-xs text-slate-500">
+              <span className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 {t.concepts.formulaValidating}
               </span>
@@ -103,7 +103,7 @@ export function FormulaEditor({ companyId, value, onChange, error }: FormulaEdit
               </span>
             )}
           </div>
-          <span className="text-xs text-slate-600 font-mono">
+          <span className="text-xs text-muted-foreground font-mono">
             {value.length}/500 {t.concepts.formulaChars}
           </span>
         </div>
@@ -128,10 +128,10 @@ export function FormulaEditor({ companyId, value, onChange, error }: FormulaEdit
       )}
 
       {/* Variables reference */}
-      <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-3 py-2.5">
+      <div className="rounded-lg bg-overlay-subtle border border-border px-3 py-2.5">
         <div className="flex items-center gap-1.5 mb-2">
-          <Info className="w-3 h-3 text-slate-500" />
-          <span className="text-xs text-slate-400 font-medium">
+          <Info className="w-3 h-3 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground font-medium">
             {t.concepts.formulaVariables}
           </span>
         </div>
@@ -141,7 +141,7 @@ export function FormulaEditor({ companyId, value, onChange, error }: FormulaEdit
               key={v}
               type="button"
               onClick={() => insertVariable(v)}
-              className="px-2 py-0.5 rounded text-[11px] font-mono bg-white/[0.06] border border-white/[0.08] text-slate-300 hover:bg-[#2563EB]/20 hover:border-[#2563EB]/30 hover:text-[#93BBFC] transition-colors cursor-pointer"
+              className="px-2 py-0.5 rounded text-[11px] font-mono bg-overlay border border-border text-muted-foreground hover:bg-brand/20 hover:border-brand/30 hover:text-brand-text transition-colors cursor-pointer"
             >
               {v}
             </button>

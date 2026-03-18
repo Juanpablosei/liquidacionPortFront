@@ -44,17 +44,17 @@ export function ConvenioSection({
   t,
 }: ConvenioSectionProps) {
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 mt-6">
+    <div className="bg-card border border-border rounded-xl p-6 mt-6">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <ScrollText className="w-4 h-4 text-slate-500" />
-          <h2 className="text-sm font-semibold text-white">{t.convenios.assignTitle}</h2>
+          <ScrollText className="w-4 h-4 text-muted-foreground" />
+          <h2 className="text-sm font-semibold text-foreground">{t.convenios.assignTitle}</h2>
         </div>
         <RoleGate roles={['OWNER', 'ADMIN']}>
           {!editingConvenio && (
             <button
               onClick={() => setEditingConvenio(true)}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-lg text-xs text-slate-300 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-overlay hover:bg-overlay-strong border border-border rounded-lg text-xs text-muted-foreground transition-colors cursor-pointer"
             >
               <Pencil className="w-3 h-3" />
               {t.common.edit}
@@ -65,10 +65,10 @@ export function ConvenioSection({
 
       {editingConvenio ? (
         <div className="flex flex-col gap-4">
-          <p className="text-xs text-slate-400">{t.convenios.assignDesc}</p>
+          <p className="text-xs text-muted-foreground">{t.convenios.assignDesc}</p>
 
           <div>
-            <label className="text-xs font-medium text-slate-400 block mb-1.5">{t.convenios.title}</label>
+            <label className="text-xs font-medium text-muted-foreground block mb-1.5">{t.convenios.title}</label>
             <Select
               value={selectedConvenioId}
               onValueChange={(v) => {
@@ -79,9 +79,9 @@ export function ConvenioSection({
               <SelectTrigger className={INPUT_CLASS}>
                 <SelectValue placeholder={t.convenios.selectConvenio} />
               </SelectTrigger>
-              <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+              <SelectContent className="bg-card border-border text-foreground">
                 {convenios.map((c) => (
-                  <SelectItem key={c.id} value={c.id} className="focus:bg-white/[0.06] focus:text-white">
+                  <SelectItem key={c.id} value={c.id} className="focus:bg-overlay focus:text-foreground">
                     {c.name} ({c.code})
                   </SelectItem>
                 ))}
@@ -95,7 +95,7 @@ export function ConvenioSection({
             if (cats.length === 0) return null;
             return (
               <div>
-                <label className="text-xs font-medium text-slate-400 block mb-1.5">{t.convenios.categories}</label>
+                <label className="text-xs font-medium text-muted-foreground block mb-1.5">{t.convenios.categories}</label>
                 <Select
                   value={selectedCategoryId}
                   onValueChange={setSelectedCategoryId}
@@ -103,9 +103,9 @@ export function ConvenioSection({
                   <SelectTrigger className={INPUT_CLASS}>
                     <SelectValue placeholder={t.convenios.selectCategory} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {cats.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id} className="focus:bg-white/[0.06] focus:text-white">
+                      <SelectItem key={cat.id} value={cat.id} className="focus:bg-overlay focus:text-foreground">
                         {cat.name} ({cat.code})
                       </SelectItem>
                     ))}
@@ -128,14 +128,14 @@ export function ConvenioSection({
             <button
               onClick={() => setEditingConvenio(false)}
               disabled={savingConvenio}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors disabled:opacity-50 cursor-pointer"
             >
               {t.common.cancel}
             </button>
             <button
               onClick={onSaveConvenio}
               disabled={savingConvenio || !selectedConvenioId}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors disabled:opacity-50 cursor-pointer"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-brand hover:bg-brand-hover transition-colors disabled:opacity-50 cursor-pointer"
             >
               {savingConvenio ? t.common.saving : t.common.save}
             </button>

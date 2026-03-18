@@ -133,7 +133,7 @@ export default function MembersPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={() => setAddOpen(true)}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.members.addMember}
@@ -147,13 +147,13 @@ export default function MembersPage() {
       ) : memberList.length === 0 ? (
         <EmptyState title={t.members.emptyTitle} description={t.members.emptyDesc} />
       ) : (
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-x-auto">
+        <div className="bg-card border border-border rounded-xl overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.06]">
-                <th className="text-left text-xs font-medium text-slate-500 px-5 py-3">{t.members.member}</th>
-                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden sm:table-cell">{t.members.role}</th>
-                <th className="text-left text-xs font-medium text-slate-500 px-4 py-3 hidden md:table-cell">{t.members.since}</th>
+              <tr className="border-b border-border">
+                <th className="text-left text-xs font-medium text-muted-foreground px-5 py-3">{t.members.member}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden sm:table-cell">{t.members.role}</th>
+                <th className="text-left text-xs font-medium text-muted-foreground px-4 py-3 hidden md:table-cell">{t.members.since}</th>
                 <th className="px-4 py-3 w-12" />
               </tr>
             </thead>
@@ -164,19 +164,19 @@ export default function MembersPage() {
                 const canModify     = isAdmin() && !isOwnerRow && !isCurrentUser;
 
                 return (
-                  <tr key={member.id} className="border-b border-white/[0.04] last:border-0 hover:bg-white/[0.04] transition-colors">
+                  <tr key={member.id} className="border-b border-border last:border-0 hover:bg-overlay-subtle transition-colors">
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[#2563EB]/15 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-brand/15 flex items-center justify-center text-xs font-semibold text-brand-text shrink-0">
                           {getInitials(member.name, member.email)}
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-white">
+                          <p className="text-sm font-medium text-foreground">
                             {member.name ?? member.email ?? member.userId}
-                            {isCurrentUser && <span className="ml-2 text-[11px] text-slate-500">{t.members.you}</span>}
+                            {isCurrentUser && <span className="ml-2 text-[11px] text-muted-foreground">{t.members.you}</span>}
                           </p>
                           {member.name && member.email && (
-                            <p className="text-xs text-slate-500 truncate">{member.email}</p>
+                            <p className="text-xs text-muted-foreground truncate">{member.email}</p>
                           )}
                         </div>
                       </div>
@@ -194,7 +194,7 @@ export default function MembersPage() {
                       )}
                     </td>
 
-                    <td className="px-4 py-4 text-sm text-slate-500 hidden md:table-cell">
+                    <td className="px-4 py-4 text-sm text-muted-foreground hidden md:table-cell">
                       {new Date(member.joinedAt).toLocaleDateString(localeId, {
                         day: '2-digit', month: 'short', year: 'numeric',
                       })}
@@ -204,11 +204,11 @@ export default function MembersPage() {
                       {canModify && (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer" aria-label={t.members.options}>
+                            <button className="min-w-[44px] min-h-[44px] rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors cursor-pointer" aria-label={t.members.options}>
                               <ChevronDown className="w-3.5 h-3.5" />
                             </button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="bg-[#0F172A] border border-white/[0.08]" align="end">
+                          <DropdownMenuContent className="bg-card border border-border" align="end">
                             {isOwner() && !isOwnerRow && (
                               <DropdownMenuItem
                                 onClick={() => setTransferTarget(member)}
@@ -283,12 +283,12 @@ function RoleSelector({
 }) {
   return (
     <Select value={currentRole} onValueChange={(v) => onChange(v as CompanyRole)}>
-      <SelectTrigger className="w-32 h-7 text-xs bg-white/[0.04] border-white/[0.08] text-white">
+      <SelectTrigger className="w-32 h-7 text-xs bg-overlay-subtle border-border text-foreground">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="bg-[#0F172A] border border-white/[0.08]">
+      <SelectContent className="bg-card border border-border">
         {assignableRoles.map((r) => (
-          <SelectItem key={r.value} value={r.value} className="text-white focus:bg-white/[0.05]">
+          <SelectItem key={r.value} value={r.value} className="text-foreground focus:bg-overlay">
             {r.label}
           </SelectItem>
         ))}
@@ -347,9 +347,9 @@ function AddMemberDialog({
 
   return (
     <Dialog open={open} onOpenChange={(o) => { if (!o) reset(); onOpenChange(o); }}>
-      <DialogContent className="bg-[#0F172A] border border-white/[0.08] text-white max-w-sm">
+      <DialogContent className="bg-card border border-border text-foreground max-w-sm">
         <DialogHeader>
-          <DialogTitle className="text-white">{t.members.addMember}</DialogTitle>
+          <DialogTitle className="text-foreground">{t.members.addMember}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-1">
@@ -357,18 +357,18 @@ function AddMemberDialog({
             <Input
               {...register('userId')}
               placeholder={t.members.userIdPlaceholder}
-              className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 font-mono text-xs"
+              className="bg-overlay border-border text-foreground placeholder:text-muted-foreground font-mono text-xs"
             />
           </FormField>
 
           <FormField label={t.members.role} name="role" error={errors.role?.message} required>
             <Select value={selectedRole} onValueChange={(v) => setValue('role', v as Exclude<CompanyRole, 'OWNER'>)}>
-              <SelectTrigger className="bg-white/[0.05] border-white/[0.1] text-white">
+              <SelectTrigger className="bg-overlay border-border text-foreground">
                 <SelectValue placeholder={t.members.selectRole} />
               </SelectTrigger>
-              <SelectContent className="bg-[#0F172A] border border-white/[0.08]">
+              <SelectContent className="bg-card border border-border">
                 {ASSIGNABLE_ROLES.map((r) => (
-                  <SelectItem key={r.value} value={r.value} className="text-white focus:bg-white/[0.05]">
+                  <SelectItem key={r.value} value={r.value} className="text-foreground focus:bg-overlay">
                     {r.label}
                   </SelectItem>
                 ))}
@@ -379,7 +379,7 @@ function AddMemberDialog({
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mt-1"
+            className="w-full bg-brand hover:bg-brand-hover disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mt-1"
           >
             {loading ? t.members.adding : t.members.addMember}
           </button>
@@ -391,15 +391,15 @@ function AddMemberDialog({
 
 function MembersSkeleton() {
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl overflow-hidden">
+    <div className="bg-card border border-border rounded-xl overflow-hidden">
       {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.04] last:border-0 motion-safe:animate-pulse">
-          <div className="w-8 h-8 rounded-full bg-white/[0.06]" />
+        <div key={i} className="flex items-center gap-3 px-5 py-4 border-b border-border last:border-0 motion-safe:animate-pulse">
+          <div className="w-8 h-8 rounded-full bg-overlay" />
           <div className="flex-1">
-            <div className="h-4 bg-white/[0.06] rounded w-36 mb-1.5" />
-            <div className="h-3 bg-white/[0.04] rounded w-48" />
+            <div className="h-4 bg-overlay rounded w-36 mb-1.5" />
+            <div className="h-3 bg-overlay-subtle rounded w-48" />
           </div>
-          <div className="h-6 bg-white/[0.04] rounded w-20 hidden sm:block" />
+          <div className="h-6 bg-overlay-subtle rounded w-20 hidden sm:block" />
         </div>
       ))}
     </div>

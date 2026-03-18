@@ -81,7 +81,7 @@ export default function PlansPage() {
           canWrite ? (
             <button
               onClick={handleNew}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563EB]/90 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand/90 transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.admin.newPlan}
@@ -101,12 +101,12 @@ export default function PlansPage() {
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className="rounded-xl border border-white/[0.06] bg-[#111827] p-5 flex flex-col gap-3"
+              className="rounded-xl border border-border bg-secondary p-5 flex flex-col gap-3"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-sm font-semibold text-white">{plan.name}</h3>
-                  <p className="text-xs text-slate-500 font-mono">{plan.code}</p>
+                  <h3 className="text-sm font-semibold text-foreground">{plan.name}</h3>
+                  <p className="text-xs text-muted-foreground font-mono">{plan.code}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className={cn(
@@ -122,14 +122,14 @@ export default function PlansPage() {
                       <button
                         onClick={() => handleEdit(plan)}
                         title={t.admin.editPlan}
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
                       >
                         <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <button
                         onClick={() => setDeleteTarget(plan)}
                         title={t.admin.deletePlan}
-                        className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+                        className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -140,20 +140,20 @@ export default function PlansPage() {
 
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
-                  <p className="text-xs text-slate-500">{t.admin.monthly}</p>
-                  <p className="text-white font-mono">
+                  <p className="text-xs text-muted-foreground">{t.admin.monthly}</p>
+                  <p className="text-foreground font-mono">
                     <CurrencyDisplay amount={Number(plan.monthlyPrice)} />
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">{t.admin.annual}</p>
-                  <p className="text-white font-mono">
+                  <p className="text-xs text-muted-foreground">{t.admin.annual}</p>
+                  <p className="text-foreground font-mono">
                     <CurrencyDisplay amount={Number(plan.annualPrice)} />
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-2 border-t border-white/[0.06]">
+              <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border">
                 <span>{t.admin.maxEmployees}: {plan.maxEmployees}</span>
                 <span>{t.admin.trial}: {plan.trialDays}d</span>
               </div>

@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#0A0F1C] text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground font-sans flex overflow-hidden">
 
       {/* Grid pattern */}
       <div
@@ -31,11 +31,11 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         style={{ background: 'radial-gradient(circle, rgba(16,163,74,0.06) 0%, transparent 70%)' }} />
 
       {/* Left panel — visible en pantallas grandes */}
-      <div className="hidden lg:flex flex-col justify-between w-[480px] shrink-0 relative z-10 border-r border-white/[0.06] p-10">
+      <div className="hidden lg:flex flex-col justify-between w-[480px] shrink-0 relative z-10 border-r border-border p-10">
 
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 w-fit">
-          <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
@@ -45,14 +45,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
         {/* Center content */}
         <div>
-          <p className="text-xs font-medium text-[#2563EB] uppercase tracking-widest mb-4">
+          <p className="text-xs font-medium text-brand uppercase tracking-widest mb-4">
             Sistema de gestión
           </p>
           <h2 className="text-3xl font-semibold tracking-tight leading-snug mb-5">
             Tu nómina,<br />
-            <span className="text-slate-400">bajo control.</span>
+            <span className="text-muted-foreground">bajo control.</span>
           </h2>
-          <p className="text-sm text-slate-500 leading-relaxed max-w-[320px]">
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-[320px]">
             Liquidaciones, contratos, asistencia y más.
             Todo en un mismo lugar.
           </p>
@@ -66,27 +66,27 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               { n: '99%',   label: 'Uptime' },
             ].map((s) => (
               <div key={s.label}
-                className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                <p className="text-lg font-semibold text-white tabular-nums">{s.n}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{s.label}</p>
+                className="bg-overlay-subtle border border-border rounded-xl p-4">
+                <p className="text-lg font-semibold text-foreground tabular-nums">{s.n}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Quote */}
-        <div className="border border-white/[0.06] rounded-xl p-5">
-          <p className="text-sm text-slate-300 leading-relaxed mb-4">
+        <div className="border border-border rounded-xl p-5">
+          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
             &quot;Antes tardábamos 4 horas en cerrar la nómina.
-            Ahora son <span className="text-white font-medium">20 minutos</span>.&quot;
+            Ahora son <span className="text-foreground font-medium">20 minutos</span>.&quot;
           </p>
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#2563EB]">
+            <div className="w-7 h-7 rounded-full bg-brand/20 flex items-center justify-center text-xs font-semibold text-brand">
               CR
             </div>
             <div>
-              <p className="text-xs font-medium text-white">Carmen Rodríguez</p>
-              <p className="text-[11px] text-slate-500">RRHH — Construye S.A.</p>
+              <p className="text-xs font-medium text-foreground">Carmen Rodríguez</p>
+              <p className="text-[11px] text-muted-foreground">RRHH — Construye S.A.</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Mobile logo */}
         <div className="lg:hidden mb-8">
           <Link href="/" className="flex items-center gap-2 justify-center">
-            <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>

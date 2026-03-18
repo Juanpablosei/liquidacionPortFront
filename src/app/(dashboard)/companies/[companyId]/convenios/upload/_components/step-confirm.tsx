@@ -18,9 +18,9 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-6 space-y-4">
-        <h3 className="text-sm font-semibold text-white">{u.confirmTitle}</h3>
-        <p className="text-xs text-slate-400">{u.confirmDesc}</p>
+      <div className="rounded-xl border border-border bg-overlay-subtle p-6 space-y-4">
+        <h3 className="text-sm font-semibold text-foreground">{u.confirmTitle}</h3>
+        <p className="text-xs text-muted-foreground">{u.confirmDesc}</p>
 
         <div className="space-y-3 text-sm">
           <Row label={u.name} value={data.name} />
@@ -47,10 +47,10 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
 
         {/* Categories summary */}
         {data.categories.length > 0 && (
-          <div className="rounded-lg border border-white/[0.06] overflow-hidden">
+          <div className="rounded-lg border border-border overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-white/[0.03] text-left text-slate-400">
+                <tr className="bg-overlay-subtle text-left text-muted-foreground">
                   <th className="px-3 py-2 font-medium">{u.code}</th>
                   <th className="px-3 py-2 font-medium">{u.name}</th>
                   <th className="px-3 py-2 font-medium text-right">{u.baseSalary}</th>
@@ -58,7 +58,7 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
               </thead>
               <tbody>
                 {data.categories.map((cat, idx) => (
-                  <tr key={idx} className="border-t border-white/[0.06] text-slate-300">
+                  <tr key={idx} className="border-t border-border text-muted-foreground">
                     <td className="px-3 py-1.5 font-mono">{cat.code}</td>
                     <td className="px-3 py-1.5">{cat.name}</td>
                     <td className="px-3 py-1.5 text-right font-mono">
@@ -73,10 +73,10 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
 
         {/* Seniority rules summary */}
         {data.seniorityRules.length > 0 && (
-          <div className="rounded-lg border border-white/[0.06] overflow-hidden">
+          <div className="rounded-lg border border-border overflow-hidden">
             <table className="w-full text-xs">
               <thead>
-                <tr className="bg-white/[0.03] text-left text-slate-400">
+                <tr className="bg-overlay-subtle text-left text-muted-foreground">
                   <th className="px-3 py-2 font-medium">{u.minYears}</th>
                   <th className="px-3 py-2 font-medium">{u.maxYears}</th>
                   <th className="px-3 py-2 font-medium text-right">{u.percentage}</th>
@@ -84,7 +84,7 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
               </thead>
               <tbody>
                 {data.seniorityRules.map((rule, idx) => (
-                  <tr key={idx} className="border-t border-white/[0.06] text-slate-300">
+                  <tr key={idx} className="border-t border-border text-muted-foreground">
                     <td className="px-3 py-1.5 font-mono">{rule.minYears}</td>
                     <td className="px-3 py-1.5 font-mono">
                       {rule.maxYears != null ? rule.maxYears : u.noUnlimited}
@@ -103,7 +103,7 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
         <Button
           onClick={onConfirm}
           disabled={isConfirming}
-          className="gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          className="gap-2 bg-brand hover:bg-brand-hover text-white"
         >
           {isConfirming && <Loader2 className="w-4 h-4 animate-spin" />}
           {isConfirming ? u.confirming : u.confirmBtn}
@@ -119,8 +119,8 @@ export function StepConfirm({ t, data, isConfirming, onConfirm, onBack }: StepCo
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-baseline justify-between gap-4">
-      <span className="text-slate-400 shrink-0">{label}</span>
-      <span className="text-white text-right">{value}</span>
+      <span className="text-muted-foreground shrink-0">{label}</span>
+      <span className="text-foreground text-right">{value}</span>
     </div>
   );
 }

@@ -16,9 +16,9 @@ import type { CreateSubscriptionInput, UpdateSubscriptionInput } from '@/lib/val
 import type { Subscription, SubscriptionPlan } from '@/lib/types/admin';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 const SELECT_CLASS =
-  'w-full h-9 rounded-md border border-white/[0.1] bg-white/[0.05] px-3 text-sm text-white focus:border-[#2563EB]/50 focus:outline-none';
+  'w-full h-9 rounded-md border border-border bg-overlay px-3 text-sm text-foreground focus:border-brand/50 focus:outline-none';
 
 interface Props {
   open: boolean;
@@ -105,15 +105,15 @@ export function SubscriptionFormSheet({ open, onOpenChange, subscription, onSucc
     const { register, handleSubmit, formState: { errors, isSubmitting } } = editForm;
     return (
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent className="bg-[#0A0F1C] border-l border-white/[0.08] text-white overflow-y-auto w-[420px] max-w-[100vw]">
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">{t.admin.editSubscription}</SheetTitle>
+        <SheetContent className="bg-background border-l border-border text-foreground overflow-y-auto w-[420px] max-w-[100vw]">
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">{t.admin.editSubscription}</SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(handleUpdate)} className="flex flex-col gap-5 p-4">
             <div>
-              <p className="text-xs text-slate-500 mb-1">{t.admin.company}</p>
-              <p className="text-sm text-white font-medium">{subscription?.company?.name ?? '—'}</p>
+              <p className="text-xs text-muted-foreground mb-1">{t.admin.company}</p>
+              <p className="text-sm text-foreground font-medium">{subscription?.company?.name ?? '—'}</p>
             </div>
 
             <FormField label={t.admin.plan} name="planId" error={errors.planId?.message}>
@@ -169,9 +169,9 @@ export function SubscriptionFormSheet({ open, onOpenChange, subscription, onSucc
   const { register, handleSubmit, formState: { errors, isSubmitting } } = createForm;
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="bg-[#0A0F1C] border-l border-white/[0.08] text-white overflow-y-auto w-[420px] max-w-[100vw]">
-        <SheetHeader className="pb-4 border-b border-white/[0.06]">
-          <SheetTitle className="text-white">{t.admin.newSubscription}</SheetTitle>
+      <SheetContent className="bg-background border-l border-border text-foreground overflow-y-auto w-[420px] max-w-[100vw]">
+        <SheetHeader className="pb-4 border-b border-border">
+          <SheetTitle className="text-foreground">{t.admin.newSubscription}</SheetTitle>
         </SheetHeader>
 
         <form onSubmit={handleSubmit(handleCreate)} className="flex flex-col gap-5 p-4">

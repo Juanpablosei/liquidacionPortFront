@@ -45,8 +45,8 @@ export function PersonalDataCard({
 
   return (
     <div className="lg:col-span-1">
-      <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-5">
-        <h2 className="text-sm font-semibold text-white mb-4">{t.employees.detail.personalData}</h2>
+      <div className="bg-card border border-border rounded-xl p-5">
+        <h2 className="text-sm font-semibold text-foreground mb-4">{t.employees.detail.personalData}</h2>
 
         {editMode ? (
           <form onSubmit={editForm.handleSubmit(onSaveEmployee)} className="flex flex-col gap-4">
@@ -64,9 +64,9 @@ export function PersonalDataCard({
                   <SelectTrigger className={INPUT_CLASS}>
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {DOC_TYPE_KEYS.map((key) => (
-                      <SelectItem key={key} value={key} className="focus:bg-white/[0.06] focus:text-white">
+                      <SelectItem key={key} value={key} className="focus:bg-overlay focus:text-foreground">
                         {docTypeLabels[key] ?? key}
                       </SelectItem>
                     ))}
@@ -107,14 +107,14 @@ export function PersonalDataCard({
               <button
                 type="button"
                 onClick={onCancelEdit}
-                className="flex-1 py-2 rounded-xl text-sm text-slate-400 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] transition-colors"
+                className="flex-1 py-2 rounded-xl text-sm text-muted-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                className="flex-1 py-2 rounded-xl text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 transition-colors"
+                className="flex-1 py-2 rounded-xl text-sm text-white bg-brand hover:bg-brand-hover disabled:opacity-60 transition-colors"
               >
                 {saving ? t.common.saving : t.common.save}
               </button>
@@ -137,24 +137,24 @@ export function PersonalDataCard({
 
       {/* Horario del contrato activo */}
       {hasActiveContract && activeSchedule.length > 0 && (
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-5 mt-4">
+        <div className="bg-card border border-border rounded-xl p-5 mt-4">
           <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-4 h-4 text-slate-500" />
-            <h2 className="text-sm font-semibold text-white">{t.employees.detail.weeklySchedule}</h2>
+            <Clock className="w-4 h-4 text-muted-foreground" />
+            <h2 className="text-sm font-semibold text-foreground">{t.employees.detail.weeklySchedule}</h2>
           </div>
           <div className="flex flex-col gap-2">
             {activeSchedule
               .sort((a, b) => a.weekday - b.weekday)
               .map((entry) => (
                 <div key={entry.id} className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-slate-400 w-8">
+                  <span className="text-xs font-medium text-muted-foreground w-8">
                     {t.employees.detail.weekdays[entry.weekday]}
                   </span>
-                  <span className="text-xs text-slate-300 font-mono">
+                  <span className="text-xs text-muted-foreground font-mono">
                     {entry.startTime} – {entry.endTime}
                   </span>
                   {entry.breakMinutes > 0 && (
-                    <span className="text-xs text-slate-500">
+                    <span className="text-xs text-muted-foreground">
                       {entry.breakMinutes}&apos; {t.employees.detail.breakMinutes}
                     </span>
                   )}

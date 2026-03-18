@@ -66,24 +66,24 @@ export default function AdminDashboardPage() {
       {/* Recent payments */}
       {metrics.recentPayments.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             {t.admin.recentPayments}
           </h2>
-          <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+          <div className="rounded-xl border border-border bg-secondary overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase border-b border-white/[0.06]">
+                <tr className="text-xs text-muted-foreground uppercase border-b border-border">
                   <th className="text-left px-4 py-3 font-medium">{t.admin.company}</th>
                   <th className="text-right px-4 py-3 font-medium">{t.admin.amount}</th>
                   <th className="text-right px-4 py-3 font-medium">{t.admin.date}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-border">
                 {metrics.recentPayments.map((p) => (
-                  <tr key={p.id} className="text-slate-300">
+                  <tr key={p.id} className="text-muted-foreground">
                     <td className="px-4 py-3">{p.subscription.company.name}</td>
                     <td className="px-4 py-3 text-right font-mono">${Number(p.amount).toLocaleString()}</td>
-                    <td className="px-4 py-3 text-right text-slate-500">{new Date(p.paidAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">{new Date(p.paidAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
               </tbody>
@@ -95,22 +95,22 @@ export default function AdminDashboardPage() {
       {/* Expiring soon */}
       {metrics.expiringSoon.length > 0 && (
         <section>
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             {t.admin.expiringSoon}
           </h2>
-          <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+          <div className="rounded-xl border border-border bg-secondary overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase border-b border-white/[0.06]">
+                <tr className="text-xs text-muted-foreground uppercase border-b border-border">
                   <th className="text-left px-4 py-3 font-medium">{t.admin.company}</th>
                   <th className="text-left px-4 py-3 font-medium">{t.admin.plan}</th>
                   <th className="text-left px-4 py-3 font-medium">{t.admin.status}</th>
                   <th className="text-right px-4 py-3 font-medium">{t.admin.expires}</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-border">
                 {metrics.expiringSoon.map((s) => (
-                  <tr key={s.id} className="text-slate-300">
+                  <tr key={s.id} className="text-muted-foreground">
                     <td className="px-4 py-3">{s.company.name}</td>
                     <td className="px-4 py-3">{s.plan.name}</td>
                     <td className="px-4 py-3">
@@ -118,7 +118,7 @@ export default function AdminDashboardPage() {
                         {s.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-500">
+                    <td className="px-4 py-3 text-right text-muted-foreground">
                       {s.currentPeriodEnd ? new Date(s.currentPeriodEnd).toLocaleDateString() : '—'}
                     </td>
                   </tr>

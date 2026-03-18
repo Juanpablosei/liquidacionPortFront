@@ -27,12 +27,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <ShieldAlert className="w-6 h-6 text-red-400" />
         </div>
         <div className="text-center">
-          <p className="text-white font-medium text-lg">{t.admin.accessDenied}</p>
-          <p className="text-slate-400 text-sm mt-1">{t.admin.accessDeniedDesc}</p>
+          <p className="text-foreground font-medium text-lg">{t.admin.accessDenied}</p>
+          <p className="text-muted-foreground text-sm mt-1">{t.admin.accessDeniedDesc}</p>
         </div>
         <Link
           href={ROUTES.companies}
-          className="mt-2 px-4 py-2 rounded-xl text-sm font-medium bg-white/[0.06] border border-white/[0.08] text-slate-300 hover:text-white hover:bg-white/[0.1] transition-colors"
+          className="mt-2 px-4 py-2 rounded-xl text-sm font-medium bg-overlay border border-border text-muted-foreground hover:text-foreground hover:bg-overlay-strong transition-colors"
         >
           {t.admin.backToDashboard}
         </Link>
@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div>
-      <nav className="bg-[#111827] rounded-xl mb-6 overflow-x-auto">
+      <nav className="bg-secondary rounded-xl mb-6 overflow-x-auto">
         <div className="flex min-w-max">
           {tabs.map((tab) => (
             <Link
@@ -66,8 +66,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               className={cn(
                 'px-4 py-3 text-sm font-medium whitespace-nowrap transition-colors',
                 isActive(tab.href)
-                  ? 'text-white border-b-2 border-[#2563EB]'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'text-foreground border-b-2 border-brand'
+                  : 'text-muted-foreground hover:text-foreground'
               )}
             >
               {tab.label}

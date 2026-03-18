@@ -201,14 +201,14 @@ export default function ConveniosPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <Link
               href={ROUTES.convenioUpload(companyId)}
-              className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-4 py-2 text-sm font-medium text-slate-300 hover:bg-white/[0.08] hover:text-white transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg border border-border bg-overlay-subtle px-4 py-2 text-sm font-medium text-muted-foreground hover:bg-overlay-strong hover:text-foreground transition-colors"
             >
               <Upload className="w-4 h-4" />
               {t.convenios.upload.uploadFromPdf}
             </Link>
             <button
               onClick={openCreateConvenio}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-4 py-2 text-sm font-medium text-white hover:bg-[#2563EB]/90 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand/90 transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.convenios.newConvenio}
@@ -245,11 +245,11 @@ export default function ConveniosPage() {
               return (
                 <div
                   key={conv.id}
-                  className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-[#111827] px-3 py-2"
+                  className="flex items-center justify-between rounded-lg border border-border bg-secondary px-3 py-2"
                 >
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-sm font-medium text-white truncate">{conv.name}</span>
-                    <span className="text-xs text-slate-500 font-mono">{conv.code}</span>
+                    <span className="text-sm font-medium text-foreground truncate">{conv.name}</span>
+                    <span className="text-xs text-muted-foreground font-mono">{conv.code}</span>
                   </div>
                   <span className={cn('inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium', urgencyClass)}>
                     {label}
@@ -268,7 +268,7 @@ export default function ConveniosPage() {
             type="checkbox"
             checked={includeExpired}
             onChange={(e) => setIncludeExpired(e.target.checked)}
-            className="h-4 w-4 rounded border-slate-600 bg-[#111827] text-[#2563EB] focus:ring-[#2563EB] focus:ring-offset-0"
+            className="h-4 w-4 rounded border-slate-600 bg-secondary text-brand focus:ring-brand focus:ring-offset-0"
           />
           <span className="text-sm text-muted-foreground">
             {t.convenios.alerts.showExpired}

@@ -35,34 +35,34 @@ export function SettlementDetail({
   t,
 }: SettlementDetailProps) {
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 mt-6">
+    <div className="bg-card border border-border rounded-xl p-6 mt-6">
       <div className="flex items-center gap-2 mb-5">
-        <FileText className="w-4 h-4 text-slate-500" />
-        <h2 className="text-sm font-semibold text-white">{t.settlements.detail.title}</h2>
+        <FileText className="w-4 h-4 text-muted-foreground" />
+        <h2 className="text-sm font-semibold text-foreground">{t.settlements.detail.title}</h2>
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div>
-          <p className="text-xs text-slate-500 mb-0.5">{t.settlements.detail.reason}</p>
-          <p className="text-sm font-medium text-white">
+          <p className="text-xs text-muted-foreground mb-0.5">{t.settlements.detail.reason}</p>
+          <p className="text-sm font-medium text-foreground">
             {settlement.reason === 'DISMISSAL' ? t.settlements.detail.dismissal : t.settlements.detail.resignation}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-500 mb-0.5">{t.settlements.detail.terminationDate}</p>
-          <p className="text-sm font-medium text-white font-mono">
+          <p className="text-xs text-muted-foreground mb-0.5">{t.settlements.detail.terminationDate}</p>
+          <p className="text-sm font-medium text-foreground font-mono">
             {formatDate(settlement.terminationDate, localeId)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-500 mb-0.5">{t.settlements.detail.hireDate}</p>
-          <p className="text-sm font-medium text-white font-mono">
+          <p className="text-xs text-muted-foreground mb-0.5">{t.settlements.detail.hireDate}</p>
+          <p className="text-sm font-medium text-foreground font-mono">
             {formatDate(settlement.hireDateSnapshot, localeId)}
           </p>
         </div>
         <div>
-          <p className="text-xs text-slate-500 mb-0.5">{t.settlements.detail.seniority}</p>
-          <p className="text-sm font-medium text-white">
+          <p className="text-xs text-muted-foreground mb-0.5">{t.settlements.detail.seniority}</p>
+          <p className="text-sm font-medium text-foreground">
             {t.settlements.detail.seniorityFormat
               .replace('{years}', String(settlement.seniorityYears))
               .replace('{months}', String(settlement.seniorityMonths))
@@ -74,7 +74,7 @@ export function SettlementDetail({
       {canViewSalary() && (
         <>
           <div className="mb-4">
-            <p className="text-xs text-slate-500 mb-0.5">{t.settlements.detail.dailySalary}</p>
+            <p className="text-xs text-muted-foreground mb-0.5">{t.settlements.detail.dailySalary}</p>
             <CurrencyDisplay amount={settlement.dailySalary} />
           </div>
 
@@ -84,20 +84,20 @@ export function SettlementDetail({
             if (!lines || lines.length === 0) return null;
             return (
               <div>
-                <p className="text-xs font-medium text-slate-500 mb-3">{t.settlements.detail.lines}</p>
-                <div className="border border-white/[0.06] rounded-lg overflow-hidden">
+                <p className="text-xs font-medium text-muted-foreground mb-3">{t.settlements.detail.lines}</p>
+                <div className="border border-border rounded-lg overflow-hidden">
                   <table className="w-full text-sm">
                     <thead>
-                      <tr className="bg-white/[0.03]">
-                        <th className="text-left text-xs font-medium text-slate-500 px-4 py-2">{t.settlements.detail.concept}</th>
-                        <th className="text-left text-xs font-medium text-slate-500 px-4 py-2">{t.settlements.detail.category}</th>
-                        <th className="text-right text-xs font-medium text-slate-500 px-4 py-2">{t.settlements.detail.amount}</th>
+                      <tr className="bg-overlay-subtle">
+                        <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">{t.settlements.detail.concept}</th>
+                        <th className="text-left text-xs font-medium text-muted-foreground px-4 py-2">{t.settlements.detail.category}</th>
+                        <th className="text-right text-xs font-medium text-muted-foreground px-4 py-2">{t.settlements.detail.amount}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {lines.map((line, i) => (
-                        <tr key={i} className="border-t border-white/[0.04]">
-                          <td className="px-4 py-2.5 text-white">{line.conceptName}</td>
+                        <tr key={i} className="border-t border-border">
+                          <td className="px-4 py-2.5 text-foreground">{line.conceptName}</td>
                           <td className="px-4 py-2.5">
                             <span className={`text-xs font-medium px-1.5 py-0.5 rounded ${
                               line.category === 'EARNING'
@@ -114,8 +114,8 @@ export function SettlementDetail({
                       ))}
                     </tbody>
                     <tfoot>
-                      <tr className="border-t border-white/[0.08] bg-white/[0.02]">
-                        <td colSpan={2} className="px-4 py-3 text-sm font-semibold text-white">{t.settlements.detail.total}</td>
+                      <tr className="border-t border-border bg-overlay-subtle">
+                        <td colSpan={2} className="px-4 py-3 text-sm font-semibold text-foreground">{t.settlements.detail.total}</td>
                         <td className="px-4 py-3 text-right font-mono font-semibold">
                           <CurrencyDisplay amount={payslip.netPay} />
                         </td>
@@ -157,17 +157,17 @@ export function SettlementModal({
 }: SettlementModalProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0F172A] border border-white/[0.08] text-white max-w-md">
+      <DialogContent className="bg-card border border-border text-foreground max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-white">{t.settlements.create.title}</DialogTitle>
-          <DialogDescription className="text-slate-400">
+          <DialogTitle className="text-foreground">{t.settlements.create.title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">
             {t.settlements.create.description}
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4 py-2">
           <div>
-            <label className="text-sm font-medium text-slate-300 block mb-1.5">{t.settlements.create.reason}</label>
+            <label className="text-sm font-medium text-muted-foreground block mb-1.5">{t.settlements.create.reason}</label>
             <Select
               value={settlementReason}
               onValueChange={(v) => setSettlementReason(v as SettlementReason)}
@@ -175,15 +175,15 @@ export function SettlementModal({
               <SelectTrigger className={INPUT_CLASS}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
-                <SelectItem value="DISMISSAL" className="focus:bg-white/[0.06] focus:text-white">{t.settlements.create.dismissal}</SelectItem>
-                <SelectItem value="RESIGNATION" className="focus:bg-white/[0.06] focus:text-white">{t.settlements.create.resignation}</SelectItem>
+              <SelectContent className="bg-card border-border text-foreground">
+                <SelectItem value="DISMISSAL" className="focus:bg-overlay focus:text-foreground">{t.settlements.create.dismissal}</SelectItem>
+                <SelectItem value="RESIGNATION" className="focus:bg-overlay focus:text-foreground">{t.settlements.create.resignation}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-slate-300 block mb-1.5">{t.settlements.create.terminationDate}</label>
+            <label className="text-sm font-medium text-muted-foreground block mb-1.5">{t.settlements.create.terminationDate}</label>
             <Input
               type="date"
               value={settlementDate}
@@ -197,7 +197,7 @@ export function SettlementModal({
           <button
             onClick={() => onOpenChange(false)}
             disabled={generatingSettlement}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50 cursor-pointer"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors disabled:opacity-50 cursor-pointer"
           >
             {t.common.cancel}
           </button>
@@ -205,7 +205,7 @@ export function SettlementModal({
             onClick={onGenerate}
             disabled={generatingSettlement || !settlementDate}
             aria-busy={generatingSettlement}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-[#2563EB] hover:bg-[#1D4ED8] transition-colors disabled:opacity-50 cursor-pointer"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-brand hover:bg-brand-hover transition-colors disabled:opacity-50 cursor-pointer"
           >
             {generatingSettlement
               ? <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.settlements.create.generating}</span>

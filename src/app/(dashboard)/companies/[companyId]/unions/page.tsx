@@ -19,7 +19,7 @@ import { useDebounce }    from '@/lib/hooks/use-debounce';
 import { Input } from '@/components/ui/input';
 import type { Union, UnionDashboard } from '@/lib/types/union';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 function formatDuesValue(union: Union, locale: string): string {
   if (union.duesType === 'PERCENTAGE') {
@@ -93,7 +93,7 @@ export default function UnionsPage() {
     {
       header: t.unions.colCode,
       cell: ({ row }) => (
-        <span className="font-mono text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+        <span className="font-mono text-xs text-muted-foreground bg-overlay-subtle px-2 py-0.5 rounded border border-border">
           {row.original.code}
         </span>
       ),
@@ -101,13 +101,13 @@ export default function UnionsPage() {
     {
       header: t.unions.colName,
       cell: ({ row }) => (
-        <span className="text-sm text-white font-medium">{row.original.name}</span>
+        <span className="text-sm text-foreground font-medium">{row.original.name}</span>
       ),
     },
     {
       header: t.unions.colDuesType,
       cell: ({ row }) => (
-        <span className="text-sm text-slate-300">
+        <span className="text-sm text-muted-foreground">
           {row.original.duesType === 'PERCENTAGE' ? t.unions.duesPercentage : t.unions.duesFixedAmount}
         </span>
       ),
@@ -115,7 +115,7 @@ export default function UnionsPage() {
     {
       header: t.unions.colDuesValue,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-slate-300">
+        <span className="font-mono text-sm text-muted-foreground">
           {formatDuesValue(row.original, localeId)}
         </span>
       ),
@@ -123,7 +123,7 @@ export default function UnionsPage() {
     {
       header: t.unions.colMembers,
       cell: ({ row }) => (
-        <span className="text-sm text-slate-300 font-mono">
+        <span className="text-sm text-muted-foreground font-mono">
           {row.original.activeMembersCount ?? 0}
         </span>
       ),
@@ -142,7 +142,7 @@ export default function UnionsPage() {
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.delete}
             >
               <Trash2 className="w-4 h-4" />
@@ -156,7 +156,7 @@ export default function UnionsPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -171,7 +171,7 @@ export default function UnionsPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={() => router.push(ROUTES.newUnion(companyId))}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.unions.newUnion}
@@ -204,7 +204,7 @@ export default function UnionsPage() {
       {/* Search */}
       <div className="mb-5">
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -230,7 +230,7 @@ export default function UnionsPage() {
           canEdit() ? (
             <button
               onClick={() => router.push(ROUTES.newUnion(companyId))}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.unions.newUnion}

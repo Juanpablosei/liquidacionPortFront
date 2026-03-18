@@ -43,10 +43,10 @@ export function ToasterProvider() {
             style={{ animation: 'slideIn 200ms ease-out' }}
           >
             {icons[t.type]}
-            <p className="text-sm text-slate-200 flex-1">{t.message}</p>
+            <p className="text-sm text-foreground flex-1">{t.message}</p>
             <button
               onClick={() => handleDismiss(t.id)}
-              className="text-slate-500 hover:text-slate-300 transition-colors shrink-0 cursor-pointer"
+              className="text-muted-foreground hover:text-muted-foreground transition-colors shrink-0 cursor-pointer"
             >
               <X className="w-3.5 h-3.5" />
             </button>

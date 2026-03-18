@@ -2,6 +2,7 @@ import es, { type Translations } from './es';
 export type { Translations };
 import en from './en';
 import { useAuthStore } from '@/stores/auth-store';
+import { useUiStore } from '@/stores/ui-store';
 
 const dictionaries: Record<string, Translations> = { es, en };
 
@@ -14,11 +15,12 @@ export function getTranslations(locale?: string | null): Translations {
 
 /**
  * React hook that returns the translations for the current user locale.
- * Reactively updates when the user changes their language.
+ * Falls back to ui-store locale when user is not logged in.
  */
 export function useTranslation(): Translations {
-  const locale = useAuthStore((s) => s.user?.locale);
-  return getTranslations(locale);
+  const userLocale = useAuthStore((s) => s.user?.locale);
+  const uiLocale = useUiStore((s) => s.locale);
+  return getTranslations(userLocale ?? uiLocale);
 }
 
 /** Map app locale to Intl locale id */
@@ -28,6 +30,7 @@ export function getLocaleId(locale?: string | null): string {
 
 /** React hook that returns the Intl locale id for the current user. */
 export function useLocaleId(): string {
-  const locale = useAuthStore((s) => s.user?.locale);
-  return getLocaleId(locale);
+  const userLocale = useAuthStore((s) => s.user?.locale);
+  const uiLocale = useUiStore((s) => s.locale);
+  return getLocaleId(userLocale ?? uiLocale);
 }

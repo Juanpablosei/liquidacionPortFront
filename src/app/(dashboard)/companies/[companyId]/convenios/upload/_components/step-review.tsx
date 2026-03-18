@@ -88,7 +88,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
     <div className="space-y-6">
       {/* Confidence badge */}
       <div className="flex items-center gap-3">
-        <span className="text-sm text-slate-400">{u.confidence}:</span>
+        <span className="text-sm text-muted-foreground">{u.confidence}:</span>
         <span
           className={cn(
             'inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1 text-xs font-medium',
@@ -176,17 +176,17 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
       {/* Categories table */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white">{u.categories}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{u.categories}</h3>
           <Button variant="outline" size="sm" onClick={addCategory} className="gap-1.5 text-xs">
             <Plus className="w-3.5 h-3.5" />
             {u.addCategory}
           </Button>
         </div>
         {form.categories.length > 0 ? (
-          <div className="rounded-xl border border-white/[0.08] overflow-hidden">
+          <div className="rounded-xl border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-white/[0.03] text-left text-slate-400">
+                <tr className="bg-overlay-subtle text-left text-muted-foreground">
                   <th className="px-3 py-2 font-medium">{u.code}</th>
                   <th className="px-3 py-2 font-medium">{u.name}</th>
                   <th className="px-3 py-2 font-medium">{u.baseSalary}</th>
@@ -195,7 +195,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
               </thead>
               <tbody>
                 {form.categories.map((cat, idx) => (
-                  <tr key={idx} className="border-t border-white/[0.06]">
+                  <tr key={idx} className="border-t border-border">
                     <td className="px-3 py-2">
                       <Input
                         value={cat.code}
@@ -223,7 +223,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
                       <button
                         type="button"
                         onClick={() => removeCategory(idx)}
-                        className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                        className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
                         title={u.removeRow}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -235,24 +235,24 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
             </table>
           </div>
         ) : (
-          <p className="text-xs text-slate-500">{t.convenios.noCategories}</p>
+          <p className="text-xs text-muted-foreground">{t.convenios.noCategories}</p>
         )}
       </div>
 
       {/* Seniority rules table */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white">{u.seniorityRules}</h3>
+          <h3 className="text-sm font-semibold text-foreground">{u.seniorityRules}</h3>
           <Button variant="outline" size="sm" onClick={addRule} className="gap-1.5 text-xs">
             <Plus className="w-3.5 h-3.5" />
             {u.addRule}
           </Button>
         </div>
         {form.seniorityRules.length > 0 ? (
-          <div className="rounded-xl border border-white/[0.08] overflow-hidden">
+          <div className="rounded-xl border border-border overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-white/[0.03] text-left text-slate-400">
+                <tr className="bg-overlay-subtle text-left text-muted-foreground">
                   <th className="px-3 py-2 font-medium">{u.minYears}</th>
                   <th className="px-3 py-2 font-medium">{u.maxYears}</th>
                   <th className="px-3 py-2 font-medium">{u.percentage}</th>
@@ -261,7 +261,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
               </thead>
               <tbody>
                 {form.seniorityRules.map((rule, idx) => (
-                  <tr key={idx} className="border-t border-white/[0.06]">
+                  <tr key={idx} className="border-t border-border">
                     <td className="px-3 py-2">
                       <Input
                         type="number"
@@ -297,7 +297,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
                       <button
                         type="button"
                         onClick={() => removeRule(idx)}
-                        className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                        className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors"
                         title={u.removeRow}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -309,7 +309,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
             </table>
           </div>
         ) : (
-          <p className="text-xs text-slate-500">-</p>
+          <p className="text-xs text-muted-foreground">-</p>
         )}
       </div>
 
@@ -319,7 +319,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
           <button
             type="button"
             onClick={() => setShowNotes((v) => !v)}
-            className="flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             {showNotes ? (
               <ChevronUp className="w-4 h-4" />
@@ -329,8 +329,8 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
             {showNotes ? u.hideNotes : u.showNotes}
           </button>
           {showNotes && (
-            <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
-              <pre className="text-xs text-slate-400 whitespace-pre-wrap font-mono leading-relaxed">
+            <div className="rounded-xl border border-border bg-overlay-subtle p-4">
+              <pre className="text-xs text-muted-foreground whitespace-pre-wrap font-mono leading-relaxed">
                 {form.rawNotes}
               </pre>
             </div>
@@ -343,7 +343,7 @@ export function StepReview({ t, data, onConfirm, onBack }: StepReviewProps) {
         <Button
           onClick={() => onConfirm(form)}
           disabled={!form.name.trim()}
-          className="gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          className="gap-2 bg-brand hover:bg-brand-hover text-white"
         >
           {u.stepConfirm}
         </Button>

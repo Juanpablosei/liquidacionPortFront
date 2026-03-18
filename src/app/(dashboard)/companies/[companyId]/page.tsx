@@ -151,7 +151,7 @@ export default function CompanyDashboardPage() {
 
       {/* Quick access */}
       <div className="mb-2">
-        <p className="text-xs font-medium text-slate-400 uppercase tracking-widest mb-4">
+        <p className="text-xs font-medium text-muted-foreground uppercase tracking-widest mb-4">
           {t.companies.overview.quickAccess}
         </p>
       </div>
@@ -161,17 +161,17 @@ export default function CompanyDashboardPage() {
           <Link
             key={link.href}
             href={link.href}
-            className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-4 flex flex-col gap-3 hover:border-white/[0.1] hover:bg-[#131c2e] transition-all group"
+            className="bg-card border border-border rounded-xl p-4 flex flex-col gap-3 hover:border-border hover:bg-secondary transition-all group"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB] group-hover:bg-[#2563EB]/20 transition-colors">
+            <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand group-hover:bg-brand/20 transition-colors">
               {link.icon}
             </div>
             <div className="flex items-end justify-between">
-              <span className="text-sm font-medium text-white">{link.label}</span>
-              <ArrowRight className="w-3.5 h-3.5 text-slate-600 group-hover:text-[#2563EB] group-hover:translate-x-0.5 transition-all" />
+              <span className="text-sm font-medium text-foreground">{link.label}</span>
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground group-hover:text-brand group-hover:translate-x-0.5 transition-all" />
             </div>
             {link.description && (
-              <p className="text-xs text-slate-500 leading-relaxed -mt-1">{link.description}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed -mt-1">{link.description}</p>
             )}
           </Link>
         ))}
@@ -284,15 +284,15 @@ function DashboardSkeleton() {
     <>
       <div className="flex items-start gap-4 mb-8">
         <div className="flex-1">
-          <div className="h-6 bg-white/[0.06] rounded w-48 mb-2 motion-safe:animate-pulse" />
-          <div className="h-4 bg-white/[0.04] rounded w-72 motion-safe:animate-pulse" />
+          <div className="h-6 bg-overlay rounded w-48 mb-2 motion-safe:animate-pulse" />
+          <div className="h-4 bg-overlay-subtle rounded w-72 motion-safe:animate-pulse" />
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 motion-safe:animate-pulse">
-            <div className="h-4 bg-white/[0.06] rounded w-24 mb-4" />
-            <div className="h-7 bg-white/[0.08] rounded w-16" />
+          <div key={i} className="bg-card border border-border rounded-xl p-6 motion-safe:animate-pulse">
+            <div className="h-4 bg-overlay rounded w-24 mb-4" />
+            <div className="h-7 bg-overlay-strong rounded w-16" />
           </div>
         ))}
       </div>

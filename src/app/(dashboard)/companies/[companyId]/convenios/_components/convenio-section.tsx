@@ -39,7 +39,7 @@ export function ConvenioSection({
 }: ConvenioSectionProps) {
   return (
     <section>
-      <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-3">
+      <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
         {title} ({convenios.length})
       </h2>
       <div className="space-y-2">

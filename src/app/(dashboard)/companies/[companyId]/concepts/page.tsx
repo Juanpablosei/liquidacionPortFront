@@ -29,7 +29,7 @@ import { Input } from '@/components/ui/input';
 import { FormulaEditor } from '@/components/concepts/formula-editor';
 import type { PayrollConcept, ConceptCalcType } from '@/lib/types/payroll';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 type ActiveTab = 'EARNING' | 'DEDUCTION';
 
@@ -59,7 +59,7 @@ export default function ConceptsPage() {
     FIXED:   { label: t.concepts.fixed,    icon: <Hash   className="w-3 h-3" />, color: 'text-blue-400' },
     PERCENT: { label: t.concepts.percent,  icon: <TrendingUp className="w-3 h-3" />, color: 'text-violet-400' },
     HOURLY:  { label: t.concepts.hourly,   icon: <Clock  className="w-3 h-3" />, color: 'text-cyan-400' },
-    MANUAL:  { label: t.concepts.manual,   icon: <Sliders className="w-3 h-3" />, color: 'text-slate-400' },
+    MANUAL:  { label: t.concepts.manual,   icon: <Sliders className="w-3 h-3" />, color: 'text-muted-foreground' },
     FORMULA: { label: t.concepts.formula,  icon: <FunctionSquare className="w-3 h-3" />, color: 'text-amber-400' },
   };
 
@@ -190,7 +190,7 @@ export default function ConceptsPage() {
     {
       header: t.concepts.code,
       cell: ({ row }) => (
-        <span className="font-mono text-xs text-slate-400 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.06]">
+        <span className="font-mono text-xs text-muted-foreground bg-overlay-subtle px-2 py-0.5 rounded border border-border">
           {row.original.code}
         </span>
       ),
@@ -198,7 +198,7 @@ export default function ConceptsPage() {
     {
       header: t.concepts.name,
       cell: ({ row }) => (
-        <span className="text-sm text-white font-medium">{row.original.name}</span>
+        <span className="text-sm text-foreground font-medium">{row.original.name}</span>
       ),
     },
     {
@@ -216,7 +216,7 @@ export default function ConceptsPage() {
     {
       header: t.concepts.value,
       cell: ({ row }) => (
-        <span className="font-mono text-sm text-slate-300">{formatAmount(row.original, localeId)}</span>
+        <span className="font-mono text-sm text-muted-foreground">{formatAmount(row.original, localeId)}</span>
       ),
     },
     {
@@ -228,7 +228,7 @@ export default function ConceptsPage() {
     {
       header: t.concepts.order,
       cell: ({ row }) => (
-        <span className="text-sm text-slate-500 font-mono">{row.original.sortOrder}</span>
+        <span className="text-sm text-muted-foreground font-mono">{row.original.sortOrder}</span>
       ),
     },
     {
@@ -242,8 +242,8 @@ export default function ConceptsPage() {
                 onClick={(e) => { e.stopPropagation(); handleToggleActive(row.original); }}
                 className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                   row.original.isActive
-                    ? 'text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06]'
-                    : 'text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/[0.06]'
+                    ? 'text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06]'
+                    : 'text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/[0.06]'
                 }`}
                 title={row.original.isActive ? t.concepts.deactivate : t.concepts.activate}
               >
@@ -251,7 +251,7 @@ export default function ConceptsPage() {
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
                 aria-label={t.common.edit}
               >
                 <Pencil className="w-4 h-4" />
@@ -261,7 +261,7 @@ export default function ConceptsPage() {
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.delete}
             >
               <Trash2 className="w-4 h-4" />
@@ -275,7 +275,7 @@ export default function ConceptsPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -290,7 +290,7 @@ export default function ConceptsPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.concepts.newConcept}
@@ -300,7 +300,7 @@ export default function ConceptsPage() {
       />
 
       {/* Tabs Haberes / Deducciones */}
-      <div className="flex items-center gap-1 mb-5 bg-white/[0.03] border border-white/[0.06] rounded-xl p-1 w-fit">
+      <div className="flex items-center gap-1 mb-5 bg-overlay-subtle border border-border rounded-xl p-1 w-fit">
         {([
           { key: 'EARNING',   label: t.concepts.earnings,   count: earningsCount,   color: 'text-emerald-400' },
           { key: 'DEDUCTION', label: t.concepts.deductions, count: deductionsCount, color: 'text-red-400' },
@@ -311,12 +311,12 @@ export default function ConceptsPage() {
             aria-pressed={activeTab === tab.key}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all cursor-pointer ${
               activeTab === tab.key
-                ? 'bg-white/[0.08] text-white shadow-sm'
-                : 'text-slate-500 hover:text-slate-300'
+                ? 'bg-overlay-strong text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-muted-foreground'
             }`}
           >
             {tab.label}
-            <span className={`text-xs font-mono ${activeTab === tab.key ? tab.color : 'text-slate-600'}`}>
+            <span className={`text-xs font-mono ${activeTab === tab.key ? tab.color : 'text-muted-foreground'}`}>
               {tab.count}
             </span>
           </button>
@@ -342,7 +342,7 @@ export default function ConceptsPage() {
           canEdit() ? (
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.concepts.newConcept}
@@ -354,11 +354,11 @@ export default function ConceptsPage() {
       {/* Sheet crear/editar */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
+          className="bg-sidebar border-l border-border text-foreground overflow-y-auto"
           style={{ width: 440, maxWidth: '100vw' }}
         >
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">
               {editItem ? t.concepts.editTitle : t.concepts.createTitle}
             </SheetTitle>
           </SheetHeader>
@@ -407,7 +407,7 @@ export default function ConceptsPage() {
                         ? cat === 'EARNING'
                           ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
                           : 'bg-red-500/20 border-red-500/40 text-red-300'
-                        : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                        : 'bg-overlay-subtle border-border text-muted-foreground hover:border-border'
                     }`}
                   >
                     {cat === 'EARNING' ? t.concepts.categoryEarning : t.concepts.categoryDeduction}
@@ -428,11 +428,11 @@ export default function ConceptsPage() {
                       onClick={() => setValue('calcType', type)}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                         watchedCalcType === type
-                          ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
-                          : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                          ? 'bg-brand/20 border-brand/40 text-brand-text'
+                          : 'bg-overlay-subtle border-border text-muted-foreground hover:border-border'
                       }`}
                     >
-                      <span className={watchedCalcType === type ? 'text-[#93BBFC]' : cfg.color}>
+                      <span className={watchedCalcType === type ? 'text-brand-text' : cfg.color}>
                         {cfg.icon}
                       </span>
                       {cfg.label}
@@ -478,8 +478,8 @@ export default function ConceptsPage() {
                         onClick={() => setValue('percentBase', base)}
                         className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                           watch('percentBase') === base
-                            ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
-                            : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                            ? 'bg-brand/20 border-brand/40 text-brand-text'
+                            : 'bg-overlay-subtle border-border text-muted-foreground hover:border-border'
                         }`}
                       >
                         {base === 'BASIC' ? t.concepts.calcBaseBasic : t.concepts.calcBaseGross}
@@ -504,8 +504,8 @@ export default function ConceptsPage() {
             )}
 
             {watchedCalcType === 'MANUAL' && (
-              <div className="rounded-lg bg-white/[0.03] border border-white/[0.06] px-4 py-3">
-                <p className="text-xs text-slate-500 leading-relaxed">
+              <div className="rounded-lg bg-overlay-subtle border border-border px-4 py-3">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   {t.concepts.manualNote}
                 </p>
               </div>
@@ -526,14 +526,14 @@ export default function ConceptsPage() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
               >
                 {isSaving ? t.common.saving : t.common.save}
               </button>

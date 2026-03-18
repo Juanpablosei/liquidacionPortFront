@@ -165,7 +165,7 @@ export default function AdminConveniosPage() {
           canWrite ? (
             <button
               onClick={openCreateConvenio}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               {t.convenios.newConvenio}
@@ -178,14 +178,14 @@ export default function AdminConveniosPage() {
         <LoadingSkeleton variant="cards" rows={4} />
       ) : convenios.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
-            <ScrollText className="w-5 h-5 text-slate-500" />
+          <div className="w-12 h-12 rounded-xl bg-overlay-subtle border border-border flex items-center justify-center">
+            <ScrollText className="w-5 h-5 text-muted-foreground" />
           </div>
-          <p className="text-slate-400 text-sm">{t.convenios.emptyTitle}</p>
+          <p className="text-muted-foreground text-sm">{t.convenios.emptyTitle}</p>
           {canWrite && (
             <button
               onClick={openCreateConvenio}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               {t.convenios.newConvenio}

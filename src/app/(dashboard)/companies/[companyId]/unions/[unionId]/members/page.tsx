@@ -198,7 +198,7 @@ export default function UnionMembersPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={() => setShowAdd(true)}
-              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white text-sm font-medium rounded-xl transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-brand hover:bg-brand/90 text-white text-sm font-medium rounded-xl transition-colors cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               {t.unions.addMember}
@@ -214,9 +214,9 @@ export default function UnionMembersPage() {
             type="checkbox"
             checked={activeOnly}
             onChange={(e) => { setActiveOnly(e.target.checked); setPage(1); }}
-            className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.04] text-[#2563EB] focus:ring-[#2563EB]/50"
+            className="h-4 w-4 rounded border-border bg-overlay-subtle text-brand focus:ring-brand/50"
           />
-          <span className="text-sm text-slate-300">{t.unions.filterActive}</span>
+          <span className="text-sm text-muted-foreground">{t.unions.filterActive}</span>
         </label>
       </div>
 
@@ -230,7 +230,7 @@ export default function UnionMembersPage() {
         onPageChange={setPage}
         emptyMessage={t.unions.noMembers}
         emptyDescription={t.unions.noMembersDesc}
-        emptyIcon={<Users className="w-10 h-10 text-slate-500" />}
+        emptyIcon={<Users className="w-10 h-10 text-muted-foreground" />}
       />
 
       {/* Add member dialog */}
@@ -254,7 +254,7 @@ export default function UnionMembersPage() {
                   <select
                     value={field.value}
                     onChange={field.onChange}
-                    className="flex h-10 w-full rounded-md border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50"
+                    className="flex h-10 w-full rounded-md border border-border bg-overlay-subtle px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand/50"
                   >
                     <option value="">{t.unions.selectEmployee}</option>
                     {employees.map((emp) => (
@@ -280,14 +280,14 @@ export default function UnionMembersPage() {
               <button
                 type="button"
                 onClick={() => setShowAdd(false)}
-                className="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-sm text-slate-300 rounded-xl transition-colors cursor-pointer"
+                className="px-4 py-2 bg-overlay hover:bg-overlay-strong border border-border text-sm text-muted-foreground rounded-xl transition-colors cursor-pointer"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={addingMember}
-                className="px-4 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+                className="px-4 py-2 bg-brand hover:bg-brand/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
               >
                 {addingMember ? t.common.saving : t.common.save}
               </button>
@@ -315,7 +315,7 @@ export default function UnionMembersPage() {
               <button
                 type="button"
                 onClick={() => setRemovingId(null)}
-                className="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-sm text-slate-300 rounded-xl transition-colors cursor-pointer"
+                className="px-4 py-2 bg-overlay hover:bg-overlay-strong border border-border text-sm text-muted-foreground rounded-xl transition-colors cursor-pointer"
               >
                 {t.common.cancel}
               </button>

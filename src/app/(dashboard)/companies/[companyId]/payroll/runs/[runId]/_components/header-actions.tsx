@@ -46,7 +46,7 @@ export function HeaderActions({
       <StatusBadge status={run.status} />
 
       {(isDraft || isCompleted) && canEdit && (
-        <button onClick={onCalculate} disabled={isCalculating} className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
+        <button onClick={onCalculate} disabled={isCalculating} className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
           {isCalculating ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Play className="w-4 h-4" />}
           {isCalculating ? labels.calculating : labels.calculate}
         </button>
@@ -54,7 +54,7 @@ export function HeaderActions({
 
       {isCompleted && canEdit && (
         <RoleGate roles={['OWNER', 'ADMIN']}>
-          <button onClick={onClose} disabled={isClosing} className="inline-flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+          <button onClick={onClose} disabled={isClosing} className="inline-flex items-center gap-2 bg-overlay hover:bg-overlay-strong border border-border text-foreground px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             <Lock className="w-4 h-4" />
             {labels.closeRun}
           </button>
@@ -62,14 +62,14 @@ export function HeaderActions({
       )}
 
       {(isCompleted || isClosed) && (
-        <button onClick={onExport} disabled={isExporting} className="inline-flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-slate-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
+        <button onClick={onExport} disabled={isExporting} className="inline-flex items-center gap-2 bg-overlay-subtle hover:bg-overlay-strong border border-border text-muted-foreground hover:text-foreground px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
           {isExporting ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Download className="w-4 h-4" />}
           {isExporting ? labels.exporting : labels.export}
         </button>
       )}
 
       {(isCompleted || isClosed) && (
-        <button onClick={onExportPdf} disabled={isExportingPdf} className="inline-flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] text-slate-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
+        <button onClick={onExportPdf} disabled={isExportingPdf} className="inline-flex items-center gap-2 bg-overlay-subtle hover:bg-overlay-strong border border-border text-muted-foreground hover:text-foreground px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
           {isExportingPdf ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <FileText className="w-4 h-4" />}
           {isExportingPdf ? labels.exportingPdf : labels.exportPdf}
         </button>

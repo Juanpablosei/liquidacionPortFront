@@ -14,18 +14,18 @@ interface StatCardProps {
 
 export function StatCard({ title, value, icon, description, trend, href }: StatCardProps) {
   const content = (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 flex flex-col gap-4 transition-colors hover:border-white/[0.1] hover:bg-[#131c2e]">
+    <div className="bg-card border border-border rounded-xl p-6 flex flex-col gap-4 transition-colors hover:border-border hover:bg-secondary">
       <div className="flex items-start justify-between">
-        <p className="text-sm text-slate-400">{title}</p>
-        <div className="w-9 h-9 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB]">
+        <p className="text-sm text-muted-foreground">{title}</p>
+        <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand">
           {icon}
         </div>
       </div>
 
       <div>
-        <p className="text-2xl font-semibold text-white tabular-nums tracking-tight">{value}</p>
+        <p className="text-2xl font-semibold text-foreground tabular-nums tracking-tight">{value}</p>
         {description && (
-          <p className="text-xs text-slate-400 mt-1">{description}</p>
+          <p className="text-xs text-muted-foreground mt-1">{description}</p>
         )}
       </div>
 
@@ -43,7 +43,7 @@ export function StatCard({ title, value, icon, description, trend, href }: StatC
 
   if (href) {
     return (
-      <Link href={href} className="block cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-xl focus-visible:outline-none">
+      <Link href={href} className="block cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:rounded-xl focus-visible:outline-none">
         {content}
       </Link>
     );

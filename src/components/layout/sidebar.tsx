@@ -71,11 +71,11 @@ function NavItem({
       aria-label={collapsed ? item.label : undefined}
       title={collapsed ? item.label : undefined}
       className={`
-        flex items-center gap-3 rounded-xl transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16]
+        flex items-center gap-3 rounded-xl transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar
         ${collapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}
         ${isActive
-          ? 'bg-[#2563EB]/15 text-[#93BBFC]'
-          : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+          ? 'bg-brand/15 text-brand-text'
+          : 'text-muted-foreground hover:text-foreground hover:bg-overlay-subtle'
         }
       `}
     >
@@ -149,19 +149,19 @@ export function Sidebar() {
 
   return (
     <aside
-      className="flex flex-col h-screen bg-[#060B16] border-r border-white/[0.06] transition-[width] duration-200 ease-in-out shrink-0"
+      className="flex flex-col h-screen bg-sidebar border-r border-border transition-[width] duration-200 ease-in-out shrink-0"
       style={{ width: sidebarCollapsed ? 64 : 240 }}
     >
       {/* Logo */}
-      <div className={`flex items-center border-b border-white/[0.06] h-14 shrink-0 ${sidebarCollapsed ? 'justify-center px-0' : 'px-4 gap-2.5'}`}>
-        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-lg focus-visible:outline-none">
-          <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center shrink-0">
+      <div className={`flex items-center border-b border-border h-14 shrink-0 ${sidebarCollapsed ? 'justify-center px-0' : 'px-4 gap-2.5'}`}>
+        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:rounded-lg focus-visible:outline-none">
+          <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center shrink-0">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
           {!sidebarCollapsed && (
-            <span className="text-[14px] font-semibold tracking-tight text-white">Silent Port</span>
+            <span className="text-[14px] font-semibold tracking-tight text-foreground">Silent Port</span>
           )}
         </Link>
       </div>
@@ -201,7 +201,7 @@ export function Sidebar() {
 
         {adminNav.length > 0 && (
           <>
-            <div className={`my-2 border-t border-white/[0.06] ${sidebarCollapsed ? 'mx-2' : 'mx-1'}`} />
+            <div className={`my-2 border-t border-border ${sidebarCollapsed ? 'mx-2' : 'mx-1'}`} />
             {adminNav.map((item) => (
               <NavItem
                 key={item.href}
@@ -216,21 +216,21 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom: profile + collapse */}
-      <div className="border-t border-white/[0.06] p-2 shrink-0 flex flex-col gap-1">
+      <div className="border-t border-border p-2 shrink-0 flex flex-col gap-1">
         <Link
           href={ROUTES.profile}
           aria-label={sidebarCollapsed ? displayName : undefined}
           title={sidebarCollapsed ? displayName : undefined}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          className={`flex items-center gap-2.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-overlay-subtle transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
         >
-          <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
+          <div className="w-7 h-7 rounded-full bg-brand/20 flex items-center justify-center text-xs font-semibold text-brand-text shrink-0">
             {initials}
           </div>
           {!sidebarCollapsed && (
             <div className="min-w-0">
-              <p className="text-sm font-medium text-white truncate leading-none">{displayName}</p>
+              <p className="text-sm font-medium text-foreground truncate leading-none">{displayName}</p>
               {user?.email && (
-                <p className="text-xs text-slate-400 truncate">{user.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               )}
             </div>
           )}
@@ -240,7 +240,7 @@ export function Sidebar() {
           onClick={handleLogout}
           aria-label={sidebarCollapsed ? t.sidebar.logout : undefined}
           title={sidebarCollapsed ? t.sidebar.logout : undefined}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          className={`flex items-center gap-2.5 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
         >
           <LogOut className="w-4 h-4 shrink-0" />
           {!sidebarCollapsed && <span className="text-sm">{t.sidebar.logoutShort}</span>}
@@ -249,7 +249,7 @@ export function Sidebar() {
         <button
           onClick={toggleSidebar}
           aria-label={sidebarCollapsed ? t.sidebar.expand : t.sidebar.collapse}
-          className={`flex items-center gap-2.5 rounded-xl text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
+          className={`flex items-center gap-2.5 rounded-xl text-muted-foreground hover:text-muted-foreground hover:bg-overlay-subtle transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-3 py-2'}`}
           title={sidebarCollapsed ? t.sidebar.expandShort : t.sidebar.collapseShort}
         >
           {sidebarCollapsed
@@ -308,21 +308,21 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <aside className="flex flex-col h-screen w-[240px] bg-[#060B16] border-r border-white/[0.06]">
+    <aside className="flex flex-col h-screen w-[240px] bg-sidebar border-r border-border">
       {/* Logo + close */}
-      <div className="flex items-center justify-between border-b border-white/[0.06] h-14 px-4 shrink-0">
-        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:rounded-lg focus-visible:outline-none" onClick={onClose}>
-          <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center shrink-0">
+      <div className="flex items-center justify-between border-b border-border h-14 px-4 shrink-0">
+        <Link href={ROUTES.companies} aria-label="Silent Port — Home" className="flex items-center gap-2.5 focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:rounded-lg focus-visible:outline-none" onClick={onClose}>
+          <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center shrink-0">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
             </svg>
           </div>
-          <span className="text-[14px] font-semibold tracking-tight text-white">Silent Port</span>
+          <span className="text-[14px] font-semibold tracking-tight text-foreground">Silent Port</span>
         </Link>
         <button
           onClick={onClose}
           aria-label={t.sidebar.closeMenu}
-          className="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/[0.05] transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16]"
+          className="w-10 h-10 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar"
         >
           <X className="w-4 h-4" />
         </button>
@@ -342,7 +342,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
         ))}
         {adminNav.length > 0 && (
           <>
-            <div className="my-2 border-t border-white/[0.06] mx-1" />
+            <div className="my-2 border-t border-border mx-1" />
             {adminNav.map((item) => (
               <div key={item.href} onClick={onClose}>
                 <NavItem item={item} collapsed={false} pathname={pathname} role={role} />
@@ -353,24 +353,24 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
       </nav>
 
       {/* Bottom */}
-      <div className="border-t border-white/[0.06] p-2 shrink-0 flex flex-col gap-1">
+      <div className="border-t border-border p-2 shrink-0 flex flex-col gap-1">
         <Link
           href={ROUTES.profile}
           onClick={onClose}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] focus-visible:outline-none"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-overlay-subtle transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar focus-visible:outline-none"
         >
-          <div className="w-7 h-7 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-xs font-semibold text-[#93BBFC] shrink-0">
+          <div className="w-7 h-7 rounded-full bg-brand/20 flex items-center justify-center text-xs font-semibold text-brand-text shrink-0">
             {initials}
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-medium text-white truncate leading-none">{displayName}</p>
-            {user?.email && <p className="text-xs text-slate-400 truncate">{user.email}</p>}
+            <p className="text-sm font-medium text-foreground truncate leading-none">{displayName}</p>
+            {user?.email && <p className="text-xs text-muted-foreground truncate">{user.email}</p>}
           </div>
         </Link>
         <button
           onClick={handleLogout}
           aria-label={t.sidebar.logout}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[#060B16] focus-visible:outline-none"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar focus-visible:outline-none"
         >
           <LogOut className="w-4 h-4 shrink-0" />
           <span className="text-sm">{t.sidebar.logoutShort}</span>

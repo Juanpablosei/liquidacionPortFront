@@ -6,6 +6,8 @@ import { ArrowRight, Users, FileText, TrendingUp, Shield, Zap, BarChart3 } from 
 import { ROUTES } from '@/lib/constants/routes';
 import { useTranslation } from '@/lib/i18n';
 import { useAuthStore } from '@/stores/auth-store';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { LocaleToggle } from '@/components/layout/locale-toggle';
 
 const BAR_DATA = [
   { month: 'Ago', value: 68, amount: '$2.1M' },
@@ -51,10 +53,10 @@ function StatCard({ value, suffix = '', label, locale }: { value: number; suffix
   const count = useCountUp(value);
   return (
     <div className="flex flex-col gap-1">
-      <span className="text-4xl font-semibold text-white tracking-tight tabular-nums">
+      <span className="text-4xl font-semibold text-foreground tracking-tight tabular-nums">
         {count.toLocaleString(locale === 'en' ? 'en-US' : 'es-AR')}{suffix}
       </span>
-      <span className="text-sm text-slate-400">{label}</span>
+      <span className="text-sm text-muted-foreground">{label}</span>
     </div>
   );
 }
@@ -79,7 +81,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0A0F1C] text-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-background text-foreground font-sans overflow-x-hidden">
 
       {/* Grid pattern overlay */}
       <div
@@ -102,20 +104,22 @@ export default function HomePage() {
       {/* NAV */}
       <nav className="relative z-10 flex items-center justify-between px-5 sm:px-8 py-5 max-w-7xl mx-auto">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-[#2563EB] flex items-center justify-center">
+          <div className="w-7 h-7 rounded-lg bg-brand flex items-center justify-center">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </div>
           <span className="text-[15px] font-semibold tracking-tight">Silent Port</span>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <LocaleToggle />
           <Link href={ROUTES.login}
-            className="text-sm text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg">
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none focus-visible:rounded-lg">
             {t.landing.login}
           </Link>
           <Link href={ROUTES.register}
-            className="text-sm bg-white text-[#0A0F1C] px-4 py-2 rounded-lg font-medium hover:bg-slate-100 transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+            className="text-sm bg-white text-gray-950 px-4 py-2 rounded-lg font-medium hover:bg-slate-100 transition-colors focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none">
             {t.landing.startFree}
           </Link>
         </div>
@@ -124,32 +128,32 @@ export default function HomePage() {
       {/* HERO */}
       <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 pt-20 pb-24">
         <div className="max-w-3xl">
-          <div className="inline-flex items-center gap-2 bg-[#2563EB]/10 border border-[#2563EB]/20 rounded-full px-4 py-1.5 mb-8"
+          <div className="inline-flex items-center gap-2 bg-brand/10 border border-brand/20 rounded-full px-4 py-1.5 mb-8"
             style={{ animation: 'fadeUp 0.6s ease both' }}>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] motion-safe:animate-pulse" />
-            <span className="text-xs text-[#93BBFC] font-medium">{t.landing.metaTitle.replace('Silent Port — ', '')}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-brand motion-safe:animate-pulse" />
+            <span className="text-xs text-brand-text font-medium">{t.landing.metaTitle.replace('Silent Port — ', '')}</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold leading-[1.08] tracking-tight mb-6"
             style={{ animation: 'fadeUp 0.6s ease 0.1s both' }}>
             {t.landing.heroTitle1}
             <br />
-            <span className="text-[#2563EB]">{t.landing.heroTitle2}</span>
+            <span className="text-brand">{t.landing.heroTitle2}</span>
           </h1>
 
-          <p className="text-lg text-slate-400 leading-relaxed mb-10 max-w-xl"
+          <p className="text-lg text-muted-foreground leading-relaxed mb-10 max-w-xl"
             style={{ animation: 'fadeUp 0.6s ease 0.2s both' }}>
             {t.landing.heroDesc}
           </p>
 
           <div className="flex items-center gap-4" style={{ animation: 'fadeUp 0.6s ease 0.3s both' }}>
             <Link href={ROUTES.register}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-6 py-3 rounded-xl font-medium text-sm transition-all hover:shadow-[0_0_32px_rgba(37,99,235,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-6 py-3 rounded-xl font-medium text-sm transition-all hover:shadow-[0_0_32px_rgba(37,99,235,0.4)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none">
               {t.landing.heroCta}
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link href={ROUTES.login}
-              className="text-sm text-slate-400 hover:text-white transition-colors focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none focus-visible:rounded-lg">
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none focus-visible:rounded-lg">
               {t.landing.heroLogin}
             </Link>
           </div>
@@ -157,22 +161,22 @@ export default function HomePage() {
 
         {/* DASHBOARD PREVIEW */}
         <div className="mt-20 relative overflow-hidden" style={{ animation: 'fadeUp 0.8s ease 0.4s both' }}>
-          <div className="rounded-2xl border border-white/[0.06] bg-[#0F172A]/80 backdrop-blur overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
+          <div className="rounded-2xl border border-border bg-card/80 backdrop-blur overflow-hidden shadow-[0_32px_80px_rgba(0,0,0,0.6)]">
 
             {/* Window chrome */}
-            <div className="flex items-center gap-2 px-5 py-3 border-b border-white/[0.06]">
+            <div className="flex items-center gap-2 px-5 py-3 border-b border-border">
               <div className="w-3 h-3 rounded-full bg-[#FF5F56]" />
               <div className="w-3 h-3 rounded-full bg-[#FFBD2E]" />
               <div className="w-3 h-3 rounded-full bg-[#27C93F]" />
-              <span className="ml-4 text-xs text-slate-500">{t.landing.demoTitle}</span>
+              <span className="ml-4 text-xs text-muted-foreground">{t.landing.demoTitle}</span>
             </div>
 
             <div className="grid grid-cols-12 gap-0">
               {/* Sidebar simulado */}
-              <div className="col-span-2 border-r border-white/[0.05] py-6 px-3 hidden md:flex flex-col gap-1">
+              <div className="col-span-2 border-r border-border py-6 px-3 hidden md:flex flex-col gap-1">
                 {(t.landing.demoNav as string[]).map((item: string, i: number) => (
                   <div key={item}
-                    className={`text-xs px-3 py-2 rounded-lg ${i === 3 ? 'bg-[#2563EB]/15 text-[#93BBFC]' : 'text-slate-500'}`}>
+                    className={`text-xs px-3 py-2 rounded-lg ${i === 3 ? 'bg-brand/15 text-brand-text' : 'text-muted-foreground'}`}>
                     {item}
                   </div>
                 ))}
@@ -190,13 +194,13 @@ export default function HomePage() {
                     { label: t.landing.demoPayslips, value: '48', delta: null },
                   ].map((s) => (
                     <div key={s.label}
-                      className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                      <p className="text-[10px] text-slate-500 mb-1">{s.label}</p>
-                      <p className={`text-sm font-semibold ${s.status ? 'text-[#4ADE80]' : 'text-white'} tabular-nums`}>
+                      className="bg-overlay-subtle border border-border rounded-xl p-3">
+                      <p className="text-[10px] text-muted-foreground mb-1">{s.label}</p>
+                      <p className={`text-sm font-semibold ${s.status ? 'text-emerald-400' : 'text-foreground'} tabular-nums`}>
                         {s.value}
                       </p>
                       {s.delta && (
-                        <p className="text-[10px] text-[#4ADE80] mt-0.5">{s.delta} {t.landing.demoVsLastMonth}</p>
+                        <p className="text-[10px] text-emerald-400 mt-0.5">{s.delta} {t.landing.demoVsLastMonth}</p>
                       )}
                     </div>
                   ))}
@@ -206,10 +210,10 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
 
                   {/* Bar chart */}
-                  <div className="col-span-1 sm:col-span-3 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
+                  <div className="col-span-1 sm:col-span-3 bg-overlay-subtle border border-border rounded-xl p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <p className="text-xs font-medium text-white">{t.landing.demoMonthlyPayroll}</p>
-                      <span className="text-[10px] text-slate-500 bg-white/[0.04] px-2 py-0.5 rounded">{t.landing.demoLast7Months}</span>
+                      <p className="text-xs font-medium text-foreground">{t.landing.demoMonthlyPayroll}</p>
+                      <span className="text-[10px] text-muted-foreground bg-overlay-subtle px-2 py-0.5 rounded">{t.landing.demoLast7Months}</span>
                     </div>
                     <div className="flex items-end gap-2 h-28">
                       {BAR_DATA.map((bar, i) => (
@@ -227,7 +231,7 @@ export default function HomePage() {
                               }}
                             />
                           </div>
-                          <span className="text-[9px] text-slate-600">{bar.month}</span>
+                          <span className="text-[9px] text-muted-foreground">{bar.month}</span>
                         </div>
                       ))}
                     </div>
@@ -237,8 +241,8 @@ export default function HomePage() {
                   <div className="col-span-1 sm:col-span-2 flex flex-col gap-3">
 
                     {/* Line chart */}
-                    <div className="flex-1 bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                      <p className="text-xs font-medium text-white mb-3">{t.landing.demoCostPerEmployee}</p>
+                    <div className="flex-1 bg-overlay-subtle border border-border rounded-xl p-4">
+                      <p className="text-xs font-medium text-foreground mb-3">{t.landing.demoCostPerEmployee}</p>
                       <svg viewBox="0 0 100 80" className="w-full h-16" preserveAspectRatio="none">
                         <defs>
                           <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
@@ -262,12 +266,12 @@ export default function HomePage() {
                     </div>
 
                     {/* Mini table */}
-                    <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-3">
-                      <p className="text-[10px] text-slate-500 mb-2">{t.landing.demoLastEmployees}</p>
+                    <div className="bg-overlay-subtle border border-border rounded-xl p-3">
+                      <p className="text-[10px] text-muted-foreground mb-2">{t.landing.demoLastEmployees}</p>
                       {['García, María', 'López, Juan', 'Pérez, Ana'].map((name) => (
-                        <div key={name} className="flex items-center justify-between py-1 border-b border-white/[0.04] last:border-0">
-                          <span className="text-[10px] text-slate-300">{name}</span>
-                          <span className="text-[10px] text-[#4ADE80]">{t.landing.demoActive}</span>
+                        <div key={name} className="flex items-center justify-between py-1 border-b border-border last:border-0">
+                          <span className="text-[10px] text-muted-foreground">{name}</span>
+                          <span className="text-[10px] text-emerald-400">{t.landing.demoActive}</span>
                         </div>
                       ))}
                     </div>
@@ -284,7 +288,7 @@ export default function HomePage() {
       </section>
 
       {/* STATS */}
-      <section className="relative z-10 border-y border-white/[0.06] bg-white/[0.02]">
+      <section className="relative z-10 border-y border-border bg-overlay-subtle">
         <div className="max-w-7xl mx-auto px-5 sm:px-8 py-16 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10">
           <StatCard value={1200} suffix="+" label={t.landing.statsCompanies} locale={locale} />
           <StatCard value={48000} suffix="+" label={t.landing.statsEmployees} locale={locale} />
@@ -296,42 +300,42 @@ export default function HomePage() {
       {/* FEATURES */}
       <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-28">
         <div className="mb-14">
-          <p className="text-xs font-medium text-[#2563EB] uppercase tracking-widest mb-3">{t.landing.featuresTitle}</p>
+          <p className="text-xs font-medium text-brand uppercase tracking-widest mb-3">{t.landing.featuresTitle}</p>
           <h2 className="text-4xl font-semibold tracking-tight">
             {t.landing.featuresSubtitle1}
             <br />
-            <span className="text-slate-400">{t.landing.featuresSubtitle2}</span>
+            <span className="text-muted-foreground">{t.landing.featuresSubtitle2}</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.05] rounded-2xl overflow-hidden border border-white/[0.05]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-overlay rounded-2xl overflow-hidden border border-border">
           {FEATURES.map((f) => (
             <div key={f.title}
-              className="bg-[#0A0F1C] p-7 hover:bg-[#0F172A] transition-colors group">
-              <div className="w-9 h-9 rounded-xl bg-[#2563EB]/10 border border-[#2563EB]/20 flex items-center justify-center text-[#2563EB] mb-5 group-hover:bg-[#2563EB]/20 transition-colors">
+              className="bg-background p-7 hover:bg-card transition-colors group">
+              <div className="w-9 h-9 rounded-xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand mb-5 group-hover:bg-brand/20 transition-colors">
                 {f.icon}
               </div>
-              <h3 className="font-semibold text-white mb-2">{f.title}</h3>
-              <p className="text-sm text-slate-400 leading-relaxed">{f.desc}</p>
+              <h3 className="font-semibold text-foreground mb-2">{f.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
       {/* QUOTE / TESTIMONIAL */}
-      <section className="relative z-10 border-y border-white/[0.06] bg-white/[0.02]">
+      <section className="relative z-10 border-y border-border bg-overlay-subtle">
         <div className="max-w-3xl mx-auto px-5 sm:px-8 py-20 text-center">
-          <div className="text-5xl text-[#2563EB]/30 font-serif mb-6">&quot;</div>
-          <p className="text-xl text-white leading-relaxed font-light mb-8">
+          <div className="text-5xl text-brand/30 font-serif mb-6">&quot;</div>
+          <p className="text-xl text-foreground leading-relaxed font-light mb-8">
             {t.landing.testimonial}
           </p>
           <div className="flex items-center justify-center gap-3">
-            <div className="w-9 h-9 rounded-full bg-[#2563EB]/20 flex items-center justify-center text-sm font-semibold text-[#2563EB]">
+            <div className="w-9 h-9 rounded-full bg-brand/20 flex items-center justify-center text-sm font-semibold text-brand">
               CR
             </div>
             <div className="text-left">
-              <p className="text-sm font-medium text-white">{t.landing.testimonialAuthor}</p>
-              <p className="text-xs text-slate-500">{t.landing.testimonialRole}</p>
+              <p className="text-sm font-medium text-foreground">{t.landing.testimonialAuthor}</p>
+              <p className="text-xs text-muted-foreground">{t.landing.testimonialRole}</p>
             </div>
           </div>
         </div>
@@ -340,34 +344,34 @@ export default function HomePage() {
       {/* CTA FINAL */}
       <section className="relative z-10 max-w-7xl mx-auto px-5 sm:px-8 py-28 text-center">
         <div className="relative inline-block mb-8">
-          <div className="absolute inset-0 blur-3xl bg-[#2563EB]/20 rounded-full" />
+          <div className="absolute inset-0 blur-3xl bg-brand/20 rounded-full" />
         </div>
         <h2 className="text-3xl sm:text-5xl font-semibold tracking-tight mb-5">
           {t.landing.ctaTitle}
           <br />
-          <span className="text-slate-400">{t.landing.ctaSubtitle}</span>
+          <span className="text-muted-foreground">{t.landing.ctaSubtitle}</span>
         </h2>
-        <p className="text-slate-400 mb-10 text-lg max-w-md mx-auto">
+        <p className="text-muted-foreground mb-10 text-lg max-w-md mx-auto">
           {t.landing.ctaDesc}
         </p>
         <Link href={ROUTES.register}
-          className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-8 py-4 rounded-xl font-medium text-base transition-all hover:shadow-[0_0_48px_rgba(37,99,235,0.5)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none">
+          className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-8 py-4 rounded-xl font-medium text-base transition-all hover:shadow-[0_0_48px_rgba(37,99,235,0.5)] active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none">
           {t.landing.ctaButton}
           <ArrowRight className="w-5 h-5" />
         </Link>
       </section>
 
       {/* FOOTER */}
-      <footer className="relative z-10 border-t border-white/[0.06] px-5 sm:px-8 py-8 max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <footer className="relative z-10 border-t border-border px-5 sm:px-8 py-8 max-w-7xl mx-auto flex flex-col sm:flex-row gap-4 items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-md bg-[#2563EB] flex items-center justify-center">
+          <div className="w-5 h-5 rounded-md bg-brand flex items-center justify-center">
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <path d="M1.5 2.5h7M1.5 5h4M1.5 7.5h5.5" stroke="white" strokeWidth="1.2" strokeLinecap="round"/>
             </svg>
           </div>
-          <span className="text-sm font-medium text-slate-400">Silent Port</span>
+          <span className="text-sm font-medium text-muted-foreground">Silent Port</span>
         </div>
-        <p className="text-xs text-slate-600">
+        <p className="text-xs text-muted-foreground">
           {t.landing.footer.replace('{year}', String(new Date().getFullYear()))}
         </p>
       </footer>

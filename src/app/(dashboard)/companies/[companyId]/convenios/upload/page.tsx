@@ -132,7 +132,7 @@ export default function ConvenioUploadPage() {
                   <div
                     className={cn(
                       'h-px w-8',
-                      isDone ? 'bg-[#2563EB]' : 'bg-white/[0.12]',
+                      isDone ? 'bg-brand' : 'bg-overlay-strong',
                     )}
                   />
                 )}
@@ -141,10 +141,10 @@ export default function ConvenioUploadPage() {
                     className={cn(
                       'flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold transition-colors',
                       isActive
-                        ? 'bg-[#2563EB] text-white'
+                        ? 'bg-brand text-white'
                         : isDone
-                          ? 'bg-[#2563EB]/20 text-[#2563EB]'
-                          : 'bg-white/[0.06] text-slate-500',
+                          ? 'bg-brand/20 text-brand'
+                          : 'bg-overlay text-muted-foreground',
                     )}
                   >
                     {idx + 1}
@@ -152,7 +152,7 @@ export default function ConvenioUploadPage() {
                   <span
                     className={cn(
                       'text-sm font-medium hidden sm:inline',
-                      isActive ? 'text-white' : 'text-slate-500',
+                      isActive ? 'text-foreground' : 'text-muted-foreground',
                     )}
                   >
                     {stepLabels[s]}

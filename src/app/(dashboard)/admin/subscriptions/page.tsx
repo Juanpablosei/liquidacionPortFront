@@ -74,10 +74,10 @@ export default function SubscriptionsPage() {
           title={t.admin.noSubscriptions}
         />
       ) : (
-        <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+        <div className="rounded-xl border border-border bg-secondary overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-xs text-slate-500 uppercase border-b border-white/[0.06]">
+              <tr className="text-xs text-muted-foreground uppercase border-b border-border">
                 <th className="text-left px-4 py-3 font-medium">{t.admin.company}</th>
                 <th className="text-left px-4 py-3 font-medium">{t.admin.plan}</th>
                 <th className="text-left px-4 py-3 font-medium">{t.admin.cycle}</th>
@@ -85,14 +85,14 @@ export default function SubscriptionsPage() {
                 <th className="text-right px-4 py-3 font-medium">{t.admin.price}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-border">
               {data.items.map((sub) => (
                 <tr
                   key={sub.id}
-                  className="text-slate-300 hover:bg-white/[0.02] cursor-pointer transition-colors"
+                  className="text-muted-foreground hover:bg-overlay-subtle cursor-pointer transition-colors"
                   onClick={() => router.push(ROUTES.adminSubscription(sub.id))}
                 >
-                  <td className="px-4 py-3 font-medium text-white">{sub.company?.name ?? '—'}</td>
+                  <td className="px-4 py-3 font-medium text-foreground">{sub.company?.name ?? '—'}</td>
                   <td className="px-4 py-3">{sub.plan?.name ?? '—'}</td>
                   <td className="px-4 py-3">{CYCLE_LABELS[sub.billingCycle]?.(t) ?? sub.billingCycle}</td>
                   <td className="px-4 py-3">
@@ -112,20 +112,20 @@ export default function SubscriptionsPage() {
           </table>
 
           {data.pages > 1 && (
-            <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.06] text-xs text-slate-500">
+            <div className="flex items-center justify-between px-4 py-3 border-t border-border text-xs text-muted-foreground">
               <span>{data.total} {data.total === 1 ? t.dataTable.record : t.dataTable.records}</span>
               <div className="flex gap-2">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}
-                  className="px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-30 transition-colors"
+                  className="px-3 py-1 rounded-lg bg-overlay-subtle hover:bg-overlay-strong disabled:opacity-30 transition-colors"
                 >
                   {t.dataTable.prevPage}
                 </button>
                 <button
                   onClick={() => setPage((p) => Math.min(data.pages, p + 1))}
                   disabled={page === data.pages}
-                  className="px-3 py-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] disabled:opacity-30 transition-colors"
+                  className="px-3 py-1 rounded-lg bg-overlay-subtle hover:bg-overlay-strong disabled:opacity-30 transition-colors"
                 >
                   {t.dataTable.nextPage}
                 </button>

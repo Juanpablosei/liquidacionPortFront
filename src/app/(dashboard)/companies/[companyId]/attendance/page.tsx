@@ -37,7 +37,7 @@ import {
 import type { Attendance } from '@/lib/types/attendance';
 import type { Employee } from '@/lib/types/employee';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 function formatDate(d: string, locale: string): string {
   const iso = d.includes('T') ? d : d + 'T00:00:00';
@@ -169,37 +169,37 @@ export default function AttendancePage() {
     {
       header: t.attendance.employee,
       cell: ({ row }) => (
-        <span className="text-sm text-white">{empName(row.original)}</span>
+        <span className="text-sm text-foreground">{empName(row.original)}</span>
       ),
     },
     {
       header: t.attendance.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date, localeId)}</span>
+        <span className="font-mono text-muted-foreground text-sm">{formatDate(row.original.date, localeId)}</span>
       ),
     },
     {
       header: t.attendance.checkIn,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{row.original.clockIn ?? '—'}</span>
+        <span className="font-mono text-muted-foreground text-sm">{row.original.clockIn ?? '—'}</span>
       ),
     },
     {
       header: t.attendance.checkOut,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{row.original.clockOut ?? '—'}</span>
+        <span className="font-mono text-muted-foreground text-sm">{row.original.clockOut ?? '—'}</span>
       ),
     },
     {
       header: t.attendance.worked,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-400 text-sm">{formatMinutes(row.original.workedMinutes)}</span>
+        <span className="font-mono text-muted-foreground text-sm">{formatMinutes(row.original.workedMinutes)}</span>
       ),
     },
     {
       header: t.attendance.notes,
       cell: ({ row }) => (
-        <span className="text-slate-400 text-sm truncate max-w-[120px] sm:max-w-[180px] block">{row.original.notes ?? '—'}</span>
+        <span className="text-muted-foreground text-sm truncate max-w-[120px] sm:max-w-[180px] block">{row.original.notes ?? '—'}</span>
       ),
     },
     {
@@ -210,7 +210,7 @@ export default function AttendancePage() {
           {canEdit() && (
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.edit}
             >
               <Pencil className="w-4 h-4" />
@@ -219,7 +219,7 @@ export default function AttendancePage() {
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.delete}
             >
               <Trash2 className="w-4 h-4" />
@@ -233,7 +233,7 @@ export default function AttendancePage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -249,14 +249,14 @@ export default function AttendancePage() {
             <div className="flex items-center gap-2">
               <Link
                 href={ROUTES.attendanceImport(companyId)}
-                className="inline-flex items-center gap-2 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-slate-300 hover:text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-overlay-subtle hover:bg-overlay-strong border border-border text-muted-foreground hover:text-foreground px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 {t.attendance.importBtn}
               </Link>
               <button
                 onClick={openCreate}
-                className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 {t.attendance.register}
@@ -272,7 +272,7 @@ export default function AttendancePage() {
           value={filterEmp}
           onChange={(e) => setFilterEmp(e.target.value)}
           aria-label={t.attendance.employee}
-          className="flex-1 min-w-0 px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="flex-1 min-w-0 px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         >
           <option value="">{t.attendance.allEmployees}</option>
           {employees.map((e) => (
@@ -284,14 +284,14 @@ export default function AttendancePage() {
           value={filterFrom}
           onChange={(e) => setFilterFrom(e.target.value)}
           aria-label={t.common.from}
-          className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         />
         <input
           type="date"
           value={filterTo}
           onChange={(e) => setFilterTo(e.target.value)}
           aria-label={t.common.to}
-          className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         />
       </div>
 
@@ -314,7 +314,7 @@ export default function AttendancePage() {
           canEdit() && !filterEmp && !filterFrom && !filterTo ? (
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.attendance.emptyAction}
@@ -326,11 +326,11 @@ export default function AttendancePage() {
       {/* Sheet crear/editar */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
+          className="bg-sidebar border-l border-border text-foreground overflow-y-auto"
           style={{ width: 420, maxWidth: '100vw' }}
         >
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">
               {editItem ? t.attendance.editTitle : t.attendance.createTitle}
             </SheetTitle>
           </SheetHeader>
@@ -344,7 +344,7 @@ export default function AttendancePage() {
                   <SelectTrigger className={INPUT_CLASS}>
                     <SelectValue placeholder={t.attendance.selectEmployee} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {employees.map((e) => (
                       <SelectItem key={e.id} value={e.id}>
                         {e.lastName}, {e.firstName}
@@ -374,7 +374,7 @@ export default function AttendancePage() {
                 rows={3}
                 maxLength={500}
                 placeholder={t.common.notesPlaceholder}
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-[#2563EB]/50 transition-colors resize-none"
+                className="w-full px-3 py-2 bg-overlay border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand/50 transition-colors resize-none"
               />
             </FormField>
 
@@ -382,14 +382,14 @@ export default function AttendancePage() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
               >
                 {isSaving ? t.common.saving : t.common.save}
               </button>

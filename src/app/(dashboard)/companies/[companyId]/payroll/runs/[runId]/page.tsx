@@ -291,7 +291,7 @@ export default function RunDetailPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -355,7 +355,7 @@ export default function RunDetailPage() {
         emptyDescription={isRunning ? t.payroll.runDetail.generatingMsg : isDraft ? t.payroll.runDetail.notCalculatedMsg : t.payroll.runDetail.noSlipsGenerated}
         emptyAction={
           isDraft && canEdit() ? (
-            <button onClick={handleCalculate} disabled={isCalculating} className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
+            <button onClick={handleCalculate} disabled={isCalculating} className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors disabled:opacity-50">
               {isCalculating ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Play className="w-4 h-4" />}
               {isCalculating ? t.payroll.runDetail.calculating : t.payroll.runDetail.calculateAction}
             </button>

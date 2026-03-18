@@ -403,7 +403,7 @@ export default function EmployeeDetailPage() {
               {!editMode && (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   {t.common.edit}
@@ -412,7 +412,7 @@ export default function EmployeeDetailPage() {
               {!settlement && (
                 <button
                   onClick={() => setShowSettlement(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors cursor-pointer"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   {t.settlements.create.title}

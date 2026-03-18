@@ -81,10 +81,10 @@ export default function UnionDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 bg-white/[0.05] rounded motion-safe:animate-pulse" />
-        <div className="rounded-xl border border-white/[0.06] p-6 space-y-4">
+        <div className="h-8 w-48 bg-overlay rounded motion-safe:animate-pulse" />
+        <div className="rounded-xl border border-border p-6 space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="h-5 bg-white/[0.05] rounded motion-safe:animate-pulse" />
+            <div key={i} className="h-5 bg-overlay rounded motion-safe:animate-pulse" />
           ))}
         </div>
       </div>
@@ -109,7 +109,7 @@ export default function UnionDetailPage() {
               {!editMode && (
                 <button
                   onClick={() => setEditMode(true)}
-                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors cursor-pointer"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                   {t.common.edit}
@@ -122,7 +122,7 @@ export default function UnionDetailPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Info / Edit card */}
-        <div className="lg:col-span-2 rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">
+        <div className="lg:col-span-2 rounded-xl border border-border bg-overlay-subtle p-6">
           {editMode ? (
             <form onSubmit={form.handleSubmit(onSave)} className="space-y-4">
               <FormField label={t.unions.name} name="name" error={form.formState.errors.name?.message} required>
@@ -141,7 +141,7 @@ export default function UnionDetailPage() {
                     <select
                       value={field.value ?? ''}
                       onChange={field.onChange}
-                      className="flex h-10 w-full rounded-md border border-white/[0.08] bg-white/[0.04] px-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#2563EB]/50"
+                      className="flex h-10 w-full rounded-md border border-border bg-overlay-subtle px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-brand/50"
                     >
                       <option value="PERCENTAGE">{t.unions.duesPercentage}</option>
                       <option value="FIXED_AMOUNT">{t.unions.duesFixedAmount}</option>
@@ -168,9 +168,9 @@ export default function UnionDetailPage() {
                         type="checkbox"
                         checked={field.value ?? false}
                         onChange={(e) => field.onChange(e.target.checked)}
-                        className="h-4 w-4 rounded border-white/[0.2] bg-white/[0.04] text-[#2563EB] focus:ring-[#2563EB]/50"
+                        className="h-4 w-4 rounded border-border bg-overlay-subtle text-brand focus:ring-brand/50"
                       />
-                      <span className="text-sm text-slate-300">{t.unions.isActive}</span>
+                      <span className="text-sm text-muted-foreground">{t.unions.isActive}</span>
                     </label>
                   )}
                 />
@@ -180,14 +180,14 @@ export default function UnionDetailPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-4 py-2 bg-[#2563EB] hover:bg-[#2563EB]/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+                  className="px-4 py-2 bg-brand hover:bg-brand/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   {saving ? t.common.saving : t.common.save}
                 </button>
                 <button
                   type="button"
                   onClick={() => setEditMode(false)}
-                  className="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] text-sm text-slate-300 rounded-xl transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-overlay hover:bg-overlay-strong border border-border text-sm text-muted-foreground rounded-xl transition-colors cursor-pointer"
                 >
                   {t.common.cancel}
                 </button>
@@ -209,20 +209,20 @@ export default function UnionDetailPage() {
         </div>
 
         {/* Side card — quick link to members */}
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 flex flex-col gap-4">
-          <h3 className="text-sm font-medium text-slate-400 uppercase tracking-wider">{t.unions.members}</h3>
+        <div className="rounded-xl border border-border bg-overlay-subtle p-6 flex flex-col gap-4">
+          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t.unions.members}</h3>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-[#2563EB]/10 flex items-center justify-center">
-              <Users className="w-5 h-5 text-[#2563EB]" />
+            <div className="w-10 h-10 rounded-lg bg-brand/10 flex items-center justify-center">
+              <Users className="w-5 h-5 text-brand" />
             </div>
             <div>
-              <p className="text-2xl font-semibold text-white">{union.activeMembersCount ?? 0}</p>
-              <p className="text-xs text-slate-400">{t.unions.activeMembers}</p>
+              <p className="text-2xl font-semibold text-foreground">{union.activeMembersCount ?? 0}</p>
+              <p className="text-xs text-muted-foreground">{t.unions.activeMembers}</p>
             </div>
           </div>
           <Link
             href={ROUTES.unionMembers(companyId, unionId)}
-            className="mt-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors"
+            className="mt-auto inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors"
           >
             <Users className="w-3.5 h-3.5" />
             {t.unions.membersTitle}
@@ -236,10 +236,10 @@ export default function UnionDetailPage() {
 function InfoItem({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <div className="mt-0.5 text-slate-500">{icon}</div>
+      <div className="mt-0.5 text-muted-foreground">{icon}</div>
       <div>
-        <dt className="text-xs text-slate-400">{label}</dt>
-        <dd className="text-sm text-slate-200 mt-0.5">{value}</dd>
+        <dt className="text-xs text-muted-foreground">{label}</dt>
+        <dd className="text-sm text-foreground mt-0.5">{value}</dd>
       </div>
     </div>
   );

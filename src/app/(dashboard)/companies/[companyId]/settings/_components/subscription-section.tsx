@@ -60,8 +60,8 @@ export function SubscriptionSection({ companyId }: SubscriptionSectionProps) {
 
   if (error) {
     return (
-      <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
-        <h2 className="text-sm font-semibold text-white mb-2">{sub.title}</h2>
+      <div className="bg-card border border-border rounded-xl p-6">
+        <h2 className="text-sm font-semibold text-foreground mb-2">{sub.title}</h2>
         <p className="text-sm text-red-400">{sub.loadError}</p>
       </div>
     );
@@ -88,11 +88,11 @@ export function SubscriptionSection({ companyId }: SubscriptionSectionProps) {
   }
 
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
-      <h2 className="text-sm font-semibold text-white mb-5">{sub.title}</h2>
+    <div className="bg-card border border-border rounded-xl p-6">
+      <h2 className="text-sm font-semibold text-foreground mb-5">{sub.title}</h2>
 
       {!subscription ? (
-        <p className="text-sm text-slate-400">{sub.noSubscription}</p>
+        <p className="text-sm text-muted-foreground">{sub.noSubscription}</p>
       ) : (
         <div className="flex flex-col gap-6">
           {/* Subscription info grid */}
@@ -134,30 +134,30 @@ export function SubscriptionSection({ companyId }: SubscriptionSectionProps) {
 
           {/* Payments table */}
           <div>
-            <h3 className="text-sm font-medium text-slate-300 mb-3">{sub.paymentHistory}</h3>
+            <h3 className="text-sm font-medium text-muted-foreground mb-3">{sub.paymentHistory}</h3>
 
             {payments.length === 0 ? (
-              <p className="text-xs text-slate-500">{sub.noPayments}</p>
+              <p className="text-xs text-muted-foreground">{sub.noPayments}</p>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b border-white/[0.06] text-left">
-                      <th className="pb-2 pr-4 text-xs font-medium text-slate-500">{sub.amount}</th>
-                      <th className="pb-2 pr-4 text-xs font-medium text-slate-500">{sub.periodStart}</th>
-                      <th className="pb-2 pr-4 text-xs font-medium text-slate-500">{sub.periodEnd}</th>
-                      <th className="pb-2 text-xs font-medium text-slate-500">{sub.paidAt}</th>
+                    <tr className="border-b border-border text-left">
+                      <th className="pb-2 pr-4 text-xs font-medium text-muted-foreground">{sub.amount}</th>
+                      <th className="pb-2 pr-4 text-xs font-medium text-muted-foreground">{sub.periodStart}</th>
+                      <th className="pb-2 pr-4 text-xs font-medium text-muted-foreground">{sub.periodEnd}</th>
+                      <th className="pb-2 text-xs font-medium text-muted-foreground">{sub.paidAt}</th>
                     </tr>
                   </thead>
                   <tbody>
                     {payments.map((p) => (
-                      <tr key={p.id} className="border-b border-white/[0.04]">
+                      <tr key={p.id} className="border-b border-border">
                         <td className="py-2.5 pr-4">
                           <CurrencyDisplay amount={p.amount} className="text-sm" />
                         </td>
-                        <td className="py-2.5 pr-4 text-slate-300">{fmtDate(p.periodStart)}</td>
-                        <td className="py-2.5 pr-4 text-slate-300">{fmtDate(p.periodEnd)}</td>
-                        <td className="py-2.5 text-slate-300">{fmtDate(p.paidAt)}</td>
+                        <td className="py-2.5 pr-4 text-muted-foreground">{fmtDate(p.periodStart)}</td>
+                        <td className="py-2.5 pr-4 text-muted-foreground">{fmtDate(p.periodEnd)}</td>
+                        <td className="py-2.5 text-muted-foreground">{fmtDate(p.paidAt)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -182,8 +182,8 @@ function InfoCell({
 }) {
   return (
     <div>
-      <span className="text-xs text-slate-500 block mb-1">{label}</span>
-      {children ?? <span className="text-sm text-white">{value}</span>}
+      <span className="text-xs text-muted-foreground block mb-1">{label}</span>
+      {children ?? <span className="text-sm text-foreground">{value}</span>}
     </div>
   );
 }

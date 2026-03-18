@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { useTranslation } from '@/lib/i18n';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 // ─── Seniority Bonus Rules ──────────────────────────────────────────────────
 
@@ -41,7 +41,7 @@ export function SeniorityBonusEditor({ value, onChange, readOnly }: SeniorityBon
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-slate-300">{t.convenios.seniorityBonusRules}</label>
+      <label className="text-sm font-medium text-muted-foreground">{t.convenios.seniorityBonusRules}</label>
       {value.map((row, idx) => (
         <div key={idx} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
           <Input
@@ -62,7 +62,7 @@ export function SeniorityBonusEditor({ value, onChange, readOnly }: SeniorityBon
           {!readOnly && (
             <button
               type="button" onClick={() => removeRow(idx)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -70,7 +70,7 @@ export function SeniorityBonusEditor({ value, onChange, readOnly }: SeniorityBon
         </div>
       ))}
       {value.length > 0 && (
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 text-[10px] text-slate-600 -mt-1 px-1">
+        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 text-[10px] text-muted-foreground -mt-1 px-1">
           <span>{t.convenios.minYears}</span>
           <span>{t.convenios.maxYears}</span>
           <span>{t.convenios.percentPerYear}</span>
@@ -80,7 +80,7 @@ export function SeniorityBonusEditor({ value, onChange, readOnly }: SeniorityBon
       {!readOnly && (
         <button
           type="button" onClick={addRow}
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer w-fit"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-fit"
         >
           <Plus className="w-3.5 h-3.5" /> {t.convenios.addRule}
         </button>
@@ -124,7 +124,7 @@ export function DaysBracketEditor({ label, value, onChange, readOnly }: DaysBrac
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-medium text-slate-300">{label}</label>
+      <label className="text-sm font-medium text-muted-foreground">{label}</label>
       {value.map((row, idx) => (
         <div key={idx} className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 items-center">
           <Input
@@ -145,7 +145,7 @@ export function DaysBracketEditor({ label, value, onChange, readOnly }: DaysBrac
           {!readOnly && (
             <button
               type="button" onClick={() => removeRow(idx)}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
             </button>
@@ -153,7 +153,7 @@ export function DaysBracketEditor({ label, value, onChange, readOnly }: DaysBrac
         </div>
       ))}
       {value.length > 0 && (
-        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 text-[10px] text-slate-600 -mt-1 px-1">
+        <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 text-[10px] text-muted-foreground -mt-1 px-1">
           <span>{t.convenios.minYears}</span>
           <span>{t.convenios.maxYears}</span>
           <span>{t.convenios.days}</span>
@@ -163,7 +163,7 @@ export function DaysBracketEditor({ label, value, onChange, readOnly }: DaysBrac
       {!readOnly && (
         <button
           type="button" onClick={addRow}
-          className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-white transition-colors cursor-pointer w-fit"
+          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors cursor-pointer w-fit"
         >
           <Plus className="w-3.5 h-3.5" /> {t.convenios.addRule}
         </button>

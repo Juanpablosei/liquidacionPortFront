@@ -115,7 +115,7 @@ export default function AttendanceImportPage() {
   if (!isAdmin()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -152,8 +152,8 @@ export default function AttendanceImportPage() {
         className={cn(
           'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-10 transition-colors duration-150 cursor-pointer',
           isDragging
-            ? 'border-[#2563EB] bg-[#2563EB]/[0.06]'
-            : 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.2] hover:bg-white/[0.04]',
+            ? 'border-brand bg-brand/[0.06]'
+            : 'border-border bg-overlay-subtle hover:border-border hover:bg-overlay-subtle',
         )}
       >
         <input
@@ -168,8 +168,8 @@ export default function AttendanceImportPage() {
           <div className="flex items-center gap-3">
             <FileSpreadsheet className="w-8 h-8 text-emerald-400 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-white">{t.attendance.fileSelected}</p>
-              <p className="text-xs text-slate-400">{file.name}</p>
+              <p className="text-sm font-medium text-foreground">{t.attendance.fileSelected}</p>
+              <p className="text-xs text-muted-foreground">{file.name}</p>
             </div>
             <button
               type="button"
@@ -179,16 +179,16 @@ export default function AttendanceImportPage() {
                 setResult(null);
               }}
               aria-label={t.attendance.removeFile}
-              className="ml-2 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+              className="ml-2 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay-strong transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         ) : (
           <>
-            <Upload className="w-8 h-8 text-slate-500" />
-            <p className="text-sm text-slate-300">{t.attendance.dropzoneText}</p>
-            <p className="text-xs text-slate-500">{t.attendance.dropzoneHint}</p>
+            <Upload className="w-8 h-8 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">{t.attendance.dropzoneText}</p>
+            <p className="text-xs text-muted-foreground">{t.attendance.dropzoneHint}</p>
           </>
         )}
       </div>
@@ -198,7 +198,7 @@ export default function AttendanceImportPage() {
         <Button
           onClick={handleImport}
           disabled={!file || isUploading}
-          className="gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          className="gap-2 bg-brand hover:bg-brand-hover text-white"
         >
           <Upload className="w-4 h-4" />
           {isUploading ? t.attendance.uploading : t.attendance.importBtn}
@@ -208,7 +208,7 @@ export default function AttendanceImportPage() {
       {/* Results */}
       {result && (
         <div className="mt-8 space-y-4">
-          <h2 className="text-sm font-semibold text-white">
+          <h2 className="text-sm font-semibold text-foreground">
             {t.attendance.resultsTitle}
           </h2>
 
@@ -245,10 +245,10 @@ export default function AttendanceImportPage() {
 
           {/* Skipped records table */}
           {result.skippedRecords.length > 0 && (
-            <div className="rounded-xl border border-white/[0.08] overflow-hidden max-h-[400px] overflow-y-auto">
+            <div className="rounded-xl border border-border overflow-hidden max-h-[400px] overflow-y-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-white/[0.03] text-left text-slate-400">
+                  <tr className="bg-overlay-subtle text-left text-muted-foreground">
                     <th className="px-4 py-2 font-medium">{t.attendance.row}</th>
                     <th className="px-4 py-2 font-medium">{t.attendance.documentNumber}</th>
                     <th className="px-4 py-2 font-medium">{t.attendance.date}</th>
@@ -259,7 +259,7 @@ export default function AttendanceImportPage() {
                   {result.skippedRecords.map((rec) => (
                     <tr
                       key={`${rec.row}-${rec.documentNumber}`}
-                      className="border-t border-white/[0.06] text-slate-300"
+                      className="border-t border-border text-muted-foreground"
                     >
                       <td className="px-4 py-2 font-mono">{rec.row}</td>
                       <td className="px-4 py-2">{rec.documentNumber}</td>

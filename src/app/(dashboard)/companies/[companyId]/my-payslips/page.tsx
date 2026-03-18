@@ -47,8 +47,8 @@ export default function MyPayslipsPage() {
         const period = row.original.run?.period;
         return (
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-slate-500 shrink-0" />
-            <span className="text-sm text-white font-medium">
+            <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
+            <span className="text-sm text-foreground font-medium">
               {period?.name ?? formatPeriod(period?.startDate, period?.endDate, localeId)}
             </span>
           </div>
@@ -58,7 +58,7 @@ export default function MyPayslipsPage() {
     {
       header: t.myPayslips.net,
       cell: ({ row }) => (
-        <CurrencyDisplay amount={row.original.netPay} className="text-sm font-medium text-white" />
+        <CurrencyDisplay amount={row.original.netPay} className="text-sm font-medium text-foreground" />
       ),
     },
     {

@@ -18,7 +18,7 @@ import {
 import type { Convenio } from '@/lib/types/convenio';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 interface ConvenioFormSheetProps {
   open: boolean;
@@ -74,10 +74,10 @@ export function ConvenioFormSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
-        className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto w-[520px] max-w-[100vw]"
+        className="bg-sidebar border-l border-border text-foreground overflow-y-auto w-[520px] max-w-[100vw]"
       >
-        <SheetHeader className="pb-4 border-b border-white/[0.06]">
-          <SheetTitle className="text-white">
+        <SheetHeader className="pb-4 border-b border-border">
+          <SheetTitle className="text-foreground">
             {editItem ? t.convenios.editTitle : t.convenios.createTitle}
           </SheetTitle>
         </SheetHeader>
@@ -202,14 +202,14 @@ export function ConvenioFormSheet({
             <button
               type="button"
               onClick={() => onOpenChange(false)}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
             >
               {t.common.cancel}
             </button>
             <button
               type="submit"
               disabled={isSaving}
-              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
             >
               {isSaving ? t.common.saving : t.common.save}
             </button>
@@ -234,18 +234,18 @@ function BracketSection({ title, fields, onAdd, t, children }: BracketSectionPro
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-medium text-slate-300">{title}</span>
+        <span className="text-sm font-medium text-muted-foreground">{title}</span>
         <button
           type="button"
           onClick={onAdd}
-          className="inline-flex items-center gap-1 text-xs text-[#2563EB] hover:text-[#93BBFC] transition-colors"
+          className="inline-flex items-center gap-1 text-xs text-brand hover:text-brand-text transition-colors"
         >
           <Plus className="w-3 h-3" />
           {t.convenios.addRule}
         </button>
       </div>
       {fields.length === 0 && (
-        <p className="text-xs text-slate-600 italic">{t.convenios.noCategories}</p>
+        <p className="text-xs text-muted-foreground italic">{t.convenios.noCategories}</p>
       )}
       <div className="space-y-2">{children}</div>
     </div>
@@ -262,13 +262,13 @@ interface BracketRowProps {
 
 function BracketRow({ onRemove, t, children }: BracketRowProps) {
   return (
-    <div className="flex items-end gap-2 rounded-lg bg-white/[0.02] border border-white/[0.06] p-2.5">
+    <div className="flex items-end gap-2 rounded-lg bg-overlay-subtle border border-border p-2.5">
       <div className="flex-1 grid grid-cols-3 gap-2">{children}</div>
       <button
         type="button"
         onClick={onRemove}
         title={t.convenios.removeRule}
-        className="shrink-0 p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+        className="shrink-0 p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
       >
         <Trash2 className="w-3.5 h-3.5" />
       </button>
@@ -286,11 +286,11 @@ const MiniInput = forwardRef<HTMLInputElement, MiniInputProps>(
   function MiniInput({ label, ...props }, ref) {
     return (
       <div className="flex flex-col gap-0.5">
-        <span className="text-[10px] text-slate-500 font-medium">{label}</span>
+        <span className="text-[10px] text-muted-foreground font-medium">{label}</span>
         <input
           ref={ref}
           {...props}
-          className="h-8 rounded-md bg-white/[0.05] border border-white/[0.1] text-white text-xs font-mono px-2 focus:border-[#2563EB]/50 focus:outline-none"
+          className="h-8 rounded-md bg-overlay border border-border text-foreground text-xs font-mono px-2 focus:border-brand/50 focus:outline-none"
         />
       </div>
     );

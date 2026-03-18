@@ -68,7 +68,7 @@ export function SubscriptionWarningBanner({ status, companyId }: SubscriptionWar
         <button
           type="button"
           onClick={handleDismiss}
-          className="p-0.5 rounded hover:bg-white/10 transition-colors duration-150"
+          className="p-0.5 rounded hover:bg-overlay-strong transition-colors duration-150"
           aria-label={t.common.close}
         >
           <X className="h-4 w-4" />

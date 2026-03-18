@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/select';
 import { useTranslation } from '@/lib/i18n';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 const DOC_TYPE_KEYS = ['CI', 'RUC', 'PASSPORT', 'OTHER'] as const;
 
@@ -80,7 +80,7 @@ export default function NewEmployeePage() {
       />
 
       <div className="max-w-2xl">
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
+        <div className="bg-card border border-border rounded-xl p-6">
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 
             <div className="flex gap-3">
@@ -98,12 +98,12 @@ export default function NewEmployeePage() {
                   <SelectTrigger className={INPUT_CLASS}>
                     <SelectValue placeholder={t.common.type} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {DOC_TYPE_KEYS.map((key) => (
                       <SelectItem
                         key={key}
                         value={key}
-                        className="focus:bg-white/[0.06] focus:text-white"
+                        className="focus:bg-overlay focus:text-foreground"
                       >
                         {docTypeLabels[key] ?? key}
                       </SelectItem>
@@ -160,8 +160,8 @@ export default function NewEmployeePage() {
               />
             </FormField>
 
-            <div className="border-t border-white/[0.06] pt-4 flex flex-col gap-5">
-              <p className="text-xs text-slate-500 -mb-2">{t.employees.new.optionalData}</p>
+            <div className="border-t border-border pt-4 flex flex-col gap-5">
+              <p className="text-xs text-muted-foreground -mb-2">{t.employees.new.optionalData}</p>
 
               <FormField label={t.employees.new.email} name="email" error={errors.email?.message}>
                 <Input
@@ -199,14 +199,14 @@ export default function NewEmployeePage() {
               type="submit"
               disabled={loading}
               aria-busy={loading}
-              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mt-1"
+              className="w-full bg-brand hover:bg-brand-hover disabled:opacity-60 text-white py-2.5 rounded-xl text-sm font-medium transition-colors mt-1"
             >
               {loading ? (<span className="flex items-center justify-center gap-2"><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.employees.new.submitting}</span>) : t.employees.new.submit}
             </button>
           </form>
         </div>
 
-        <p className="text-xs text-slate-600 mt-4 text-center">
+        <p className="text-xs text-muted-foreground mt-4 text-center">
           {t.employees.new.contractNote}
         </p>
       </div>

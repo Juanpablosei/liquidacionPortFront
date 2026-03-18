@@ -92,13 +92,13 @@ export default function SubscriptionDetailPage() {
       />
 
       {/* Subscription info */}
-      <div className="rounded-xl border border-white/[0.06] bg-[#111827] p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
+      <div className="rounded-xl border border-border bg-secondary p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
         <div>
-          <p className="text-xs text-slate-500">{t.admin.plan}</p>
-          <p className="text-white font-medium">{sub.plan?.name ?? '—'}</p>
+          <p className="text-xs text-muted-foreground">{t.admin.plan}</p>
+          <p className="text-foreground font-medium">{sub.plan?.name ?? '—'}</p>
         </div>
         <div>
-          <p className="text-xs text-slate-500">{t.admin.status}</p>
+          <p className="text-xs text-muted-foreground">{t.admin.status}</p>
           <span className={cn(
             'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium mt-1',
             getSubscriptionStatusColor(sub.status)
@@ -107,12 +107,12 @@ export default function SubscriptionDetailPage() {
           </span>
         </div>
         <div>
-          <p className="text-xs text-slate-500">{t.admin.cycle}</p>
-          <p className="text-white">{CYCLE_LABELS[sub.billingCycle]?.(t) ?? sub.billingCycle}</p>
+          <p className="text-xs text-muted-foreground">{t.admin.cycle}</p>
+          <p className="text-foreground">{CYCLE_LABELS[sub.billingCycle]?.(t) ?? sub.billingCycle}</p>
         </div>
         <div>
-          <p className="text-xs text-slate-500">{t.admin.price}</p>
-          <p className="text-white font-mono">
+          <p className="text-xs text-muted-foreground">{t.admin.price}</p>
+          <p className="text-foreground font-mono">
             <CurrencyDisplay amount={Number(sub.effectivePrice)} />
           </p>
         </div>
@@ -121,7 +121,7 @@ export default function SubscriptionDetailPage() {
       {/* Payments */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wider">
+          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             {t.admin.payments} ({payments.length})
           </h2>
           <Button size="sm" onClick={() => setPaymentOpen(true)}>
@@ -131,12 +131,12 @@ export default function SubscriptionDetailPage() {
         </div>
 
         {payments.length === 0 ? (
-          <p className="text-sm text-slate-500">{t.admin.noPayments}</p>
+          <p className="text-sm text-muted-foreground">{t.admin.noPayments}</p>
         ) : (
-          <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+          <div className="rounded-xl border border-border bg-secondary overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase border-b border-white/[0.06]">
+                <tr className="text-xs text-muted-foreground uppercase border-b border-border">
                   <th className="text-right px-4 py-3 font-medium">{t.admin.amount}</th>
                   <th className="text-left px-4 py-3 font-medium">{t.admin.periodStart}</th>
                   <th className="text-left px-4 py-3 font-medium">{t.admin.periodEnd}</th>
@@ -144,19 +144,19 @@ export default function SubscriptionDetailPage() {
                   <th className="px-4 py-3 w-10" />
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-border">
                 {payments.map((p) => (
-                  <tr key={p.id} className="text-slate-300">
+                  <tr key={p.id} className="text-muted-foreground">
                     <td className="px-4 py-3 text-right font-mono">
                       <CurrencyDisplay amount={Number(p.amount)} />
                     </td>
                     <td className="px-4 py-3">{new Date(p.periodStart).toLocaleDateString()}</td>
                     <td className="px-4 py-3">{new Date(p.periodEnd).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 text-right text-slate-500">{new Date(p.paidAt).toLocaleDateString()}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground">{new Date(p.paidAt).toLocaleDateString()}</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => setDeleteTarget(p)}
-                        className="p-1 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 transition-colors"
+                        className="p-1 rounded hover:bg-red-500/10 text-muted-foreground hover:text-red-400 transition-colors"
                         aria-label={t.admin.deletePayment}
                       >
                         <Trash2 className="w-3.5 h-3.5" />

@@ -23,7 +23,7 @@ interface ConfirmDialogProps {
 }
 
 const CONFIRM_STYLES: Record<string, string> = {
-  default: 'bg-[#2563EB] hover:bg-[#1D4ED8] text-white',
+  default: 'bg-brand hover:bg-brand-hover text-white',
   danger:  'bg-red-600 hover:bg-red-700 text-white',
   warning: 'bg-yellow-600 hover:bg-yellow-700 text-white',
 };
@@ -47,16 +47,16 @@ export function ConfirmDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-[#0F172A] border border-white/[0.08] text-white max-w-md">
+      <DialogContent className="bg-card border border-border text-foreground max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-white">{title}</DialogTitle>
-          <DialogDescription className="text-slate-400">{description}</DialogDescription>
+          <DialogTitle className="text-foreground">{title}</DialogTitle>
+          <DialogDescription className="text-muted-foreground">{description}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2">
           <button
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
-            className="px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+            className="px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
           >
             {cancelLabel ?? t.confirmDialog.cancel}
           </button>
@@ -64,7 +64,7 @@ export function ConfirmDialog({
             onClick={handleConfirm}
             disabled={isLoading}
             aria-busy={isLoading}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none ${CONFIRM_STYLES[variant]}`}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none ${CONFIRM_STYLES[variant]}`}
           >
             {isLoading ? t.confirmDialog.processing : (confirmLabel ?? t.confirmDialog.confirm)}
           </button>

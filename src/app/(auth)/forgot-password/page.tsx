@@ -42,14 +42,14 @@ export default function ForgotPasswordPage() {
           <CheckCircle2 className="w-7 h-7 text-emerald-400" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold text-white mb-2">{t.auth.forgotPassword.successTitle}</h1>
-          <p className="text-sm text-slate-400 leading-relaxed max-w-[300px]">
+          <h1 className="text-2xl font-semibold text-foreground mb-2">{t.auth.forgotPassword.successTitle}</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed max-w-[300px]">
             {t.auth.forgotPassword.successMessage}
           </p>
         </div>
         <Link
           href={ROUTES.login}
-          className="inline-flex items-center gap-2 text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors mt-2"
+          className="inline-flex items-center gap-2 text-sm text-brand hover:text-brand-text transition-colors mt-2"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.auth.forgotPassword.backToLogin}
@@ -67,17 +67,17 @@ export default function ForgotPasswordPage() {
   return (
     <div style={{ animation: 'fadeUp 0.5s ease both' }}>
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1.5">
           {t.auth.forgotPassword.title}
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {t.auth.forgotPassword.subtitle}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="email" className="text-sm font-medium text-slate-300">
+          <label htmlFor="email" className="text-sm font-medium text-muted-foreground">
             {t.auth.forgotPassword.email}
           </label>
           <input
@@ -85,7 +85,7 @@ export default function ForgotPasswordPage() {
             type="email"
             autoComplete="email"
             placeholder="tu@email.com"
-            className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/20"
+            className="h-11 w-full rounded-xl bg-overlay border border-border text-foreground placeholder:text-muted-foreground px-4 text-sm outline-none transition-all focus:border-brand focus:bg-overlay-strong focus:ring-2 focus:ring-brand/20"
             {...register('email')}
           />
           {errors.email && (
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-1 h-11 w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-1 h-11 w-full rounded-xl bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
@@ -112,7 +112,7 @@ export default function ForgotPasswordPage() {
       <div className="mt-6 text-center">
         <Link
           href={ROUTES.login}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors"
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-muted-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.auth.forgotPassword.backToLogin}

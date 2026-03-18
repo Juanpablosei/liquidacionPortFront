@@ -23,7 +23,7 @@ export function buildPayslipColumns(
       cell: ({ row }) => {
         const e = row.original.employee;
         return (
-          <span className="text-sm text-white font-medium">
+          <span className="text-sm text-foreground font-medium">
             {e ? `${e.lastName}, ${e.firstName}` : `${labels.employee} ${row.original.employeeId.slice(-6)}`}
           </span>
         );
@@ -44,7 +44,7 @@ export function buildPayslipColumns(
     {
       header: labels.net,
       cell: ({ row }) => (
-        <span className="font-mono text-sm font-semibold text-white whitespace-nowrap">{fmt(row.original.netPay)}</span>
+        <span className="font-mono text-sm font-semibold text-foreground whitespace-nowrap">{fmt(row.original.netPay)}</span>
       ),
     },
     {
@@ -53,7 +53,7 @@ export function buildPayslipColumns(
       cell: ({ row }) => (
         <button
           onClick={() => onOpenPayslip(row.original)}
-          className="flex items-center gap-1 text-xs text-slate-500 hover:text-[#93BBFC] transition-colors cursor-pointer"
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-brand-text transition-colors cursor-pointer"
         >
           {labels.viewDetail}
           <ChevronRight className="w-3 h-3" />

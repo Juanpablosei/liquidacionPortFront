@@ -34,15 +34,15 @@ export function ConceptCheckboxList({
       {concepts.map((concept) => (
         <label
           key={concept.id}
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-white/[0.02] hover:bg-white/[0.04] border border-white/[0.05] cursor-pointer transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-overlay-subtle hover:bg-overlay-subtle border border-border cursor-pointer transition-colors"
         >
           <input
             type="checkbox"
             checked={checkedIds.has(concept.id)}
             onChange={(e) => onToggle(concept.id, e.target.checked)}
-            className="w-3.5 h-3.5 rounded border-white/[0.2] bg-white/[0.05] text-[#2563EB] focus:ring-[#2563EB]/50"
+            className="w-3.5 h-3.5 rounded border-border bg-overlay text-brand focus:ring-brand/50"
           />
-          <span className="text-xs text-white flex-1">{concept.name}</span>
+          <span className="text-xs text-foreground flex-1">{concept.name}</span>
           <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${
             concept.category === 'EARNING'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
@@ -82,8 +82,8 @@ export function NewContractForm({
   setSelectedConceptIds: (v: Set<string>) => void;
 }) {
   return (
-    <div className="bg-[#0F172A] border border-[#2563EB]/20 rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">{t.employees.detail.newContract}</h3>
+    <div className="bg-card border border-brand/20 rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-foreground mb-4">{t.employees.detail.newContract}</h3>
       <form onSubmit={contractForm.handleSubmit(onCreateContract)} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           <FormField label={t.employees.detail.startDate} name="startDate" error={contractForm.formState.errors.startDate?.message} required>
@@ -103,9 +103,9 @@ export function NewContractForm({
               <SelectTrigger className={INPUT_CLASS}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
-                <SelectItem value="MONTHLY" className="focus:bg-white/[0.06] focus:text-white">{t.status.monthly}</SelectItem>
-                <SelectItem value="HOURLY"  className="focus:bg-white/[0.06] focus:text-white">{t.status.hourly}</SelectItem>
+              <SelectContent className="bg-card border-border text-foreground">
+                <SelectItem value="MONTHLY" className="focus:bg-overlay focus:text-foreground">{t.status.monthly}</SelectItem>
+                <SelectItem value="HOURLY"  className="focus:bg-overlay focus:text-foreground">{t.status.hourly}</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
@@ -123,7 +123,7 @@ export function NewContractForm({
         </div>
 
         {companyConcepts.length > 0 && (
-          <div className="border-t border-white/[0.06] pt-4">
+          <div className="border-t border-border pt-4">
             <div className="flex items-center gap-2 mb-3">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -133,13 +133,13 @@ export function NewContractForm({
                     setUseCustomConcepts(e.target.checked);
                     if (!e.target.checked) setSelectedConceptIds(new Set());
                   }}
-                  className="w-4 h-4 rounded border-white/[0.2] bg-white/[0.05] text-[#2563EB] focus:ring-[#2563EB]/50"
+                  className="w-4 h-4 rounded border-border bg-overlay text-brand focus:ring-brand/50"
                 />
-                <span className="text-xs text-slate-400">{t.employees.detail.chooseConceptsToggle}</span>
+                <span className="text-xs text-muted-foreground">{t.employees.detail.chooseConceptsToggle}</span>
               </label>
             </div>
             {!useCustomConcepts && (
-              <p className="text-xs text-slate-500">{t.employees.detail.autoAssignNote}</p>
+              <p className="text-xs text-muted-foreground">{t.employees.detail.autoAssignNote}</p>
             )}
             {useCustomConcepts && (
               <ConceptCheckboxList
@@ -161,14 +161,14 @@ export function NewContractForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2 rounded-xl text-sm text-slate-400 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] transition-colors"
+            className="flex-1 py-2 rounded-xl text-sm text-muted-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
           >
             {t.common.cancel}
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 py-2 rounded-xl text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 transition-colors"
+            className="flex-1 py-2 rounded-xl text-sm text-white bg-brand hover:bg-brand-hover disabled:opacity-60 transition-colors"
           >
             {saving ? t.common.creating : t.employees.detail.createContract}
           </button>
@@ -202,8 +202,8 @@ export function EditContractForm({
   editConceptsLoaded: boolean;
 }) {
   return (
-    <div className="bg-[#0F172A] border border-amber-500/20 rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-4">{t.employees.detail.editContract}</h3>
+    <div className="bg-card border border-amber-500/20 rounded-xl p-5">
+      <h3 className="text-sm font-semibold text-foreground mb-4">{t.employees.detail.editContract}</h3>
       <form onSubmit={editContractForm.handleSubmit(onUpdateContract)} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           <FormField label={t.employees.detail.startDate} name="edit-startDate" error={editContractForm.formState.errors.startDate?.message} required>
@@ -223,9 +223,9 @@ export function EditContractForm({
               <SelectTrigger className={INPUT_CLASS}>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
-                <SelectItem value="MONTHLY" className="focus:bg-white/[0.06] focus:text-white">{t.status.monthly}</SelectItem>
-                <SelectItem value="HOURLY"  className="focus:bg-white/[0.06] focus:text-white">{t.status.hourly}</SelectItem>
+              <SelectContent className="bg-card border-border text-foreground">
+                <SelectItem value="MONTHLY" className="focus:bg-overlay focus:text-foreground">{t.status.monthly}</SelectItem>
+                <SelectItem value="HOURLY"  className="focus:bg-overlay focus:text-foreground">{t.status.hourly}</SelectItem>
               </SelectContent>
             </Select>
           </FormField>
@@ -243,13 +243,13 @@ export function EditContractForm({
         </div>
 
         {companyConcepts.length > 0 && (
-          <div className="border-t border-white/[0.06] pt-4">
+          <div className="border-t border-border pt-4">
             <div className="flex items-center gap-2 mb-3">
-              <BookOpen className="w-3.5 h-3.5 text-slate-500" />
-              <span className="text-xs font-medium text-slate-400">{t.employees.detail.assignedConcepts}</span>
+              <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">{t.employees.detail.assignedConcepts}</span>
             </div>
             {!editConceptsLoaded ? (
-              <p className="text-xs text-slate-600 motion-safe:animate-pulse">{t.employees.detail.loadingConcepts}</p>
+              <p className="text-xs text-muted-foreground motion-safe:animate-pulse">{t.employees.detail.loadingConcepts}</p>
             ) : (
               <ConceptCheckboxList
                 concepts={companyConcepts}
@@ -270,14 +270,14 @@ export function EditContractForm({
           <button
             type="button"
             onClick={onCancel}
-            className="flex-1 py-2 rounded-xl text-sm text-slate-400 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] transition-colors"
+            className="flex-1 py-2 rounded-xl text-sm text-muted-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
           >
             {t.common.cancel}
           </button>
           <button
             type="submit"
             disabled={saving}
-            className="flex-1 py-2 rounded-xl text-sm text-white bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-60 transition-colors"
+            className="flex-1 py-2 rounded-xl text-sm text-white bg-brand hover:bg-brand-hover disabled:opacity-60 transition-colors"
           >
             {saving ? t.common.saving : t.employees.detail.saveChanges}
           </button>

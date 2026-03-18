@@ -43,12 +43,12 @@ function ConfirmEmailContent() {
 
       {state === 'loading' && (
         <>
-          <div className="w-14 h-14 rounded-2xl bg-white/[0.05] border border-white/[0.1] flex items-center justify-center">
-            <Loader2 className="w-6 h-6 motion-safe:animate-spin text-[#2563EB]" />
+          <div className="w-14 h-14 rounded-2xl bg-overlay border border-border flex items-center justify-center">
+            <Loader2 className="w-6 h-6 motion-safe:animate-spin text-brand" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.loading}</h1>
-            <p className="text-sm text-slate-400">{t.auth.confirmEmail.loadingSubtitle}</p>
+            <h1 className="text-2xl font-semibold text-foreground mb-1.5">{t.auth.confirmEmail.loading}</h1>
+            <p className="text-sm text-muted-foreground">{t.auth.confirmEmail.loadingSubtitle}</p>
           </div>
         </>
       )}
@@ -59,14 +59,14 @@ function ConfirmEmailContent() {
             <CheckCircle2 className="w-7 h-7 text-emerald-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.successTitle}</h1>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <h1 className="text-2xl font-semibold text-foreground mb-1.5">{t.auth.confirmEmail.successTitle}</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {t.auth.confirmEmail.successSubtitle}
             </p>
           </div>
           <Link
             href={ROUTES.login}
-            className="h-11 px-6 rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] flex items-center"
+            className="h-11 px-6 rounded-xl bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] flex items-center"
           >
             {t.auth.confirmEmail.loginLink}
           </Link>
@@ -79,12 +79,12 @@ function ConfirmEmailContent() {
             <XCircle className="w-7 h-7 text-red-400" />
           </div>
           <div>
-            <h1 className="text-2xl font-semibold text-white mb-1.5">{t.auth.confirmEmail.errorTitle}</h1>
-            <p className="text-sm text-slate-400 leading-relaxed max-w-[280px]">{errorMessage}</p>
+            <h1 className="text-2xl font-semibold text-foreground mb-1.5">{t.auth.confirmEmail.errorTitle}</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-[280px]">{errorMessage}</p>
           </div>
           <Link
             href={ROUTES.forgotPassword}
-            className="text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors"
+            className="text-sm text-brand hover:text-brand-text transition-colors"
           >
             {t.auth.confirmEmail.requestNewLink}
           </Link>
@@ -105,7 +105,7 @@ export default function ConfirmEmailPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-32">
-        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-slate-500" />
+        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-muted-foreground" />
       </div>
     }>
       <ConfirmEmailContent />

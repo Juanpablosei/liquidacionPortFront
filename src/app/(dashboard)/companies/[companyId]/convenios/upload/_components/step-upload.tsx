@@ -85,12 +85,12 @@ export function StepUpload({ t, isUploading, onUpload, onCancel }: StepUploadPro
         className={cn(
           'relative flex flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed p-12 transition-colors duration-150',
           isUploading
-            ? 'cursor-wait border-white/[0.08] bg-white/[0.02]'
+            ? 'cursor-wait border-border bg-overlay-subtle'
             : 'cursor-pointer',
           !isUploading && isDragging
-            ? 'border-[#2563EB] bg-[#2563EB]/[0.06]'
+            ? 'border-brand bg-brand/[0.06]'
             : !isUploading
-              ? 'border-white/[0.12] bg-white/[0.02] hover:border-white/[0.2] hover:bg-white/[0.04]'
+              ? 'border-border bg-overlay-subtle hover:border-border hover:bg-overlay-subtle'
               : '',
         )}
       >
@@ -105,8 +105,8 @@ export function StepUpload({ t, isUploading, onUpload, onCancel }: StepUploadPro
 
         {isUploading ? (
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="w-8 h-8 text-[#2563EB] animate-spin" />
-            <p className="text-sm font-medium text-slate-300">
+            <Loader2 className="w-8 h-8 text-brand animate-spin" />
+            <p className="text-sm font-medium text-muted-foreground">
               {t.convenios.upload.uploading}
             </p>
           </div>
@@ -114,8 +114,8 @@ export function StepUpload({ t, isUploading, onUpload, onCancel }: StepUploadPro
           <div className="flex items-center gap-3">
             <FileText className="w-8 h-8 text-red-400 shrink-0" />
             <div>
-              <p className="text-sm font-medium text-white">{file.name}</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-sm font-medium text-foreground">{file.name}</p>
+              <p className="text-xs text-muted-foreground">
                 {(file.size / (1024 * 1024)).toFixed(2)} MB
               </p>
             </div>
@@ -125,18 +125,18 @@ export function StepUpload({ t, isUploading, onUpload, onCancel }: StepUploadPro
                 e.stopPropagation();
                 setFile(null);
               }}
-              className="ml-2 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.08] transition-colors"
+              className="ml-2 p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay-strong transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
           </div>
         ) : (
           <>
-            <Upload className="w-8 h-8 text-slate-500" />
-            <p className="text-sm text-slate-300">
+            <Upload className="w-8 h-8 text-muted-foreground" />
+            <p className="text-sm text-muted-foreground">
               {t.convenios.upload.dropzoneText}
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-muted-foreground">
               {t.convenios.upload.dropzoneHint}
             </p>
           </>
@@ -148,7 +148,7 @@ export function StepUpload({ t, isUploading, onUpload, onCancel }: StepUploadPro
         <Button
           onClick={() => file && onUpload(file)}
           disabled={!file || isUploading}
-          className="gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white"
+          className="gap-2 bg-brand hover:bg-brand-hover text-white"
         >
           <Upload className="w-4 h-4" />
           {isUploading ? t.convenios.upload.uploading : t.convenios.upload.stepUpload}

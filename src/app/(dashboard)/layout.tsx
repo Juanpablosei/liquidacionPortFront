@@ -35,8 +35,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Spinner solo mientras se verifica la sesión (isLoading).
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#0A0F1C] flex items-center justify-center" role="status" aria-label="Loading">
-        <div className="w-6 h-6 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full motion-safe:animate-spin" />
+      <div className="min-h-screen bg-background flex items-center justify-center" role="status" aria-label="Loading">
+        <div className="w-6 h-6 border-2 border-brand/30 border-t-[#2563EB] rounded-full motion-safe:animate-spin" />
       </div>
     );
   }
@@ -44,11 +44,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Sin sesión: fondo oscuro (nunca blanco) mientras el useEffect
   // ejecuta router.replace('/login'). No se renderiza contenido protegido.
   if (!isAuthenticated) {
-    return <div className="min-h-screen bg-[#0A0F1C]" />;
+    return <div className="min-h-screen bg-background" />;
   }
 
   return (
-    <div className="flex h-screen bg-[#0A0F1C] overflow-hidden">
+    <div className="flex h-screen bg-background overflow-hidden">
       {/* Force password change modal */}
       {mustChangePassword && <ForcePasswordModal />}
 

@@ -133,10 +133,10 @@ export default function EmployeesPage() {
       header: t.employees.employee,
       cell: ({ row }) => (
         <div>
-          <p className="font-medium text-white">
+          <p className="font-medium text-foreground">
             {row.original.lastName}, {row.original.firstName}
           </p>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {docTypeLabels[row.original.documentType] ?? row.original.documentType}{' '}
             {row.original.documentNumber}
           </p>
@@ -146,7 +146,7 @@ export default function EmployeesPage() {
     {
       header: t.employees.email,
       cell: ({ row }) => (
-        <span className="text-slate-400 text-sm">
+        <span className="text-muted-foreground text-sm">
           {row.original.email ?? '\u2014'}
         </span>
       ),
@@ -154,7 +154,7 @@ export default function EmployeesPage() {
     {
       header: t.employees.hireDate,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">
+        <span className="font-mono text-muted-foreground text-sm">
           {formatDate(row.original.hireDate, localeId)}
         </span>
       ),
@@ -170,7 +170,7 @@ export default function EmployeesPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -187,7 +187,7 @@ export default function EmployeesPage() {
               <button
                 onClick={handleDownloadTemplate}
                 disabled={downloading}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors cursor-pointer disabled:opacity-50"
               >
                 {downloading ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Download className="w-4 h-4" />}
                 {downloading ? t.employees.import.downloading : t.employees.import.downloadTemplate}
@@ -195,7 +195,7 @@ export default function EmployeesPage() {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={importing}
-                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors cursor-pointer disabled:opacity-50"
+                className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors cursor-pointer disabled:opacity-50"
               >
                 {importing ? <Loader2 className="w-4 h-4 motion-safe:animate-spin" /> : <Upload className="w-4 h-4" />}
                 {importing ? t.employees.import.importing : t.employees.import.importEmployees}
@@ -210,7 +210,7 @@ export default function EmployeesPage() {
               />
               <Link
                 href={ROUTES.newEmployee(companyId)}
-                className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 {t.employees.newEmployee}
@@ -224,24 +224,24 @@ export default function EmployeesPage() {
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <form onSubmit={handleSearchSubmit} className="flex-1 flex gap-2">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             <input
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               placeholder={t.employees.searchPlaceholder}
               aria-label={t.employees.search}
-              className="w-full pl-9 pr-4 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+              className="w-full pl-9 pr-4 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand/50 transition-colors"
             />
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] rounded-xl text-sm text-slate-300 transition-colors"
+            className="px-4 py-2 bg-overlay hover:bg-overlay-strong border border-border rounded-xl text-sm text-muted-foreground transition-colors"
           >
             {t.employees.search}
           </button>
         </form>
 
-        <div className="flex gap-1 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1">
+        <div className="flex gap-1 bg-overlay-subtle border border-border rounded-xl p-1">
           {(['all', 'active', 'inactive'] as const).map((f) => (
             <button
               key={f}
@@ -250,8 +250,8 @@ export default function EmployeesPage() {
               className={[
                 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
                 filterActive === f
-                  ? 'bg-[#2563EB] text-white'
-                  : 'text-slate-400 hover:text-slate-300',
+                  ? 'bg-brand text-white'
+                  : 'text-muted-foreground hover:text-muted-foreground',
               ].join(' ')}
             >
               {f === 'all' ? t.employees.all : f === 'active' ? t.employees.actives : t.employees.inactives}
@@ -271,7 +271,7 @@ export default function EmployeesPage() {
             <button
               onClick={() => setImportErrors([])}
               aria-label={t.common.close}
-              className="w-8 h-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-red-400 transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -280,8 +280,8 @@ export default function EmployeesPage() {
             {importErrors.map((err, i) => (
               <p key={i} className="text-xs text-red-300">
                 <span className="font-mono text-red-400">Fila {err.row}</span>{' '}
-                <span className="text-slate-500">·</span>{' '}
-                <span className="text-slate-400">{err.field}:</span>{' '}
+                <span className="text-muted-foreground">·</span>{' '}
+                <span className="text-muted-foreground">{err.field}:</span>{' '}
                 {err.message}
               </p>
             ))}

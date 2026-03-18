@@ -28,7 +28,7 @@ import {
 import { Input } from '@/components/ui/input';
 import type { Holiday } from '@/lib/types/attendance';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 const CURRENT_YEAR = new Date().getFullYear();
 const YEAR_OPTIONS = Array.from({ length: 5 }, (_, i) => CURRENT_YEAR - 1 + i);
@@ -126,13 +126,13 @@ export default function HolidaysPage() {
     {
       header: t.holidays.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date, localeId)}</span>
+        <span className="font-mono text-muted-foreground text-sm">{formatDate(row.original.date, localeId)}</span>
       ),
     },
     {
       header: t.holidays.name,
       cell: ({ row }) => (
-        <span className="text-sm text-white">{row.original.name}</span>
+        <span className="text-sm text-foreground">{row.original.name}</span>
       ),
     },
     {
@@ -151,7 +151,7 @@ export default function HolidaysPage() {
           {canEdit() && (
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.edit}
             >
               <Pencil className="w-4 h-4" />
@@ -160,7 +160,7 @@ export default function HolidaysPage() {
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.delete}
             >
               <Trash2 className="w-4 h-4" />
@@ -181,7 +181,7 @@ export default function HolidaysPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.holidays.addHoliday}
@@ -191,7 +191,7 @@ export default function HolidaysPage() {
       />
 
       {/* Filtro año */}
-      <div className="flex gap-1 bg-white/[0.04] border border-white/[0.06] rounded-xl p-1 mb-5 w-fit">
+      <div className="flex gap-1 bg-overlay-subtle border border-border rounded-xl p-1 mb-5 w-fit">
         {YEAR_OPTIONS.map((y) => (
           <button
             key={y}
@@ -200,8 +200,8 @@ export default function HolidaysPage() {
             className={[
               'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer',
               year === y
-                ? 'bg-[#2563EB] text-white'
-                : 'text-slate-400 hover:text-slate-300',
+                ? 'bg-brand text-white'
+                : 'text-muted-foreground hover:text-muted-foreground',
             ].join(' ')}
           >
             {y}
@@ -224,7 +224,7 @@ export default function HolidaysPage() {
           canEdit() ? (
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.holidays.addHoliday}
@@ -236,11 +236,11 @@ export default function HolidaysPage() {
       {/* Sheet crear/editar */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
+          className="bg-sidebar border-l border-border text-foreground overflow-y-auto"
           style={{ width: 420, maxWidth: '100vw' }}
         >
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">
               {editItem ? t.holidays.editTitle : t.holidays.createTitle}
             </SheetTitle>
           </SheetHeader>
@@ -273,8 +273,8 @@ export default function HolidaysPage() {
                     className={[
                       'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors cursor-pointer',
                       watchedOptional === opt.value
-                        ? 'bg-[#2563EB]/20 border-[#2563EB]/50 text-[#93BBFC]'
-                        : 'bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white',
+                        ? 'bg-brand/20 border-brand/50 text-brand-text'
+                        : 'bg-overlay-subtle border-border text-muted-foreground hover:text-foreground',
                     ].join(' ')}
                   >
                     {opt.label}
@@ -287,14 +287,14 @@ export default function HolidaysPage() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
               >
                 {isSaving ? t.common.saving : t.common.save}
               </button>

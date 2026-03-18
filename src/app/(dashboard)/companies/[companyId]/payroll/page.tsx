@@ -33,7 +33,7 @@ import {
 import { Input } from '@/components/ui/input';
 import type { PayrollPeriod, PayrollRun, PayrollPeriodType } from '@/lib/types/payroll';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 function formatDate(d: string, locale: string) {
   const dateOnly = d.substring(0, 10);
@@ -144,7 +144,7 @@ export default function PayrollPage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -159,7 +159,7 @@ export default function PayrollPage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={() => { reset({ periodType: 'MONTHLY', startDate: '', endDate: '', name: '' }); setSheetOpen(true); }}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.payroll.newPeriod}
@@ -188,7 +188,7 @@ export default function PayrollPage() {
             return (
               <div
                 key={period.id}
-                className="bg-[#0B1220] border border-white/[0.07] rounded-2xl overflow-hidden transition-all"
+                className="bg-card border border-border rounded-2xl overflow-hidden transition-all"
               >
                 {/* Period header row */}
                 <div
@@ -196,18 +196,18 @@ export default function PayrollPage() {
                   tabIndex={0}
                   onClick={() => toggleExpand(period.id)}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleExpand(period.id); } }}
-                  className="w-full text-left flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors duration-150 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#2563EB]/50"
+                  className="w-full text-left flex items-center gap-4 px-5 py-4 hover:bg-overlay-subtle transition-colors duration-150 group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/50"
                 >
                   <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
-                    <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-slate-300" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-muted-foreground" />
                   </div>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2.5 mb-1">
-                      <span className="text-sm font-medium text-white">
+                      <span className="text-sm font-medium text-foreground">
                         {period.name ?? `${periodTypeLabels[period.periodType]} — ${formatDate(period.startDate, localeId)}`}
                       </span>
-                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.05] text-slate-400 border border-white/[0.06]">
+                      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay text-muted-foreground border border-border">
                         {periodTypeLabels[period.periodType]}
                       </span>
                       {isClosed ? (
@@ -220,20 +220,20 @@ export default function PayrollPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 font-mono">
+                    <p className="text-xs text-muted-foreground font-mono">
                       {formatDate(period.startDate, localeId)} → {formatDate(period.endDate, localeId)}
                     </p>
                   </div>
 
                   <div className="flex items-center gap-2 shrink-0">
                     {isExpanded && (
-                      <span className="text-xs text-slate-500 font-mono">{runs.length} run{runs.length !== 1 ? 's' : ''}</span>
+                      <span className="text-xs text-muted-foreground font-mono">{runs.length} run{runs.length !== 1 ? 's' : ''}</span>
                     )}
                     {canEdit() && !isClosed && (
                       <button
                         onClick={(e) => { e.stopPropagation(); handleCreateRun(period.id); }}
                         disabled={creatingRun === period.id}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#2563EB]/15 border border-[#2563EB]/25 text-[#93BBFC] text-xs font-medium hover:bg-[#2563EB]/25 transition-colors duration-150 disabled:opacity-50 cursor-pointer"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand/15 border border-brand/25 text-brand-text text-xs font-medium hover:bg-brand/25 transition-colors duration-150 disabled:opacity-50 cursor-pointer"
                       >
                         <Play className="w-3 h-3" />
                         {creatingRun === period.id ? t.common.creating : t.payroll.newRun}
@@ -244,32 +244,32 @@ export default function PayrollPage() {
 
                 {/* Expanded: runs list */}
                 {isExpanded && (
-                  <div className="border-t border-white/[0.05] px-5 py-3 flex flex-col gap-2">
+                  <div className="border-t border-border px-5 py-3 flex flex-col gap-2">
                     {runs.length === 0 ? (
-                      <p className="text-xs text-slate-500 py-2 text-center">{t.payroll.noRuns}</p>
+                      <p className="text-xs text-muted-foreground py-2 text-center">{t.payroll.noRuns}</p>
                     ) : (
                       runs.map((run) => (
                         <button
                           key={run.id}
                           onClick={() => router.push(ROUTES.payrollRun(companyId, run.id))}
-                          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04] transition-all text-left group"
+                          className="flex items-center gap-3 px-4 py-3 rounded-xl bg-overlay-subtle border border-border hover:border-border hover:bg-overlay-subtle transition-all text-left group"
                         >
                           <div className="relative flex-shrink-0">
-                            <Receipt className="w-4 h-4 text-slate-500 group-hover:text-slate-300 transition-colors" />
+                            <Receipt className="w-4 h-4 text-muted-foreground group-hover:text-muted-foreground transition-colors" />
                             {run.status === 'RUNNING' && (
                               <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-yellow-400 motion-safe:animate-pulse" />
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-xs text-slate-400 font-mono truncate">
+                            <p className="text-xs text-muted-foreground font-mono truncate">
                               {t.payroll.run.replace('{id}', run.id.slice(-8).toUpperCase())}
                             </p>
                             {run.runAt && (
-                              <p className="text-[11px] text-slate-600">{formatDateTime(run.runAt, localeId)}</p>
+                              <p className="text-[11px] text-muted-foreground">{formatDateTime(run.runAt, localeId)}</p>
                             )}
                           </div>
                           <StatusBadge status={run.status} />
-                          <ChevronDown className="w-3.5 h-3.5 text-slate-600 -rotate-90 group-hover:text-slate-400 transition-colors" />
+                          <ChevronDown className="w-3.5 h-3.5 text-muted-foreground -rotate-90 group-hover:text-muted-foreground transition-colors" />
                         </button>
                       ))
                     )}
@@ -284,11 +284,11 @@ export default function PayrollPage() {
       {/* Sheet: crear periodo */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
+          className="bg-sidebar border-l border-border text-foreground overflow-y-auto"
           style={{ width: 440, maxWidth: '100vw' }}
         >
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">{t.payroll.periodForm.title}</SheetTitle>
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">{t.payroll.periodForm.title}</SheetTitle>
           </SheetHeader>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 p-4">
@@ -302,8 +302,8 @@ export default function PayrollPage() {
                     aria-pressed={watch('periodType') === type}
                     className={`py-2 rounded-lg text-sm font-medium border transition-all cursor-pointer ${
                       watch('periodType') === type
-                        ? 'bg-[#2563EB]/20 border-[#2563EB]/40 text-[#93BBFC]'
-                        : 'bg-white/[0.04] border-white/[0.08] text-slate-400 hover:border-white/[0.15]'
+                        ? 'bg-brand/20 border-brand/40 text-brand-text'
+                        : 'bg-overlay-subtle border-border text-muted-foreground hover:border-border'
                     }`}
                   >
                     {periodTypeLabels[type]}
@@ -333,14 +333,14 @@ export default function PayrollPage() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
               >
                 {isSaving ? t.common.creating : t.payroll.periodForm.submit}
               </button>
@@ -356,12 +356,12 @@ function PeriodsSkeleton() {
   return (
     <div className="flex flex-col gap-3">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-[#0B1220] border border-white/[0.07] rounded-2xl px-5 py-4 motion-safe:animate-pulse">
+        <div key={i} className="bg-card border border-border rounded-2xl px-5 py-4 motion-safe:animate-pulse">
           <div className="flex items-center gap-4">
-            <div className="w-4 h-4 bg-white/[0.06] rounded" />
+            <div className="w-4 h-4 bg-overlay rounded" />
             <div className="flex-1">
-              <div className="h-4 bg-white/[0.06] rounded w-48 mb-2" />
-              <div className="h-3 bg-white/[0.04] rounded w-32" />
+              <div className="h-4 bg-overlay rounded w-48 mb-2" />
+              <div className="h-3 bg-overlay-subtle rounded w-32" />
             </div>
           </div>
         </div>
@@ -386,7 +386,7 @@ function EmptyPeriods({ onNew, canEdit, emptyTitle, emptyDesc, emptyAction }: {
         canEdit ? (
           <button
             onClick={onNew}
-            className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+            className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
           >
             <Plus className="w-4 h-4" />
             {emptyAction}

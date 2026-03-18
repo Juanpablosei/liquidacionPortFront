@@ -37,7 +37,7 @@ import {
 import type { OvertimeEntry, OvertimeType } from '@/lib/types/attendance';
 import type { Employee } from '@/lib/types/employee';
 
-const INPUT_CLASS = 'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+const INPUT_CLASS = 'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 function formatDate(d: string, locale: string): string {
   const iso = d.includes('T') ? d : d + 'T00:00:00';
@@ -173,13 +173,13 @@ export default function OvertimePage() {
     {
       header: t.overtime.employee,
       cell: ({ row }) => (
-        <span className="text-sm text-white">{empName(row.original)}</span>
+        <span className="text-sm text-foreground">{empName(row.original)}</span>
       ),
     },
     {
       header: t.overtime.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{formatDate(row.original.date, localeId)}</span>
+        <span className="font-mono text-muted-foreground text-sm">{formatDate(row.original.date, localeId)}</span>
       ),
     },
     {
@@ -189,13 +189,13 @@ export default function OvertimePage() {
     {
       header: t.overtime.minutes,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-sm">{row.original.minutes} min</span>
+        <span className="font-mono text-muted-foreground text-sm">{row.original.minutes} min</span>
       ),
     },
     {
       header: t.overtime.notes,
       cell: ({ row }) => (
-        <span className="text-slate-400 text-sm truncate max-w-[120px] sm:max-w-[180px] block">{row.original.notes ?? '—'}</span>
+        <span className="text-muted-foreground text-sm truncate max-w-[120px] sm:max-w-[180px] block">{row.original.notes ?? '—'}</span>
       ),
     },
     {
@@ -206,7 +206,7 @@ export default function OvertimePage() {
           {canEdit() && (
             <button
               onClick={(e) => { e.stopPropagation(); openEdit(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.edit}
             >
               <Pencil className="w-4 h-4" />
@@ -215,7 +215,7 @@ export default function OvertimePage() {
           {canDelete() && (
             <button
               onClick={(e) => { e.stopPropagation(); setDeleteItem(row.original); }}
-              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-[#2563EB]/50 focus-visible:outline-none"
+              className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:outline-none"
               aria-label={t.common.delete}
             >
               <Trash2 className="w-4 h-4" />
@@ -229,7 +229,7 @@ export default function OvertimePage() {
   if (!isManager()) {
     return (
       <div className="flex items-center justify-center py-20">
-        <p className="text-slate-400 text-sm">{t.common.noPermission}</p>
+        <p className="text-muted-foreground text-sm">{t.common.noPermission}</p>
       </div>
     );
   }
@@ -244,7 +244,7 @@ export default function OvertimePage() {
           <RoleGate roles={['OWNER', 'ADMIN']}>
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.overtime.register}
@@ -259,7 +259,7 @@ export default function OvertimePage() {
           value={filterEmp}
           onChange={(e) => setFilterEmp(e.target.value)}
           aria-label={t.overtime.employee}
-          className="flex-1 min-w-0 px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="flex-1 min-w-0 px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         >
           <option value="">{t.overtime.allEmployees}</option>
           {employees.map((e) => (
@@ -270,7 +270,7 @@ export default function OvertimePage() {
           value={filterType}
           onChange={(e) => setFilterType(e.target.value as OvertimeType | '')}
           aria-label={t.overtime.type}
-          className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         >
           {OT_TYPE_FILTER.map((o) => (
             <option key={o.value} value={o.value}>{o.label}</option>
@@ -281,14 +281,14 @@ export default function OvertimePage() {
           value={filterFrom}
           onChange={(e) => setFilterFrom(e.target.value)}
           aria-label={t.common.from}
-          className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         />
         <input
           type="date"
           value={filterTo}
           onChange={(e) => setFilterTo(e.target.value)}
           aria-label={t.common.from}
-          className="px-3 py-2 bg-white/[0.04] border border-white/[0.08] rounded-xl text-sm text-white focus:outline-none focus:border-[#2563EB]/50 transition-colors"
+          className="px-3 py-2 bg-overlay-subtle border border-border rounded-xl text-sm text-foreground focus:outline-none focus:border-brand/50 transition-colors"
         />
       </div>
 
@@ -311,7 +311,7 @@ export default function OvertimePage() {
           canEdit() && !filterEmp && !filterFrom && !filterTo && !filterType ? (
             <button
               onClick={openCreate}
-              className="inline-flex items-center gap-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors"
             >
               <Plus className="w-4 h-4" />
               {t.overtime.emptyAction}
@@ -323,11 +323,11 @@ export default function OvertimePage() {
       {/* Sheet crear/editar */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent
-          className="bg-[#060B16] border-l border-white/[0.08] text-white overflow-y-auto"
+          className="bg-sidebar border-l border-border text-foreground overflow-y-auto"
           style={{ width: 420, maxWidth: '100vw' }}
         >
-          <SheetHeader className="pb-4 border-b border-white/[0.06]">
-            <SheetTitle className="text-white">
+          <SheetHeader className="pb-4 border-b border-border">
+            <SheetTitle className="text-foreground">
               {editItem ? t.overtime.editTitle : t.overtime.createTitle}
             </SheetTitle>
           </SheetHeader>
@@ -341,7 +341,7 @@ export default function OvertimePage() {
                   <SelectTrigger className={INPUT_CLASS}>
                     <SelectValue placeholder={t.overtime.selectEmployee} />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#0F172A] border-white/[0.1] text-white">
+                  <SelectContent className="bg-card border-border text-foreground">
                     {employees.map((e) => (
                       <SelectItem key={e.id} value={e.id}>
                         {e.lastName}, {e.firstName}
@@ -367,8 +367,8 @@ export default function OvertimePage() {
                     className={[
                       'flex-1 py-2 rounded-lg text-sm font-medium border transition-colors cursor-pointer',
                       watchedType === ot
-                        ? 'bg-[#2563EB]/20 border-[#2563EB]/50 text-[#93BBFC]'
-                        : 'bg-white/[0.03] border-white/[0.08] text-slate-400 hover:text-white',
+                        ? 'bg-brand/20 border-brand/50 text-brand-text'
+                        : 'bg-overlay-subtle border-border text-muted-foreground hover:text-foreground',
                     ].join(' ')}
                   >
                     {ot === 'OT_50' ? t.overtime.ot50 : t.overtime.ot100}
@@ -395,7 +395,7 @@ export default function OvertimePage() {
                 rows={3}
                 maxLength={500}
                 placeholder={t.common.notesPlaceholder}
-                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.1] rounded-lg text-sm text-white placeholder:text-slate-600 focus:outline-none focus:border-[#2563EB]/50 transition-colors resize-none"
+                className="w-full px-3 py-2 bg-overlay border border-border rounded-lg text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-brand/50 transition-colors resize-none"
               />
             </FormField>
 
@@ -403,14 +403,14 @@ export default function OvertimePage() {
               <button
                 type="button"
                 onClick={() => setSheetOpen(false)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors"
               >
                 {t.common.cancel}
               </button>
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-[#2563EB] hover:bg-[#1D4ED8] text-white transition-colors disabled:opacity-50"
+                className="flex-1 px-4 py-2 rounded-lg text-sm font-medium bg-brand hover:bg-brand-hover text-white transition-colors disabled:opacity-50"
               >
                 {isSaving ? t.common.saving : t.common.save}
               </button>

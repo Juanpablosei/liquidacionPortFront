@@ -94,8 +94,8 @@ export default function CompanySettingsPage() {
       <div className="max-w-2xl flex flex-col gap-6">
 
         {/* General settings */}
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-5">{t.companies.settings.general}</h2>
+        <div className="bg-card border border-border rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-foreground mb-5">{t.companies.settings.general}</h2>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <FormField label={t.companies.settings.companyName} name="name" error={errors.name?.message} required>
@@ -103,7 +103,7 @@ export default function CompanySettingsPage() {
                 {...register('name')}
                 maxLength={100}
                 disabled={!canEdit()}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 disabled:opacity-50"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground disabled:opacity-50"
               />
             </FormField>
 
@@ -114,7 +114,7 @@ export default function CompanySettingsPage() {
                 inputMode="numeric"
                 disabled={!canEdit()}
                 placeholder={t.companies.settings.cuitPlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 disabled:opacity-50"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground disabled:opacity-50"
               />
             </FormField>
 
@@ -124,7 +124,7 @@ export default function CompanySettingsPage() {
                 maxLength={200}
                 disabled={!canEdit()}
                 placeholder={t.companies.settings.addressPlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 disabled:opacity-50"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground disabled:opacity-50"
               />
             </FormField>
 
@@ -135,7 +135,7 @@ export default function CompanySettingsPage() {
                 maxLength={20}
                 disabled={!canEdit()}
                 placeholder={t.companies.settings.phonePlaceholder}
-                className="bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 disabled:opacity-50"
+                className="bg-overlay border-border text-foreground placeholder:text-muted-foreground disabled:opacity-50"
               />
             </FormField>
 
@@ -143,7 +143,7 @@ export default function CompanySettingsPage() {
               <button
                 type="submit"
                 disabled={saving || !isDirty}
-                className="mt-1 bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
+                className="mt-1 bg-brand hover:bg-brand-hover disabled:opacity-50 text-white py-2.5 rounded-xl text-sm font-medium transition-colors"
               >
                 {saving ? t.common.saving : t.companies.settings.saveChanges}
               </button>
@@ -163,12 +163,12 @@ export default function CompanySettingsPage() {
 
         {/* Danger zone - only OWNER */}
         {isOwner() && (
-          <div className="bg-[#0F172A] border border-red-500/20 rounded-xl p-6">
+          <div className="bg-card border border-red-500/20 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <AlertTriangle className="w-4 h-4 text-red-400" />
               <h2 className="text-sm font-semibold text-red-400">{t.companies.settings.dangerZone}</h2>
             </div>
-            <p className="text-sm text-slate-400 mb-5 leading-relaxed">
+            <p className="text-sm text-muted-foreground mb-5 leading-relaxed">
               {t.companies.settings.transferNote}
             </p>
             <div className="p-3 bg-red-500/[0.06] border border-red-500/20 rounded-lg text-xs text-red-300 leading-relaxed">
@@ -178,8 +178,8 @@ export default function CompanySettingsPage() {
         )}
 
         {/* Read-only info */}
-        <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
-          <h2 className="text-sm font-semibold text-white mb-4">{t.common.information}</h2>
+        <div className="bg-card border border-border rounded-xl p-6">
+          <h2 className="text-sm font-semibold text-foreground mb-4">{t.common.information}</h2>
           <div className="flex flex-col gap-3">
             <InfoRow label={t.common.id} value={company?.id ?? '—'} mono />
             <InfoRow
@@ -247,9 +247,9 @@ function SettlementConfigSection({ companyId, t }: { companyId: string; t: Trans
   if (loading) return null;
 
   return (
-    <div className="bg-[#0F172A] border border-white/[0.06] rounded-xl p-6">
-      <h2 className="text-sm font-semibold text-white mb-1">{t.settlements.config.title}</h2>
-      <p className="text-xs text-slate-400 mb-5">{t.settlements.config.description}</p>
+    <div className="bg-card border border-border rounded-xl p-6">
+      <h2 className="text-sm font-semibold text-foreground mb-1">{t.settlements.config.title}</h2>
+      <p className="text-xs text-muted-foreground mb-5">{t.settlements.config.description}</p>
 
       <div className="flex flex-col gap-6">
         {/* Notice period rules */}
@@ -262,7 +262,7 @@ function SettlementConfigSection({ companyId, t }: { companyId: string; t: Trans
 
         {/* Severance days per year */}
         <div>
-          <label className="text-sm font-medium text-slate-300 block mb-1.5">
+          <label className="text-sm font-medium text-muted-foreground block mb-1.5">
             {t.settlements.config.severanceDaysPerYear}
           </label>
           <Input
@@ -270,7 +270,7 @@ function SettlementConfigSection({ companyId, t }: { companyId: string; t: Trans
             min={1}
             value={severanceDays}
             onChange={(e) => setSeveranceDays(Number(e.target.value) || 15)}
-            className="bg-white/[0.05] border-white/[0.1] text-white w-32"
+            className="bg-overlay border-border text-foreground w-32"
           />
         </div>
 
@@ -286,7 +286,7 @@ function SettlementConfigSection({ companyId, t }: { companyId: string; t: Trans
           onClick={handleSave}
           disabled={saving}
           aria-busy={saving}
-          className="self-start bg-[#2563EB] hover:bg-[#1D4ED8] disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
+          className="self-start bg-brand hover:bg-brand-hover disabled:opacity-50 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer"
         >
           {saving ? <span className="flex items-center gap-2"><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.common.saving}</span> : t.settlements.config.save}
         </button>
@@ -321,34 +321,34 @@ function RulesTable({
 
   return (
     <div>
-      <label className="text-sm font-medium text-slate-300 block mb-2">{label}</label>
+      <label className="text-sm font-medium text-muted-foreground block mb-2">{label}</label>
       {rules.length > 0 && (
         <div className="grid grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-2">
-          <span className="text-xs text-slate-500 px-1">{t.settlements.config.minYears}</span>
-          <span className="text-xs text-slate-500 px-1">{t.settlements.config.maxYears}</span>
-          <span className="text-xs text-slate-500 px-1">{t.settlements.config.days}</span>
+          <span className="text-xs text-muted-foreground px-1">{t.settlements.config.minYears}</span>
+          <span className="text-xs text-muted-foreground px-1">{t.settlements.config.maxYears}</span>
+          <span className="text-xs text-muted-foreground px-1">{t.settlements.config.days}</span>
           <span />
           {rules.map((rule, i) => (
             <React.Fragment key={i}>
               <Input
                 type="number" min={0} value={rule.minYears}
                 onChange={(e) => updateRule(i, 'minYears', Number(e.target.value) || 0)}
-                className="bg-white/[0.05] border-white/[0.1] text-white text-sm"
+                className="bg-overlay border-border text-foreground text-sm"
               />
               <Input
                 type="number" min={0} value={rule.maxYears}
                 onChange={(e) => updateRule(i, 'maxYears', Number(e.target.value) || 0)}
-                className="bg-white/[0.05] border-white/[0.1] text-white text-sm"
+                className="bg-overlay border-border text-foreground text-sm"
               />
               <Input
                 type="number" min={0} value={rule.days}
                 onChange={(e) => updateRule(i, 'days', Number(e.target.value) || 0)}
-                className="bg-white/[0.05] border-white/[0.1] text-white text-sm"
+                className="bg-overlay border-border text-foreground text-sm"
               />
               <button
                 onClick={() => removeRule(i)}
                 aria-label={t.settlements.config.removeRule}
-                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -358,7 +358,7 @@ function RulesTable({
       )}
       <button
         onClick={addRule}
-        className="inline-flex items-center gap-1.5 text-xs text-[#2563EB] hover:text-blue-400 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 text-xs text-brand hover:text-blue-400 transition-colors cursor-pointer"
       >
         <Plus className="w-3.5 h-3.5" />
         {t.settlements.config.addRule}
@@ -370,8 +370,8 @@ function RulesTable({
 function InfoRow({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <span className="text-sm text-slate-500">{label}</span>
-      <span className={`text-sm text-white truncate ${mono ? 'font-mono text-xs text-slate-400' : ''}`}>
+      <span className="text-sm text-muted-foreground">{label}</span>
+      <span className={`text-sm text-foreground truncate ${mono ? 'font-mono text-xs text-muted-foreground' : ''}`}>
         {value}
       </span>
     </div>
@@ -383,15 +383,15 @@ function SettingsSkeleton() {
     <>
       <div className="flex items-start gap-4 mb-8 motion-safe:animate-pulse">
         <div>
-          <div className="h-6 bg-white/[0.06] rounded w-40 mb-2" />
-          <div className="h-4 bg-white/[0.04] rounded w-60" />
+          <div className="h-6 bg-overlay rounded w-40 mb-2" />
+          <div className="h-4 bg-overlay-subtle rounded w-60" />
         </div>
       </div>
-      <div className="max-w-2xl bg-[#0F172A] border border-white/[0.06] rounded-xl p-6 motion-safe:animate-pulse">
+      <div className="max-w-2xl bg-card border border-border rounded-xl p-6 motion-safe:animate-pulse">
         {Array.from({ length: 4 }).map((_, i) => (
           <div key={i} className="mb-5">
-            <div className="h-3 bg-white/[0.06] rounded w-24 mb-2" />
-            <div className="h-10 bg-white/[0.04] rounded" />
+            <div className="h-3 bg-overlay rounded w-24 mb-2" />
+            <div className="h-10 bg-overlay-subtle rounded" />
           </div>
         ))}
       </div>

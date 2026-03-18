@@ -14,7 +14,7 @@ import { createPaymentSchema } from '@/lib/validators/admin';
 import type { CreatePaymentInput } from '@/lib/validators/admin';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 interface Props {
   open: boolean;
@@ -45,9 +45,9 @@ export function PaymentFormSheet({ open, onOpenChange, subscriptionId, onSuccess
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="bg-[#0A0F1C] border-l border-white/[0.08] text-white w-[400px] max-w-[100vw]">
-        <SheetHeader className="pb-4 border-b border-white/[0.06]">
-          <SheetTitle className="text-white">{t.admin.newPayment}</SheetTitle>
+      <SheetContent className="bg-background border-l border-border text-foreground w-[400px] max-w-[100vw]">
+        <SheetHeader className="pb-4 border-b border-border">
+          <SheetTitle className="text-foreground">{t.admin.newPayment}</SheetTitle>
         </SheetHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 p-4">

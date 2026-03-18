@@ -56,7 +56,7 @@ function ResetPasswordForm() {
       <div className="text-center" style={{ animation: 'fadeUp 0.5s ease both' }}>
         <p className="text-sm text-red-400 mb-4">{t.auth.resetPassword.invalidLink}</p>
         <Link href={ROUTES.forgotPassword}
-          className="text-sm text-[#2563EB] hover:text-[#93BBFC] transition-colors">
+          className="text-sm text-brand hover:text-brand-text transition-colors">
           {t.auth.resetPassword.requestNewLink}
         </Link>
       </div>
@@ -66,17 +66,17 @@ function ResetPasswordForm() {
   return (
     <div style={{ animation: 'fadeUp 0.5s ease both' }}>
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold tracking-tight text-white mb-1.5">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground mb-1.5">
           {t.auth.resetPassword.title}
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-muted-foreground">
           {t.auth.resetPassword.subtitle}
         </p>
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="newPassword" className="text-sm font-medium text-slate-300">
+          <label htmlFor="newPassword" className="text-sm font-medium text-muted-foreground">
             {t.auth.resetPassword.newPassword}
           </label>
           <div className="relative">
@@ -85,11 +85,11 @@ function ResetPasswordForm() {
               type={showNew ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
+              className="h-11 w-full rounded-xl bg-overlay border border-border text-foreground placeholder:text-muted-foreground px-4 pr-11 text-sm outline-none transition-all focus:border-brand focus:bg-overlay-strong focus:ring-2 focus:ring-brand/40"
               {...register('newPassword')}
             />
             <button type="button" onClick={() => setShowNew((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               aria-label={showNew ? t.auth.resetPassword.hidePassword : t.auth.resetPassword.showPassword} tabIndex={-1}>
               {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -97,12 +97,12 @@ function ResetPasswordForm() {
           {errors.newPassword ? (
             <p className="text-xs text-red-400">{errors.newPassword.message}</p>
           ) : (
-            <p className="text-xs text-slate-400">{t.auth.resetPassword.passwordHint}</p>
+            <p className="text-xs text-muted-foreground">{t.auth.resetPassword.passwordHint}</p>
           )}
         </div>
 
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-300">
+          <label htmlFor="confirmPassword" className="text-sm font-medium text-muted-foreground">
             {t.auth.resetPassword.confirmPassword}
           </label>
           <div className="relative">
@@ -111,11 +111,11 @@ function ResetPasswordForm() {
               type={showConfirm ? 'text' : 'password'}
               autoComplete="new-password"
               placeholder="••••••••"
-              className="h-11 w-full rounded-xl bg-white/[0.05] border border-white/[0.1] text-white placeholder:text-slate-600 px-4 pr-11 text-sm outline-none transition-all focus:border-[#2563EB] focus:bg-white/[0.08] focus:ring-2 focus:ring-[#2563EB]/40"
+              className="h-11 w-full rounded-xl bg-overlay border border-border text-foreground placeholder:text-muted-foreground px-4 pr-11 text-sm outline-none transition-all focus:border-brand focus:bg-overlay-strong focus:ring-2 focus:ring-brand/40"
               {...register('confirmPassword')}
             />
             <button type="button" onClick={() => setShowConfirm((v) => !v)}
-              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              className="absolute right-1 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               aria-label={showConfirm ? t.auth.resetPassword.hidePassword : t.auth.resetPassword.showPassword} tabIndex={-1}>
               {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
@@ -128,7 +128,7 @@ function ResetPasswordForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="mt-1 h-11 w-full rounded-xl bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="mt-1 h-11 w-full rounded-xl bg-brand hover:bg-brand-hover text-white text-sm font-medium transition-all hover:shadow-[0_0_24px_rgba(37,99,235,0.4)] active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <><Loader2 className="w-4 h-4 motion-safe:animate-spin" />{t.auth.resetPassword.submitting}</>
@@ -140,7 +140,7 @@ function ResetPasswordForm() {
 
       <div className="mt-6 text-center">
         <Link href={ROUTES.login}
-          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-300 transition-colors">
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-muted-foreground transition-colors">
           <ArrowLeft className="w-4 h-4" />
           {t.auth.resetPassword.backToLogin}
         </Link>
@@ -160,7 +160,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
       <div className="flex items-center justify-center h-32">
-        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-slate-500" />
+        <Loader2 className="h-5 w-5 motion-safe:animate-spin text-muted-foreground" />
       </div>
     }>
       <ResetPasswordForm />

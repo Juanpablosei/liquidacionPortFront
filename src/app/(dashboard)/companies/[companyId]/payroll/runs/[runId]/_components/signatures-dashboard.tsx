@@ -30,9 +30,9 @@ export function SignaturesDashboard({ signatures, localeId, labels }: Signatures
     <RoleGate roles={['OWNER', 'ADMIN']}>
       <div className="mt-6">
         <div className="flex items-center gap-2 mb-3">
-          <ClipboardCheck className="w-4 h-4 text-slate-400" />
-          <h3 className="text-sm font-semibold text-white">{labels.signatures}</h3>
-          <span className="text-xs text-slate-500 ml-auto">
+          <ClipboardCheck className="w-4 h-4 text-muted-foreground" />
+          <h3 className="text-sm font-semibold text-foreground">{labels.signatures}</h3>
+          <span className="text-xs text-muted-foreground ml-auto">
             {labels.signaturesProg
               .replace('{signed}', String(signatures.signed))
               .replace('{total}', String(signatures.total))}
@@ -40,7 +40,7 @@ export function SignaturesDashboard({ signatures, localeId, labels }: Signatures
         </div>
 
         {/* Progress bar */}
-        <div className="h-2 rounded-full bg-white/[0.06] mb-4 overflow-hidden">
+        <div className="h-2 rounded-full bg-overlay mb-4 overflow-hidden">
           <div
             className="h-full rounded-full bg-emerald-500 transition-all duration-500"
             style={{ width: `${(signatures.signed / signatures.total) * 100}%` }}
@@ -48,19 +48,19 @@ export function SignaturesDashboard({ signatures, localeId, labels }: Signatures
         </div>
 
         {/* Employee signatures table */}
-        <div className="rounded-xl border border-white/[0.06] overflow-hidden">
+        <div className="rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/[0.06] bg-white/[0.02]">
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500">{labels.employee}</th>
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500">{labels.status}</th>
-                <th className="text-left px-4 py-2.5 text-xs font-medium text-slate-500">{labels.notes}</th>
+              <tr className="border-b border-border bg-overlay-subtle">
+                <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">{labels.employee}</th>
+                <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">{labels.status}</th>
+                <th className="text-left px-4 py-2.5 text-xs font-medium text-muted-foreground">{labels.notes}</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-border">
               {signatures.details.map((d) => (
-                <tr key={d.employeeId} className="hover:bg-white/[0.02]">
-                  <td className="px-4 py-2.5 text-white">
+                <tr key={d.employeeId} className="hover:bg-overlay-subtle">
+                  <td className="px-4 py-2.5 text-foreground">
                     {d.lastName}, {d.firstName}
                   </td>
                   <td className="px-4 py-2.5">
@@ -69,7 +69,7 @@ export function SignaturesDashboard({ signatures, localeId, labels }: Signatures
                         <Check className="w-3 h-3" />
                         {labels.signedLabel}
                         {d.signedAt && (
-                          <span className="text-slate-500 ml-1">
+                          <span className="text-muted-foreground ml-1">
                             — {formatDateTime(d.signedAt, localeId)}
                           </span>
                         )}
@@ -78,7 +78,7 @@ export function SignaturesDashboard({ signatures, localeId, labels }: Signatures
                       <span className="text-xs text-amber-400">{labels.pendingLabel}</span>
                     )}
                   </td>
-                  <td className="px-4 py-2.5 text-xs text-slate-500">
+                  <td className="px-4 py-2.5 text-xs text-muted-foreground">
                     {d.comment || labels.noComment}
                   </td>
                 </tr>

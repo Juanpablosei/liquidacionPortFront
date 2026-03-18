@@ -40,20 +40,20 @@ export function ConvenioCard({
   const Chevron = isExpanded ? ChevronDown : ChevronRight;
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-[#111827] overflow-hidden">
+    <div className="rounded-xl border border-border bg-secondary overflow-hidden">
       {/* Header */}
       <div
         role="button"
         tabIndex={0}
         onClick={onToggle}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(); } }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-white/[0.02] transition-colors cursor-pointer"
+        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-overlay-subtle transition-colors cursor-pointer"
       >
-        <Chevron className="w-4 h-4 text-slate-500 shrink-0" />
+        <Chevron className="w-4 h-4 text-muted-foreground shrink-0" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-white truncate">{convenio.name}</span>
-            <span className="text-xs text-slate-500 font-mono">{convenio.code}</span>
+            <span className="text-sm font-medium text-foreground truncate">{convenio.name}</span>
+            <span className="text-xs text-muted-foreground font-mono">{convenio.code}</span>
             <span
               className={cn(
                 'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium',
@@ -73,7 +73,7 @@ export function ConvenioCard({
                   className={cn(
                     'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium',
                     isExpired
-                      ? 'bg-slate-500/15 text-slate-400 border-slate-500/20'
+                      ? 'bg-slate-500/15 text-muted-foreground border-slate-500/20'
                       : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
                   )}
                 >
@@ -83,7 +83,7 @@ export function ConvenioCard({
               );
             })()}
           </div>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-muted-foreground mt-0.5">
             {convenio.categories.length} {t.convenios.categories.toLowerCase()}
           </p>
         </div>
@@ -93,7 +93,7 @@ export function ConvenioCard({
           {canEditProp && onEdit && (
             <button
               onClick={onEdit}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.06] transition-colors"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
               title={t.common.edit}
             >
               <Pencil className="w-3.5 h-3.5" />
@@ -102,7 +102,7 @@ export function ConvenioCard({
           {canEditProp && onDelete && (
             <button
               onClick={onDelete}
-              className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+              className="p-1.5 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
               title={t.common.delete}
             >
               <Trash2 className="w-3.5 h-3.5" />
@@ -112,7 +112,7 @@ export function ConvenioCard({
             <button
               onClick={onClone}
               disabled={isCloning}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/[0.1] px-3 py-1.5 text-xs text-slate-400 hover:text-white hover:border-[#2563EB]/50 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-brand/50 transition-colors disabled:opacity-50"
             >
               <Copy className="w-3.5 h-3.5" />
               {isCloning ? t.convenios.cloning : t.convenios.clone}
@@ -123,12 +123,12 @@ export function ConvenioCard({
 
       {/* Expanded: categories table */}
       {isExpanded && (
-        <div className="border-t border-white/[0.06] px-4 py-3">
+        <div className="border-t border-border px-4 py-3">
           {canEditProp && onAddCategory && (
             <div className="flex justify-end mb-2">
               <button
                 onClick={onAddCategory}
-                className="inline-flex items-center gap-1.5 text-xs text-[#2563EB] hover:text-[#93BBFC] transition-colors"
+                className="inline-flex items-center gap-1.5 text-xs text-brand hover:text-brand-text transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" />
                 {t.convenios.addCategory}
@@ -139,7 +139,7 @@ export function ConvenioCard({
           {convenio.categories.length > 0 ? (
             <table className="w-full text-sm">
               <thead>
-                <tr className="text-xs text-slate-500 uppercase">
+                <tr className="text-xs text-muted-foreground uppercase">
                   <th className="text-left pb-2 font-medium">{t.convenios.code}</th>
                   <th className="text-left pb-2 font-medium">{t.convenios.name}</th>
                   <th className="text-right pb-2 font-medium">{t.convenios.baseSalary}</th>
@@ -147,9 +147,9 @@ export function ConvenioCard({
                   {canEditProp && <th className="w-20" />}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-border">
                 {convenio.categories.map((cat) => (
-                  <tr key={cat.id} className="text-slate-300">
+                  <tr key={cat.id} className="text-muted-foreground">
                     <td className="py-2 font-mono text-xs">{cat.code}</td>
                     <td className="py-2">{cat.name}</td>
                     <td className="py-2 text-right">
@@ -164,7 +164,7 @@ export function ConvenioCard({
                           {onEditCategory && (
                             <button
                               onClick={() => onEditCategory(cat)}
-                              className="p-1 rounded text-slate-500 hover:text-white hover:bg-white/[0.06] transition-colors"
+                              className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-overlay transition-colors"
                               title={t.convenios.editCategory}
                             >
                               <Pencil className="w-3 h-3" />
@@ -173,7 +173,7 @@ export function ConvenioCard({
                           {onDeleteCategory && (
                             <button
                               onClick={() => onDeleteCategory(cat)}
-                              className="p-1 rounded text-slate-500 hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
+                              className="p-1 rounded text-muted-foreground hover:text-red-400 hover:bg-red-500/[0.06] transition-colors"
                               title={t.convenios.deleteCategory}
                             >
                               <Trash2 className="w-3 h-3" />
@@ -187,7 +187,7 @@ export function ConvenioCard({
               </tbody>
             </table>
           ) : (
-            <p className="text-sm text-slate-500 text-center py-2">
+            <p className="text-sm text-muted-foreground text-center py-2">
               {t.convenios.noCategories}
             </p>
           )}

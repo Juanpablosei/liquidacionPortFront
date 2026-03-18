@@ -16,7 +16,7 @@ import type { AuditLog } from '@/lib/types/audit-log';
 import type { PaginatedResponse } from '@/lib/types/api';
 
 const INPUT_CLASS =
-  'bg-white/[0.05] border-white/[0.1] text-white placeholder:text-slate-600 focus:border-[#2563EB]/50 focus:ring-0';
+  'bg-overlay border-border text-foreground placeholder:text-muted-foreground focus:border-brand/50 focus:ring-0';
 
 const PAGE_LIMIT = 20;
 
@@ -132,7 +132,7 @@ export default function AuditLogsPage() {
     {
       header: t.auditLogs.date,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-300 text-xs whitespace-nowrap">
+        <span className="font-mono text-muted-foreground text-xs whitespace-nowrap">
           {formatDateTime(row.original.createdAt, localeId)}
         </span>
       ),
@@ -149,7 +149,7 @@ export default function AuditLogsPage() {
     {
       header: t.auditLogs.entity,
       cell: ({ row }) => (
-        <span className="text-sm text-white">
+        <span className="text-sm text-foreground">
           {entityLabels[row.original.entity] ?? row.original.entity}
         </span>
       ),
@@ -157,7 +157,7 @@ export default function AuditLogsPage() {
     {
       header: t.auditLogs.entityId,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-400 text-xs">
+        <span className="font-mono text-muted-foreground text-xs">
           {row.original.entityId
             ? `${row.original.entityId.substring(0, 8)}...`
             : '\u2014'}
@@ -167,7 +167,7 @@ export default function AuditLogsPage() {
     {
       header: t.auditLogs.user,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-400 text-xs">
+        <span className="font-mono text-muted-foreground text-xs">
           {row.original.userId.substring(0, 8)}...
         </span>
       ),
@@ -175,7 +175,7 @@ export default function AuditLogsPage() {
     {
       header: t.auditLogs.ip,
       cell: ({ row }) => (
-        <span className="font-mono text-slate-500 text-xs">
+        <span className="font-mono text-muted-foreground text-xs">
           {row.original.ip ?? '\u2014'}
         </span>
       ),
@@ -194,7 +194,7 @@ export default function AuditLogsPage() {
       <div className="flex flex-wrap items-end gap-3 mb-5">
         {/* Entity filter */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400">{t.auditLogs.filterEntity}</label>
+          <label className="text-xs text-muted-foreground">{t.auditLogs.filterEntity}</label>
           <select
             value={entity}
             onChange={(e) => applyFilter(setEntity, e.target.value)}
@@ -215,7 +215,7 @@ export default function AuditLogsPage() {
 
         {/* Action filter */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400">{t.auditLogs.filterAction}</label>
+          <label className="text-xs text-muted-foreground">{t.auditLogs.filterAction}</label>
           <select
             value={action}
             onChange={(e) => applyFilter(setAction, e.target.value)}
@@ -236,7 +236,7 @@ export default function AuditLogsPage() {
 
         {/* Date range */}
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400">{t.auditLogs.fromDate}</label>
+          <label className="text-xs text-muted-foreground">{t.auditLogs.fromDate}</label>
           <Input
             type="date"
             value={fromDate}
@@ -246,7 +246,7 @@ export default function AuditLogsPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-xs text-slate-400">{t.auditLogs.toDate}</label>
+          <label className="text-xs text-muted-foreground">{t.auditLogs.toDate}</label>
           <Input
             type="date"
             value={toDate}
@@ -259,7 +259,7 @@ export default function AuditLogsPage() {
         {hasFilters && (
           <button
             onClick={clearFilters}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground bg-overlay-subtle hover:bg-overlay-strong border border-border transition-colors cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
             {t.auditLogs.clearFilters}

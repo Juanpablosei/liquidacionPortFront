@@ -27,7 +27,7 @@ interface StatusBadgeProps {
 }
 
 const VARIANT_STYLES: Record<StatusBadgeVariant, string> = {
-  DRAFT:     'bg-slate-500/15 text-slate-400 border-slate-500/20',
+  DRAFT:     'bg-slate-500/15 text-muted-foreground border-slate-500/20',
   RUNNING:   'bg-yellow-500/15 text-yellow-400 border-yellow-500/20',
   COMPLETED: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/20',
   CLOSED:    'bg-blue-500/15 text-blue-400 border-blue-500/20',
@@ -40,7 +40,7 @@ const VARIANT_STYLES: Record<StatusBadgeVariant, string> = {
   OWNER:     'bg-violet-500/15 text-violet-400 border-violet-500/20',
   ADMIN:     'bg-blue-500/15 text-blue-400 border-blue-500/20',
   MANAGER:   'bg-cyan-500/15 text-cyan-400 border-cyan-500/20',
-  MEMBER:    'bg-slate-500/15 text-slate-400 border-slate-500/20',
+  MEMBER:    'bg-slate-500/15 text-muted-foreground border-slate-500/20',
   MONTHLY:   'bg-blue-500/15 text-blue-400 border-blue-500/20',
   HOURLY:    'bg-cyan-500/15 text-cyan-400 border-cyan-500/20',
 };

@@ -32,8 +32,8 @@ export function RunSummaryCards({ totals, fmt, labels }: RunSummaryCardsProps) {
       label: labels.totalNet,
       value: totals.net,
       icon: <DollarSign className="w-4 h-4" />,
-      color: 'text-white',
-      bg: 'bg-[#2563EB]/10 border-[#2563EB]/20',
+      color: 'text-foreground',
+      bg: 'bg-brand/10 border-brand/20',
     },
   ];
 
@@ -43,7 +43,7 @@ export function RunSummaryCards({ totals, fmt, labels }: RunSummaryCardsProps) {
         <div key={card.label} className={`rounded-xl border px-4 py-3 ${card.bg}`}>
           <div className="flex items-center gap-2 mb-2">
             <span className={card.color}>{card.icon}</span>
-            <span className="text-xs text-slate-500">{card.label}</span>
+            <span className="text-xs text-muted-foreground">{card.label}</span>
           </div>
           <p className={`font-mono text-lg font-semibold ${card.color}`}>{fmt(card.value)}</p>
         </div>
