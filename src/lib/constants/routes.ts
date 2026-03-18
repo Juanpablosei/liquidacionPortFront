@@ -17,7 +17,6 @@ export const ROUTES = {
   employee:       (cid: string, eid: string) => `/companies/${cid}/employees/${eid}`,
 
   attendance:       (cid: string) => `/companies/${cid}/attendance`,
-  attendanceImport: (cid: string) => `/companies/${cid}/attendance/import`,
   overtime:       (cid: string) => `/companies/${cid}/overtime`,
   holidays:       (cid: string) => `/companies/${cid}/holidays`,
   concepts:       (cid: string) => `/companies/${cid}/concepts`,
