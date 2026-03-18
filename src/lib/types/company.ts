@@ -1,15 +1,17 @@
 export type CompanyRole = 'OWNER' | 'ADMIN' | 'MANAGER' | 'MEMBER';
 
 export interface Company {
-  id:        string;
-  name:      string;
-  taxId:     string | null;
-  address:   string | null;
-  phone:     string | null;
-  isActive:  boolean;
-  myRole?:   CompanyRole;
-  createdAt: string;
-  updatedAt: string;
+  id:          string;
+  name:        string;
+  taxId:       string | null;
+  address:     string | null;
+  phone:       string | null;
+  isActive:    boolean;
+  myRole?:     CompanyRole;
+  isEmployee?: boolean;
+  employeeId?: string | null;
+  createdAt:   string;
+  updatedAt:   string;
 }
 
 export interface CompanyUser {

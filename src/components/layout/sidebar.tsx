@@ -44,6 +44,7 @@ interface NavItemDef {
   exact?:   boolean;
   minRole?: CompanyRole;
   maxRole?: CompanyRole;
+  hidden?:  boolean;
 }
 
 function NavItem({
@@ -57,6 +58,7 @@ function NavItem({
   pathname:  string;
   role:      CompanyRole | null;
 }) {
+  if (item.hidden) return null;
   if (item.minRole && !hasMinRole(role ?? 'MEMBER', item.minRole)) return null;
   if (item.maxRole && ROLE_HIERARCHY[role ?? 'MEMBER'] > ROLE_HIERARCHY[item.maxRole]) return null;
 
@@ -119,7 +121,7 @@ export function Sidebar() {
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
     { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
-    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
@@ -287,7 +289,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
     { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
-    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, maxRole: 'MEMBER' },
+    { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
   ];
