@@ -112,3 +112,21 @@ export interface BackupFile {
   size: number;
   lastModified: string;
 }
+
+// ─── Payment Proof ────────────────────────────────────────────────────────────
+
+export type PaymentProofStatus = 'PENDING' | 'APPROVED' | 'REJECTED';
+
+export interface PaymentProof {
+  id: string;
+  companyId: string;
+  subscriptionId: string;
+  fileUrl: string;
+  fileName: string;
+  notes: string | null;
+  status: PaymentProofStatus;
+  rejectionReason: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+}

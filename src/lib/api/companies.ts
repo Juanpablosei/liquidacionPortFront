@@ -2,12 +2,14 @@ import { apiFetch } from './client';
 import { toArray, unwrapObject } from './helpers';
 import { API } from '@/lib/constants/api-endpoints';
 import type { Company, CompanyUser, CompanyRole } from '@/lib/types/company';
+import type { SubscriptionPlan, PaymentProof } from '@/lib/types/admin';
 
 export interface CreateCompanyDto {
-  name:     string;
-  taxId?:   string;
-  address?: string;
-  phone?:   string;
+  name:      string;
+  taxId?:    string;
+  address?:  string;
+  phone?:    string;
+  planCode?: string;
 }
 
 export interface UpdateCompanyDto {
@@ -90,4 +92,26 @@ export function transferOwnership(
     method: 'POST',
     body:   JSON.stringify({ newOwnerUserId }),
   }).then((r) => unwrapObject<Company>(r, 'id'));
+}
+
+// ─── Public Plans ───────────────────────────────────────────────────────────
+
+export function getPublicPlans(): Promise<SubscriptionPlan[]> {
+  return apiFetch<SubscriptionPlan[]>(API.plans.list);
+}
+
+// ─── Payment Proofs ─────────────────────────────────────────────────────────
+
+export function uploadPaymentProof(companyId: string, file: File, notes?: string): Promise<{ id: string; status: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+  if (notes) formData.append('notes', notes);
+  return apiFetch(API.companySubscription.paymentProof(companyId), {
+    method: 'POST',
+    body: formData,
+  });
+}
+
+export function listPaymentProofs(companyId: string): Promise<PaymentProof[]> {
+  return apiFetch<PaymentProof[]>(API.companySubscription.paymentProofs(companyId));
 }

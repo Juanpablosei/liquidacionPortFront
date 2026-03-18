@@ -140,9 +140,14 @@ export const API = {
     payment:       (subId: string, payId: string) => `/admin/subscriptions/${subId}/payments/${payId}`,
     backups:       '/admin/backups',
   },
+  plans: {
+    list: '/plans',
+  },
   companySubscription: {
-    detail:   (cid: string) => `/companies/${cid}/subscription`,
-    payments: (cid: string) => `/companies/${cid}/subscription/payments`,
+    detail:        (cid: string) => `/companies/${cid}/subscription`,
+    payments:      (cid: string) => `/companies/${cid}/subscription/payments`,
+    paymentProof:  (cid: string) => `/companies/${cid}/subscription/payment-proof`,
+    paymentProofs: (cid: string) => `/companies/${cid}/subscription/payment-proof`,
   },
   adminConvenios: {
     list:           '/admin/convenios',

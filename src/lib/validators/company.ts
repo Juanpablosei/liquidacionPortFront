@@ -11,7 +11,8 @@ export function createCompanySchema(v: V) {
     name:    z.string().min(2, v.nameMin2).max(255),
     taxId:   z.string().max(50).refine((val) => !val || taxIdRegex.test(val.replace(/-/g, '')), v.cuitFormat).optional().or(z.literal('')),
     address: z.string().max(500).optional().or(z.literal('')),
-    phone:   z.string().max(50).refine((val) => !val || phoneRegex.test(val), v.phoneInvalid).optional().or(z.literal('')),
+    phone:    z.string().max(50).refine((val) => !val || phoneRegex.test(val), v.phoneInvalid).optional().or(z.literal('')),
+    planCode: z.string().min(1).optional(),
   });
 }
 
