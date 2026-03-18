@@ -7,3 +7,4 @@ export type * from './payroll';
 export type * from './settlement';
 export type * from './convenio';
 export type * from './admin';
+export type * from './plan';

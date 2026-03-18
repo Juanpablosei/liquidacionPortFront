@@ -1318,6 +1318,27 @@ const en: Translations = {
     },
   },
 
+  // ─── Plan Limits & Feature Gates ─────────────────────────────────────────────
+  plan: {
+    upgradeTitle: 'Plan limit reached',
+    upgradeFeatureTitle: 'Feature not available',
+    currentPlan: 'Your current plan',
+    contactAdmin: 'Contact administrator',
+    goToSubscription: 'View subscription',
+    employeeLimit: 'You have reached the employee limit for your plan ({current}/{max}).',
+    memberLimit: 'You have reached the member limit for your plan ({current}/{max}).',
+    runLimit: 'You have reached the monthly payroll run limit ({current}/{max}).',
+    companyLimit: 'You have reached the company limit for your plan ({current}/{max}).',
+    featureExportPdf: 'PDF export is not available on your current plan.',
+    featureUnions: 'Union management is not available on your current plan.',
+    featureFormulas: 'Custom formulas are not available on your current plan.',
+    featureAiUpload: 'AI-powered agreement upload is not available on your current plan.',
+    availableIn: 'Available on {plan}+ plan',
+    pro: 'Pro',
+    starter: 'Starter',
+    enterprise: 'Enterprise',
+  },
+
   // ─── API Errors ─────────────────────────────────────────────────────────────
   apiErrors: {
     noSubscription:        'This company has no active subscription.',

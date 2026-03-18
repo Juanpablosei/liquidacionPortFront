@@ -30,6 +30,7 @@ import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
 import { useUiStore } from '@/stores/ui-store';
 import { usePermissions } from '@/lib/hooks/use-permissions';
+import { usePlanFeatures } from '@/lib/hooks/use-plan-features';
 import { useTranslation } from '@/lib/i18n';
 import { ROUTES } from '@/lib/constants/routes';
 import { hasMinRole, ROLE_HIERARCHY } from '@/lib/constants/roles';
@@ -45,6 +46,7 @@ interface NavItemDef {
   minRole?: CompanyRole;
   maxRole?: CompanyRole;
   hidden?:  boolean;
+  badge?:   string;
 }
 
 function NavItem({
@@ -84,6 +86,11 @@ function NavItem({
     >
       <Icon className="w-4 h-4 shrink-0" />
       {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
+      {!collapsed && item.badge && (
+        <span className="ml-auto text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-brand/15 text-brand-text">
+          {item.badge}
+        </span>
+      )}
     </Link>
   );
 }
@@ -95,6 +102,7 @@ export function Sidebar() {
   const { activeCompany, clearCompany } = useCompanyStore();
   const { sidebarCollapsed, toggleSidebar } = useUiStore();
   const { role } = usePermissions();
+  const { features } = usePlanFeatures();
   const t = useTranslation();
 
   const companyId = activeCompany?.id;
@@ -120,7 +128,7 @@ export function Sidebar() {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
-    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
@@ -274,6 +282,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
   const { user, logout } = useAuthStore();
   const { activeCompany, clearCompany } = useCompanyStore();
   const { role } = usePermissions();
+  const { features } = usePlanFeatures();
   const t = useTranslation();
 
   const companyId = activeCompany?.id;
@@ -288,7 +297,7 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
-    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN' },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },

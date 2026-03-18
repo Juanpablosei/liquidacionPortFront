@@ -1316,6 +1316,27 @@ const es = {
     },
   },
 
+  // ─── Plan Limits & Feature Gates ─────────────────────────────────────────────
+  plan: {
+    upgradeTitle: 'Límite de plan alcanzado',
+    upgradeFeatureTitle: 'Función no disponible',
+    currentPlan: 'Tu plan actual',
+    contactAdmin: 'Contactar administrador',
+    goToSubscription: 'Ver suscripción',
+    employeeLimit: 'Has alcanzado el límite de empleados de tu plan ({current}/{max}).',
+    memberLimit: 'Has alcanzado el límite de miembros de tu plan ({current}/{max}).',
+    runLimit: 'Has alcanzado el límite de corridas de nómina mensuales ({current}/{max}).',
+    companyLimit: 'Has alcanzado el límite de empresas de tu plan ({current}/{max}).',
+    featureExportPdf: 'La exportación a PDF no está disponible en tu plan actual.',
+    featureUnions: 'La gestión de sindicatos no está disponible en tu plan actual.',
+    featureFormulas: 'Las fórmulas personalizadas no están disponibles en tu plan actual.',
+    featureAiUpload: 'La subida de convenios con IA no está disponible en tu plan actual.',
+    availableIn: 'Disponible en plan {plan}+',
+    pro: 'Pro',
+    starter: 'Starter',
+    enterprise: 'Enterprise',
+  },
+
   // ─── API Errors ─────────────────────────────────────────────────────────────
   apiErrors: {
     noSubscription:        'Esta empresa no tiene una suscripción activa.',
