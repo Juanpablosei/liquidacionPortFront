@@ -117,6 +117,8 @@ const en: Translations = {
     adminCompanies:'Companies',
     adminBackups:  'Backups',
     adminPaymentProofs: 'Payment proofs',
+    superAdminView: 'Super Admin View',
+    backToAdmin:    'Back to panel',
   },
 
   // ─── Header ──────────────────────────────────────────────────────────────────

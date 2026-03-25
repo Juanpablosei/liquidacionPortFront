@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from '@/lib/utils/toast';
-import { Building2 } from 'lucide-react';
+import { Building2, LogIn } from 'lucide-react';
 import { listAdminCompanies } from '@/lib/api/admin';
 import { PageHeader }     from '@/components/shared/page-header';
 import { LoadingSkeleton } from '@/components/shared/loading-skeleton';
@@ -10,8 +11,10 @@ import { EmptyState }      from '@/components/shared/empty-state';
 import { useTranslation }  from '@/lib/i18n';
 import { cn }              from '@/lib/utils/cn';
 import { getSubscriptionStatusColor } from '@/lib/utils/status-color';
+import { useCompanyStore } from '@/stores/company-store';
 import type { AdminCompany } from '@/lib/types/admin';
 import type { PaginatedResponse } from '@/lib/types/api';
+import type { Company } from '@/lib/types/company';
 
 const STATUS_LABELS: Record<string, (t: ReturnType<typeof useTranslation>) => string> = {
   TRIAL:     (t) => t.admin.statusTrial,
@@ -23,9 +26,26 @@ const STATUS_LABELS: Record<string, (t: ReturnType<typeof useTranslation>) => st
 
 export default function AdminCompaniesPage() {
   const t = useTranslation();
+  const router = useRouter();
+  const { setActiveCompany } = useCompanyStore();
   const [data, setData] = useState<PaginatedResponse<AdminCompany> | null>(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
+
+  function enterCompany(adminCompany: AdminCompany) {
+    const company: Company = {
+      id:        adminCompany.id,
+      name:      adminCompany.name,
+      taxId:     adminCompany.taxId,
+      address:   adminCompany.address,
+      phone:     adminCompany.phone,
+      isActive:  adminCompany.isActive,
+      createdAt: adminCompany.createdAt,
+      updatedAt: adminCompany.updatedAt,
+    };
+    setActiveCompany(company, 'OWNER');
+    router.push(`/companies/${adminCompany.id}`);
+  }
 
   const load = useCallback(async () => {
     try {
@@ -64,11 +84,16 @@ export default function AdminCompaniesPage() {
                 <th className="text-left px-4 py-3 font-medium">{t.admin.plan}</th>
                 <th className="text-left px-4 py-3 font-medium">{t.admin.status}</th>
                 <th className="text-right px-4 py-3 font-medium">{t.admin.employees}</th>
+                <th className="text-right px-4 py-3 font-medium w-10" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {data.items.map((company) => (
-                <tr key={company.id} className="text-muted-foreground">
+                <tr
+                  key={company.id}
+                  onClick={() => enterCompany(company)}
+                  className="text-muted-foreground cursor-pointer hover:bg-overlay-subtle transition-colors"
+                >
                   <td className="px-4 py-3 font-medium text-foreground">{company.name}</td>
                   <td className="px-4 py-3">{company.subscription?.plan.name ?? '—'}</td>
                   <td className="px-4 py-3">
@@ -80,6 +105,9 @@ export default function AdminCompaniesPage() {
                     </span>
                   </td>
                   <td className="px-4 py-3 text-right font-mono">{company._count.employees}</td>
+                  <td className="px-4 py-3 text-right">
+                    <LogIn className="w-3.5 h-3.5 text-muted-foreground inline-block" />
+                  </td>
                 </tr>
               ))}
             </tbody>

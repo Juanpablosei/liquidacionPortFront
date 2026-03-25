@@ -115,6 +115,8 @@ const es = {
     adminCompanies:'Empresas',
     adminBackups:  'Backups',
     adminPaymentProofs: 'Comprobantes',
+    superAdminView: 'Vista Super Admin',
+    backToAdmin:    'Volver al panel',
   },
 
   // ─── Header ──────────────────────────────────────────────────────────────────

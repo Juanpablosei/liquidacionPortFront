@@ -195,6 +195,25 @@ export function Sidebar() {
               )}
             </Link>
           </div>
+        ) : isSuperAdmin && !isOnAdminRoute && companyId ? (
+          <div className={`px-3 mb-4 ${sidebarCollapsed ? 'px-2' : ''}`}>
+            <Link
+              href={ROUTES.admin}
+              title={sidebarCollapsed ? t.sidebar.backToAdmin : undefined}
+              aria-label={sidebarCollapsed ? t.sidebar.backToAdmin : undefined}
+              className={`flex items-center gap-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 transition-colors duration-150 ${sidebarCollapsed ? 'justify-center w-10 h-10 mx-auto' : 'px-2.5 py-2'}`}
+            >
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+                <Shield className="w-4 h-4 text-amber-400" />
+              </div>
+              {!sidebarCollapsed && (
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold text-amber-400 leading-none">{t.sidebar.superAdminView}</p>
+                  <p className="text-[10px] text-amber-400/70 mt-0.5">{t.sidebar.backToAdmin}</p>
+                </div>
+              )}
+            </Link>
+          </div>
         ) : (
           <CompanySwitcher collapsed={sidebarCollapsed} />
         )}
