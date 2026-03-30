@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silent Port — Guia de Usuario v1.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-light: #93BBFC;
+      --blue-bg: #EFF6FF;
+      --dark: #0F172A;
+      --sidebar-bg: #060B16;
+      --card-bg: #0F172A;
+      --gray-900: #1E293B;
+      --gray-700: #334155;
+      --gray-500: #64748B;
+      --gray-400: #94A3B8;
+      --gray-300: #CBD5E1;
+      --gray-200: #E2E8F0;
+      --gray-100: #F1F5F9;
+      --gray-50: #F8FAFC;
+      --green: #16A34A;
+      --green-light: #DCFCE7;
+      --red: #DC2626;
+      --red-light: #FEE2E2;
+      --amber: #D97706;
+      --amber-light: #FEF3C7;
+      --violet: #7C3AED;
+      --cyan: #06B6D4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--dark);
+      line-height: 1.65;
+      background: white;
+      font-size: 10.5pt;
+    }
+
+    @media print {
+      body { font-size: 9.5pt; }
+      .page-break { page-break-before: always; }
+      .no-print { display: none; }
+      .cover { min-height: 100vh; }
+      .steps, table, .tip, .mockup-container { page-break-inside: avoid; }
+      h3 { page-break-after: avoid; }
+    }
+
+    /* ─── Cover ─── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #060B16 0%, #0F172A 40%, #1E293B 100%);
+      color: white;
+      text-align: center;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+      top: 30%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .cover-logo {
+      width: 72px; height: 72px;
+      background: var(--blue);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      box-shadow: 0 20px 60px rgba(37,99,235,0.35);
+      position: relative;
+    }
+    .cover h1 { font-size: 44pt; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 6px; position: relative; }
+    .cover .subtitle { font-size: 14pt; font-weight: 300; color: #94A3B8; margin-bottom: 56px; position: relative; }
+    .cover .guide-label { font-size: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 4px; color: var(--blue-light); margin-bottom: 8px; position: relative; }
+    .cover .guide-title { font-size: 22pt; font-weight: 700; color: white; position: relative; }
+    .cover .version { font-size: 10pt; color: #475569; margin-top: 64px; position: relative; }
+
+    /* ─── Content ─── */
+    .content { max-width: 760px; margin: 0 auto; padding: 48px 28px; }
+
+    /* ─── TOC ─── */
+    .toc h2 { font-size: 20pt; font-weight: 700; margin-bottom: 28px; color: var(--dark); }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+    .toc-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-100); }
+    .toc-num { font-size: 10pt; font-weight: 700; color: var(--blue); min-width: 22px; }
+    .toc-label { font-size: 10pt; font-weight: 500; color: var(--gray-700); }
+
+    /* ─── Section ─── */
+    .section { margin-bottom: 36px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .section-num { font-size: 28pt; font-weight: 800; color: var(--blue); line-height: 1; opacity: 0.2; }
+    h2.section-title { font-size: 17pt; font-weight: 700; color: var(--dark); }
+    .section-line { height: 3px; background: linear-gradient(90deg, var(--blue), transparent); border-radius: 2px; margin-bottom: 8px; }
+    .section-desc { font-size: 10pt; color: var(--gray-500); margin-bottom: 18px; }
+
+    h3 { font-size: 12pt; font-weight: 600; color: var(--dark); margin: 22px 0 8px; }
+    h4 { font-size: 10.5pt; font-weight: 600; color: var(--gray-700); margin: 14px 0 6px; }
+    p { margin-bottom: 8px; color: var(--gray-700); }
+    ul, ol { margin: 6px 0 10px 18px; color: var(--gray-700); }
+    li { margin-bottom: 4px; }
+    strong { color: var(--dark); }
+    em { font-style: normal; color: var(--blue); font-weight: 500; }
+
+    /* ─── Info Box ─── */
+    .tip { border-radius: 10px; padding: 14px 16px; margin: 14px 0; font-size: 9.5pt; display: flex; gap: 12px; align-items: flex-start; }
+    .tip .tip-icon { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .tip.blue { background: #EFF6FF; border: 1px solid #BFDBFE; }
+    .tip.blue .tip-icon { background: var(--blue); color: white; }
+    .tip.green { background: #F0FDF4; border: 1px solid #BBF7D0; }
+    .tip.green .tip-icon { background: var(--green); color: white; }
+    .tip.amber { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .tip.amber .tip-icon { background: var(--amber); color: white; }
+    .tip.red { background: #FEF2F2; border: 1px solid #FECACA; }
+    .tip.red .tip-icon { background: var(--red); color: white; }
+    .tip-body strong { display: block; margin-bottom: 3px; font-size: 10pt; }
+
+    /* ─── Steps ─── */
+    .steps { counter-reset: step; list-style: none; margin: 10px 0 14px; padding: 0; }
+    .steps > li {
+      counter-increment: step;
+      padding: 5px 0 5px 36px;
+      position: relative;
+      min-height: 20px;
+    }
+    .steps > li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0; top: 4px;
+      width: 22px; height: 22px;
+      background: var(--blue);
+      color: white;
+      border-radius: 50%;
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .steps > li > ul,
+    .steps > li > .fields { margin-top: 4px; margin-left: 0; padding-left: 14px; }
+
+    /* ─── Field list ─── */
+    .fields { margin: 6px 0 8px; padding: 0; list-style: none; }
+    .fields li { padding: 3px 0; font-size: 9.5pt; line-height: 1.4; }
+    .fields .fname { font-weight: 600; color: var(--dark); }
+    .fields .fname::after { content: ':  '; color: var(--gray-300); font-weight: 400; }
+    .fields .fdesc { color: var(--gray-500); }
+
+    /* ─── Tables ─── */
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9.5pt; }
+    th { background: var(--gray-50); text-align: left; padding: 8px 12px; font-weight: 600; color: var(--dark); border-bottom: 2px solid var(--gray-200); }
+    td { padding: 7px 12px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+    tr:last-child td { border-bottom: none; }
+
+    /* ─── Role Badge ─── */
+    .role { display: inline-block; font-size: 7.5pt; font-weight: 600; padding: 1px 7px; border-radius: 4px; vertical-align: middle; letter-spacing: 0.3px; }
+    .role.owner { background: #EDE9FE; color: #6D28D9; }
+    .role.admin { background: #DBEAFE; color: #1E40AF; }
+    .role.manager { background: #CFFAFE; color: #0E7490; }
+    .role.member { background: var(--gray-100); color: var(--gray-700); }
+
+    /* ─── SVG Mockups ─── */
+    .mockup-container { margin: 16px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .mockup-label { font-size: 8.5pt; font-weight: 500; color: var(--gray-400); text-align: center; margin-top: 6px; margin-bottom: 10px; }
+
+    /* ─── Divider ─── */
+    hr { border: none; border-top: 1px solid var(--gray-100); margin: 20px 0; }
+
+    /* ─── Footer ─── */
+    .doc-footer { text-align: center; padding: 36px 24px; color: var(--gray-500); font-size: 9pt; border-top: 1px solid var(--gray-100); margin-top: 32px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-logo">
+    <svg width="32" height="32" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
+  <h1>Silent Port</h1>
+  <p class="subtitle">Sistema de Gestion de Nomina</p>
+  <p class="guide-label">Documentacion</p>
+  <p class="guide-title">Guia de Usuario</p>
+  <p class="version">MVP v1.0 &mdash; Marzo 2026</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TOC -->
+<div class="content page-break">
+  <div class="toc">
+    <h2>Contenido</h2>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">01</span><span class="toc-label">Vision General del Sistema</span></div>
+      <div class="toc-item"><span class="toc-num">09</span><span class="toc-label">Horas Extra</span></div>
+      <div class="toc-item"><span class="toc-num">02</span><span class="toc-label">Registro e Inicio de Sesion</span></div>
+      <div class="toc-item"><span class="toc-num">10</span><span class="toc-label">Feriados</span></div>
+      <div class="toc-item"><span class="toc-num">03</span><span class="toc-label">Empresas</span></div>
+      <div class="toc-item"><span class="toc-num">11</span><span class="toc-label">Conceptos de Nomina</span></div>
+      <div class="toc-item"><span class="toc-num">04</span><span class="toc-label">Panel de la Empresa</span></div>
+      <div class="toc-item"><span class="toc-num">12</span><span class="toc-label">Nomina</span></div>
+      <div class="toc-item"><span class="toc-num">05</span><span class="toc-label">Miembros del Equipo</span></div>
+      <div class="toc-item"><span class="toc-num">13</span><span class="toc-label">Liquidacion</span></div>
+      <div class="toc-item"><span class="toc-num">06</span><span class="toc-label">Empleados</span></div>
+      <div class="toc-item"><span class="toc-num">14</span><span class="toc-label">Mis Recibos</span></div>
+      <div class="toc-item"><span class="toc-num">07</span><span class="toc-label">Contratos</span></div>
+      <div class="toc-item"><span class="toc-num">15</span><span class="toc-label">Perfil y Seguridad</span></div>
+      <div class="toc-item"><span class="toc-num">08</span><span class="toc-label">Asistencia</span></div>
+      <div class="toc-item"><span class="toc-num">16</span><span class="toc-label">Roles y Permisos</span></div>
+      <div class="toc-item" style="grid-column: 1 / -1; border-top: 2px solid var(--blue-bg);"><span class="toc-num">17</span><span class="toc-label">Futuras Implementaciones</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 01. VISION GENERAL -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">Vision General del Sistema</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Silent Port es una plataforma web para gestionar la nomina de su empresa de forma completa.</p>
+
+    <p>El sistema esta organizado en modulos que cubren todo el ciclo de nomina, desde el registro del personal hasta la generacion y firma de recibos de sueldo.</p>
+
+    <!-- MODULE MAP SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <defs>
+          <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#060B16"/><stop offset="100%" stop-color="#0F172A"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="720" height="380" rx="0" fill="url(#bgGrad)"/>
+
+        <!-- Title -->
+        <text x="360" y="36" text-anchor="middle" fill="#94A3B8" font-family="Inter,sans-serif" font-size="11" font-weight="600" letter-spacing="3">MODULOS DEL SISTEMA</text>
+
+        <!-- Row 1: Auth + Companies + Dashboard -->
+        <g transform="translate(28,58)">
+          <rect width="205" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Autenticacion</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Registro, login, recuperar contrasena</text>
+        </g>
+        <g transform="translate(253,58)">
+          <rect width="205" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Empresas</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Crear, seleccionar, configurar</text>
+        </g>
+        <g transform="translate(478,58)">
+          <rect width="214" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Panel General</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">KPIs, accesos rapidos, estadisticas</text>
+        </g>
+
+        <!-- Arrow -->
+        <line x1="233" y1="91" x2="253" y2="91" stroke="#2563EB" stroke-opacity="0.3" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="458" y1="91" x2="478" y2="91" stroke="#2563EB" stroke-opacity="0.3" stroke-width="1.5"/>
+
+        <!-- Row 2: RRHH -->
+        <text x="28" y="152" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">RECURSOS HUMANOS</text>
+        <g transform="translate(28,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Empleados</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Alta, baja, importar Excel</text>
+        </g>
+        <g transform="translate(198,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Contratos</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Salario, horario, conceptos</text>
+        </g>
+        <g transform="translate(368,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Miembros</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Roles y accesos al equipo</text>
+        </g>
+
+        <!-- Row 3: Tiempo -->
+        <text x="28" y="248" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">CONTROL DE TIEMPO</text>
+        <g transform="translate(28,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Asistencia</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Entrada, salida, horas</text>
+        </g>
+        <g transform="translate(198,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Horas Extra</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">50% y 100%, minutos</text>
+        </g>
+        <g transform="translate(368,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Feriados</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Obligatorios y opcionales</text>
+        </g>
+
+        <!-- Row 3 right: Nomina -->
+        <text x="540" y="152" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">NOMINA</text>
+        <g transform="translate(540,162)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Conceptos</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Haberes y deducciones</text>
+        </g>
+        <g transform="translate(540,232)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Periodos y Corridas</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Calculo, revision, cierre</text>
+        </g>
+        <g transform="translate(540,302)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Recibos y Liquidacion</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">PDF, CSV, firma, despido</text>
+        </g>
+
+        <!-- Arrows vertical -->
+        <line x1="616" y1="218" x2="616" y2="232" stroke="#7C3AED" stroke-opacity="0.3" stroke-width="1.5"/>
+        <line x1="616" y1="288" x2="616" y2="302" stroke="#7C3AED" stroke-opacity="0.3" stroke-width="1.5"/>
+
+        <!-- Profile -->
+        <g transform="translate(28,330)">
+          <rect width="140" height="36" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+          <text x="14" y="23" fill="#94A3B8" font-family="Inter,sans-serif" font-size="10" font-weight="500">Perfil y Seguridad</text>
+        </g>
+        <g transform="translate(182,330)">
+          <rect width="140" height="36" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+          <text x="14" y="23" fill="#94A3B8" font-family="Inter,sans-serif" font-size="10" font-weight="500">Mis Recibos</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Mapa de modulos del sistema</p>
+
+    <h3>Que incluye este MVP?</h3>
+    <table>
+      <tr><th style="width:30%">Area</th><th>Funcionalidades</th></tr>
+      <tr><td><strong>Autenticacion</strong></td><td>Registro, inicio de sesion, recuperar contrasena, verificacion de correo, sesiones multiples</td></tr>
+      <tr><td><strong>Empresas</strong></td><td>Crear y administrar multiples empresas, cambiar entre ellas, configurar parametros</td></tr>
+      <tr><td><strong>Equipo</strong></td><td>Invitar miembros, asignar roles (Propietario, Admin, Gerente, Miembro), transferir propiedad</td></tr>
+      <tr><td><strong>Empleados</strong></td><td>Alta individual y masiva (Excel), edicion, baja, busqueda y filtros</td></tr>
+      <tr><td><strong>Contratos</strong></td><td>Salario base, horario laboral, conceptos asignados por empleado</td></tr>
+      <tr><td><strong>Tiempo</strong></td><td>Asistencia (entrada/salida), horas extra (50% / 100%), calendario de feriados</td></tr>
+      <tr><td><strong>Conceptos</strong></td><td>Haberes y deducciones con calculo fijo, porcentaje, por hora o manual</td></tr>
+      <tr><td><strong>Nomina</strong></td><td>Periodos, corridas automatizadas, recibos, edicion de lineas, cierre, exportacion CSV/PDF</td></tr>
+      <tr><td><strong>Liquidacion</strong></td><td>Calculo automatico por despido o renuncia (aguinaldo, vacaciones, indemnizacion)</td></tr>
+      <tr><td><strong>Autoservicio</strong></td><td>Empleados pueden consultar y firmar sus recibos de sueldo</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 02. AUTH -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Registro e Inicio de Sesion</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Como crear su cuenta y acceder al sistema.</p>
+
+    <!-- LOGIN MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="340" fill="#060B16"/>
+        <!-- Card -->
+        <rect x="210" y="30" width="300" height="280" rx="16" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+        <!-- Logo -->
+        <rect x="335" y="48" width="30" height="30" rx="8" fill="#2563EB"/>
+        <text x="360" y="68" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="600">SP</text>
+        <text x="360" y="98" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="14" font-weight="600">Iniciar Sesion</text>
+        <text x="360" y="114" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Ingrese sus credenciales para continuar</text>
+        <!-- Email -->
+        <text x="236" y="142" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="500">Correo electronico</text>
+        <rect x="230" y="148" width="260" height="34" rx="10" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.1"/>
+        <text x="244" y="170" fill="#475569" font-family="Inter,sans-serif" font-size="9">usuario@empresa.com</text>
+        <!-- Password -->
+        <text x="236" y="200" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="500">Contrasena</text>
+        <rect x="230" y="206" width="260" height="34" rx="10" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.1"/>
+        <text x="244" y="228" fill="#475569" font-family="Inter,sans-serif" font-size="9">*************</text>
+        <text x="470" y="228" fill="#64748B" font-family="Inter,sans-serif" font-size="8">👁</text>
+        <!-- Forgot -->
+        <text x="490" y="254" text-anchor="end" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">Olvide mi contrasena</text>
+        <!-- Button -->
+        <rect x="230" y="264" width="260" height="36" rx="10" fill="#2563EB"/>
+        <text x="360" y="287" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="600">Iniciar Sesion</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Pantalla de inicio de sesion</p>
+
+    <h3>Crear una cuenta nueva</h3>
+    <ol class="steps">
+      <li>Acceda a la pagina de registro desde el enlace <em>"Crear cuenta"</em> en la pantalla de login.</li>
+      <li>Complete los campos (ver tabla abajo).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Campo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Nombre</strong></td><td>Su nombre completo (opcional)</td></tr>
+      <tr><td><strong>Correo electronico</strong></td><td>Sera su usuario para ingresar</td></tr>
+      <tr><td><strong>Contrasena</strong></td><td>Minimo 8 caracteres, con mayuscula, minuscula y numero</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Presione <em>"Crear cuenta"</em>. Recibira un correo de confirmacion.</li>
+      <li>Abra el correo y haga clic en el enlace de verificacion.</li>
+    </ol>
+
+    <h3>Iniciar sesion</h3>
+    <ol class="steps">
+      <li>Ingrese su correo electronico y contrasena.</li>
+      <li>Presione <em>"Iniciar sesion"</em>.</li>
+      <li>Sera redirigido al listado de empresas.</li>
+    </ol>
+
+    <h3>Recuperar contrasena</h3>
+    <ol class="steps">
+      <li>En la pantalla de login, haga clic en <em>"Olvide mi contrasena"</em>.</li>
+      <li>Ingrese su correo y presione <em>"Enviar enlace"</em>.</li>
+      <li>Revise su bandeja de entrada y haga clic en el enlace recibido.</li>
+      <li>Ingrese su nueva contrasena (dos veces) y presione <em>"Restablecer"</em>.</li>
+    </ol>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Correo no verificado?</strong>Si intenta iniciar sesion sin verificar su correo, vera un mensaje con la opcion de reenviar el correo de confirmacion.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 03. EMPRESAS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Empresas</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Gestion de sus empresas en la plataforma.</p>
+
+    <h3>Listado de empresas</h3>
+    <p>Al iniciar sesion, vera todas las empresas a las que pertenece. Cada tarjeta muestra el nombre, RUC, direccion, estado (Activa/Inactiva) y su rol. Haga clic en cualquier tarjeta para acceder al panel de esa empresa.</p>
+
+    <h3>Crear una nueva empresa</h3>
+    <ol class="steps">
+      <li>Presione <em>"Nueva Empresa"</em> o la tarjeta con el icono +.</li>
+      <li>Complete los datos (ver tabla abajo).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Campo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Nombre de la empresa</strong></td><td>Obligatorio</td></tr>
+      <tr><td><strong>RUC / CUIT</strong></td><td>Identificacion fiscal (opcional)</td></tr>
+      <tr><td><strong>Direccion</strong></td><td>Opcional</td></tr>
+      <tr><td><strong>Telefono</strong></td><td>Opcional</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Presione <em>"Crear empresa"</em>.</li>
+    </ol>
+
+    <div class="tip green">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Propietario automatico</strong>Al crear una empresa, usted queda registrado como Propietario con todos los permisos.</div>
+    </div>
+
+    <h3>Cambiar entre empresas</h3>
+    <p>Use el <strong>selector de empresa</strong> en la barra lateral izquierda para cambiar entre sus empresas sin cerrar sesion.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 04. PANEL -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Panel de la Empresa</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Vista general y acceso rapido a todos los modulos.</p>
+
+    <!-- DASHBOARD MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="300" fill="#0A0F1C"/>
+        <!-- Sidebar hint -->
+        <rect x="0" y="0" width="56" height="300" fill="#060B16"/>
+        <rect x="56" y="0" width="1" height="300" fill="white" fill-opacity="0.06"/>
+        <!-- Sidebar icons -->
+        <rect x="16" y="16" width="24" height="24" rx="6" fill="#2563EB"/>
+        <text x="28" y="32" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="7" font-weight="700">SP</text>
+        <circle cx="28" cy="64" r="4" fill="#93BBFC" fill-opacity="0.3"/>
+        <circle cx="28" cy="88" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="112" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="136" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="160" r="4" fill="#64748B" fill-opacity="0.3"/>
+
+        <!-- Content area -->
+        <text x="80" y="38" fill="white" font-family="Inter,sans-serif" font-size="14" font-weight="600">Mi Empresa S.A.</text>
+        <text x="80" y="54" fill="#64748B" font-family="Inter,sans-serif" font-size="9">RUC: 80012345-6 | Asuncion, Paraguay</text>
+
+        <!-- KPI Cards -->
+        <g transform="translate(80,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Miembros</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="18" font-weight="600">4</text>
+          <text x="14" y="60" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Tu rol: Admin</text>
+        </g>
+        <g transform="translate(235,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Empleados Activos</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="18" font-weight="600">23</text>
+        </g>
+        <g transform="translate(390,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Ultima Nomina</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="#4ADE80" font-family="Inter,sans-serif" font-size="12" font-weight="600">Completada</text>
+          <text x="14" y="60" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Febrero 2026</text>
+        </g>
+        <g transform="translate(545,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Desde</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="12" font-weight="600">Ene 2025</text>
+        </g>
+
+        <!-- Quick access label -->
+        <text x="80" y="168" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9" font-weight="500">Acceso Rapido</text>
+
+        <!-- Quick cards row -->
+        <g transform="translate(80,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Empleados</text>
+        </g>
+        <g transform="translate(190,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Asistencia</text>
+        </g>
+        <g transform="translate(300,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Nomina</text>
+        </g>
+        <g transform="translate(410,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Conceptos</text>
+        </g>
+        <g transform="translate(520,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Feriados</text>
+        </g>
+        <g transform="translate(80,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Horas Extra</text>
+        </g>
+        <g transform="translate(190,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Miembros</text>
+        </g>
+        <g transform="translate(300,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Configuracion</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Panel general de la empresa con indicadores y accesos rapidos</p>
+
+    <p>Los modulos visibles dependen de su rol. Consulte la seccion <strong>16 — Roles y Permisos</strong> para mas detalles.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 05. MIEMBROS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Miembros del Equipo</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Invite usuarios y administre los permisos de acceso a la empresa.</p>
+
+    <h3>Ver miembros</h3>
+    <p>La tabla muestra todos los usuarios con acceso a la empresa, su rol y fecha de ingreso.</p>
+
+    <h3>Agregar un miembro</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Presione <em>"Agregar miembro"</em>.</li>
+      <li>Ingrese el ID del usuario (debe tener cuenta en Silent Port).</li>
+      <li>Seleccione el rol: Administrador, Gerente o Miembro.</li>
+      <li>Presione <em>"Agregar"</em>.</li>
+    </ol>
+
+    <h3>Cambiar el rol</h3>
+    <p>Use el desplegable en la columna Rol para cambiarlo. El cambio se aplica inmediatamente.</p>
+
+    <h3>Eliminar un miembro</h3>
+    <p>Desde el menu de opciones, seleccione <em>"Eliminar"</em>. Se pedira confirmacion.</p>
+
+    <h3>Transferir propiedad</h3>
+    <p>Solo el <span class="role owner">PROPIETARIO</span> puede transferir la propiedad. Es irreversible.</p>
+
+    <div class="tip red">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Importante</strong>No se puede eliminar al propietario ni un usuario puede eliminarse a si mismo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 06. EMPLEADOS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">06</span><h2 class="section-title">Empleados</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Registro y gestion completa del personal de la empresa.</p>
+
+    <!-- EMPLOYEES MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="240" fill="#0A0F1C"/>
+        <!-- Header -->
+        <text x="28" y="32" fill="white" font-family="Inter,sans-serif" font-size="13" font-weight="600">Empleados</text>
+        <!-- Buttons -->
+        <rect x="440" y="14" width="82" height="28" rx="8" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="460" y="33" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Plantilla</text>
+        <rect x="530" y="14" width="72" height="28" rx="8" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="544" y="33" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Importar</text>
+        <rect x="610" y="14" width="86" height="28" rx="8" fill="#2563EB"/>
+        <text x="626" y="33" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="600">+ Nuevo</text>
+
+        <!-- Search -->
+        <rect x="28" y="52" width="200" height="28" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+        <text x="44" y="71" fill="#475569" font-family="Inter,sans-serif" font-size="8.5">Buscar empleado...</text>
+        <!-- Tabs -->
+        <rect x="248" y="52" width="170" height="28" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.06"/>
+        <rect x="252" y="55" width="48" height="22" rx="6" fill="#2563EB"/>
+        <text x="264" y="70" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="500">Todos</text>
+        <text x="318" y="70" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8">Activos</text>
+        <text x="370" y="70" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8">Inactivos</text>
+
+        <!-- Table header -->
+        <rect x="28" y="92" width="668" height="28" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EMPLEADO</text>
+        <text x="280" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">CORREO</text>
+        <text x="480" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">FECHA INGRESO</text>
+        <text x="620" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">ESTADO</text>
+        <line x1="28" y1="120" x2="696" y2="120" stroke="white" stroke-opacity="0.06"/>
+
+        <!-- Row 1 -->
+        <text x="44" y="140" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Maria Lopez Gonzalez</text>
+        <text x="44" y="153" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">CI 4.521.876</text>
+        <text x="280" y="146" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">mlopez@email.com</text>
+        <text x="480" y="146" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">15/01/2024</text>
+        <rect x="616" y="135" width="50" height="18" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="628" y="148" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Activo</text>
+        <line x1="28" y1="162" x2="696" y2="162" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Row 2 -->
+        <text x="44" y="182" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Carlos Benitez Ruiz</text>
+        <text x="44" y="195" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">CI 3.890.234</text>
+        <text x="280" y="188" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">cbenitez@email.com</text>
+        <text x="480" y="188" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">03/06/2023</text>
+        <rect x="616" y="177" width="50" height="18" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="628" y="190" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Activo</text>
+        <line x1="28" y1="204" x2="696" y2="204" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Row 3 -->
+        <text x="44" y="224" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Ana Ramirez Torres</text>
+        <text x="44" y="237" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">CI 5.102.445</text>
+        <text x="280" y="230" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">aramirez@email.com</text>
+        <text x="480" y="230" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">20/11/2022</text>
+        <rect x="616" y="219" width="56" height="18" rx="4" fill="#DC2626" fill-opacity="0.12" stroke="#DC2626" stroke-opacity="0.2"/>
+        <text x="626" y="232" fill="#F87171" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Inactivo</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Listado de empleados con busqueda, filtros y tabla</p>
+
+    <h3>Crear un empleado</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Presione <em>"Nuevo Empleado"</em>.</li>
+      <li>Complete los campos obligatorios (ver tabla abajo).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Campo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Tipo de documento</strong></td><td>CI, RUC, Pasaporte u Otro</td></tr>
+      <tr><td><strong>Numero de documento</strong></td><td>Identificacion unica</td></tr>
+      <tr><td><strong>Nombre y Apellido</strong></td><td>Datos del empleado</td></tr>
+      <tr><td><strong>Fecha de ingreso</strong></td><td>Inicio de la relacion laboral</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Opcionalmente agregue correo, telefono y fecha de nacimiento.</li>
+      <li>Presione <em>"Crear Empleado"</em>.</li>
+    </ol>
+
+    <h3>Importacion masiva desde Excel</h3>
+    <ol class="steps">
+      <li>Presione <em>"Descargar Plantilla"</em> para obtener el archivo Excel modelo.</li>
+      <li>Complete la plantilla con los datos de los empleados.</li>
+      <li>Presione <em>"Importar"</em> y seleccione el archivo (.xlsx, maximo 5 MB).</li>
+      <li>Si hay errores, el sistema mostrara un detalle por fila y campo para corregir.</li>
+    </ol>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Baja de empleado</strong>Puede marcar un empleado como inactivo desde su ficha. No se eliminan datos; solo deja de incluirse en futuras corridas de nomina.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 07. CONTRATOS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">07</span><h2 class="section-title">Contratos</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Condiciones laborales de cada empleado.</p>
+
+    <p>Los contratos se gestionan desde la ficha de cada empleado. Solo uno puede estar activo a la vez.</p>
+
+    <h3>Crear un contrato</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Acceda al detalle del empleado.</li>
+      <li>Presione <em>"Nuevo Contrato"</em>.</li>
+      <li>Complete los datos (ver tabla abajo).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Campo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Fecha de inicio</strong></td><td>Cuando inicia el contrato</td></tr>
+      <tr><td><strong>Salario base</strong></td><td>Monto mensual</td></tr>
+      <tr><td><strong>Tipo de empleo</strong></td><td>Tipo de contratacion</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 3;">
+      <li>Presione <em>"Crear"</em>.</li>
+    </ol>
+
+    <h3>Horario de trabajo</h3>
+    <p>Cada contrato puede tener un horario (lunes a domingo) con horas por dia. Se usa para calcular asistencia y horas extra.</p>
+
+    <h3>Conceptos del contrato</h3>
+    <p>Asigne conceptos de nomina (haberes/deducciones) al contrato. Se aplicaran automaticamente al generar la nomina.</p>
+    <ol class="steps">
+      <li>Expanda el contrato activo del empleado.</li>
+      <li>En <em>"Conceptos"</em>, busque y seleccione los que apliquen.</li>
+      <li>Para quitar un concepto, presione el boton eliminar junto a el.</li>
+    </ol>
+
+    <div class="tip green">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Automatico</strong>Los conceptos asignados al contrato se calculan en cada corrida de nomina sin intervencion manual.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 08. ASISTENCIA -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">08</span><h2 class="section-title">Asistencia</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Registro de entrada y salida del personal.</p>
+
+    <p>La tabla muestra empleado, fecha, hora de entrada/salida, horas trabajadas y observaciones. Filtre por empleado y rango de fechas.</p>
+
+    <h3>Registrar asistencia</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Presione <em>"Registrar Asistencia"</em>.</li>
+      <li>Seleccione el empleado e indique la fecha.</li>
+      <li>Ingrese hora de entrada y salida.</li>
+      <li>Opcionalmente agregue observaciones.</li>
+      <li>Presione <em>"Guardar"</em>.</li>
+    </ol>
+    <p>Puede editar o eliminar registros desde los botones de accion en cada fila.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 09. HORAS EXTRA -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">09</span><h2 class="section-title">Horas Extra</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Registro y control de horas extraordinarias.</p>
+
+    <h3>Tipos de hora extra</h3>
+    <table>
+      <tr><th>Tipo</th><th>Descripcion</th></tr>
+      <tr><td><strong>50%</strong></td><td>Hora extra diurna comun (recargo del 50%)</td></tr>
+      <tr><td><strong>100%</strong></td><td>Hora extra nocturna, domingo o feriado (recargo del 100%)</td></tr>
+    </table>
+
+    <h3>Registrar horas extra</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Presione <em>"Registrar Hora Extra"</em>.</li>
+      <li>Seleccione el empleado e indique la fecha.</li>
+      <li>Elija el tipo: 50% o 100%.</li>
+      <li>Ingrese la cantidad de minutos trabajados (1 a 1440).</li>
+      <li>Presione <em>"Guardar"</em>.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 10. FERIADOS -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">10</span><h2 class="section-title">Feriados</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Calendario de dias no laborables.</p>
+
+    <p>Visible para todos los roles. Use las pestanas de ano para navegar.</p>
+
+    <table>
+      <tr><th>Tipo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Obligatorio</strong></td><td>Feriado nacional de cumplimiento obligatorio</td></tr>
+      <tr><td><strong>Opcional</strong></td><td>Dia libre definido por la empresa</td></tr>
+    </table>
+
+    <h3>Agregar un feriado</h3>
+    <p>Requiere <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Seleccione el ano.</li>
+      <li>Presione <em>"Agregar Feriado"</em>.</li>
+      <li>Indique fecha, nombre y tipo.</li>
+      <li>Presione <em>"Guardar"</em>.</li>
+    </ol>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Nomina</strong>Los feriados se consideran automaticamente al calcular horas extra y recargos.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 11. CONCEPTOS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">11</span><h2 class="section-title">Conceptos de Nomina</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Defina los haberes y deducciones que componen el recibo de sueldo.</p>
+
+    <p>Cada concepto representa un ingreso (haber) o descuento (deduccion) en el recibo. Se organizan en dos pestanas: <strong>Haberes</strong> y <strong>Deducciones</strong>.</p>
+
+    <h3>Tipos de calculo</h3>
+    <table>
+      <tr><th>Tipo</th><th>Como funciona</th><th>Ejemplo</th></tr>
+      <tr><td><strong>Fijo</strong></td><td>Monto que se aplica siempre igual</td><td>Bonificacion de Gs. 500.000</td></tr>
+      <tr><td><strong>Porcentaje</strong></td><td>Se calcula como % del salario basico o bruto</td><td>IPS 9%</td></tr>
+      <tr><td><strong>Por hora</strong></td><td>Se multiplica por horas trabajadas</td><td>Gs. 25.000/hora</td></tr>
+      <tr><td><strong>Manual</strong></td><td>Se ingresa a mano en cada corrida</td><td>Descuento por anticipo</td></tr>
+    </table>
+
+    <h3>Crear un concepto</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Presione <em>"Nuevo Concepto"</em>.</li>
+      <li>Complete el formulario (ver tabla abajo).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Campo</th><th>Descripcion</th></tr>
+      <tr><td><strong>Codigo</strong></td><td>Identificador corto, ej: SAL_BASE, IPS_9</td></tr>
+      <tr><td><strong>Nombre</strong></td><td>Descripcion del concepto</td></tr>
+      <tr><td><strong>Categoria</strong></td><td>Haber o Deduccion</td></tr>
+      <tr><td><strong>Tipo de calculo</strong></td><td>Fijo, Porcentaje, Por hora o Manual</td></tr>
+      <tr><td><strong>Valor</strong></td><td>Monto, porcentaje o tarifa segun el tipo</td></tr>
+      <tr><td><strong>Orden</strong></td><td>Posicion en la que aparece en el recibo</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Presione <em>"Guardar"</em>.</li>
+    </ol>
+
+    <p>Puede activar/desactivar conceptos sin eliminarlos. Un concepto inactivo no se incluye en nuevas corridas.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 12. NOMINA -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">12</span><h2 class="section-title">Nomina</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Periodos, corridas y generacion de recibos de sueldo.</p>
+
+    <p>El modulo de nomina tiene tres niveles: <strong>Periodos</strong> → <strong>Corridas</strong> → <strong>Recibos</strong>.</p>
+
+    <!-- PAYROLL FLOW SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="130" fill="#0A0F1C"/>
+        <text x="360" y="22" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">FLUJO DE NOMINA</text>
+
+        <!-- Step boxes -->
+        <g transform="translate(18,38)">
+          <rect width="100" height="72" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="10" font-weight="600">1. Periodo</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Definir rango</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">de fechas</text>
+        </g>
+        <text x="130" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(148,38)">
+          <rect width="100" height="72" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="10" font-weight="600">2. Corrida</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Crear run</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">dentro del periodo</text>
+        </g>
+        <text x="260" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(278,38)">
+          <rect width="100" height="72" rx="10" fill="#16A34A" fill-opacity="0.1" stroke="#16A34A" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10" font-weight="600">3. Calcular</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Motor genera</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">recibos</text>
+        </g>
+        <text x="390" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(408,38)">
+          <rect width="100" height="72" rx="10" fill="#D97706" fill-opacity="0.1" stroke="#D97706" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10" font-weight="600">4. Revisar</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Verificar y</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">ajustar montos</text>
+        </g>
+        <text x="520" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(538,38)">
+          <rect width="74" height="72" rx="10" fill="#DC2626" fill-opacity="0.1" stroke="#DC2626" stroke-opacity="0.25"/>
+          <text x="37" y="30" text-anchor="middle" fill="#F87171" font-family="Inter,sans-serif" font-size="10" font-weight="600">5. Cerrar</text>
+          <text x="37" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Finalizar</text>
+          <text x="37" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">corrida</text>
+        </g>
+        <text x="624" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(638,38)">
+          <rect width="74" height="72" rx="10" fill="#7C3AED" fill-opacity="0.1" stroke="#7C3AED" stroke-opacity="0.25"/>
+          <text x="37" y="30" text-anchor="middle" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10" font-weight="600">6. Exportar</text>
+          <text x="37" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">CSV o PDF</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Flujo completo de procesamiento de nomina</p>
+
+    <h3>Periodos</h3>
+    <p>Un periodo define el rango de fechas (ej: 1 al 31 de marzo). Tipos: Mensual, Quincenal, Semanal o Personalizado.</p>
+    <ol class="steps">
+      <li>Presione <em>"Nuevo Periodo"</em>.</li>
+      <li>Seleccione tipo, nombre (opcional), fecha inicio y fin.</li>
+      <li>Presione <em>"Crear"</em>.</li>
+    </ol>
+
+    <h3>Estados de una corrida</h3>
+    <table>
+      <tr><th>Estado</th><th>Significado</th></tr>
+      <tr><td><strong>Borrador</strong></td><td>Creada pero no procesada</td></tr>
+      <tr><td><strong>Procesando</strong></td><td>El sistema esta calculando</td></tr>
+      <tr><td><strong>Completada</strong></td><td>Recibos listos para revision</td></tr>
+      <tr><td><strong>Cerrada</strong></td><td>Finalizada, no se puede modificar</td></tr>
+    </table>
+
+    <h3>Procesar nomina paso a paso</h3>
+    <ol class="steps">
+      <li><strong>Crear corrida:</strong> desde un periodo, presione <em>"Nueva Corrida"</em>.</li>
+      <li><strong>Calcular:</strong> presione <em>"Calcular"</em>. El sistema procesa haberes y deducciones de cada empleado activo.</li>
+      <li><strong>Revisar:</strong> verifique los recibos. Haga clic en un empleado para ver el desglose.</li>
+      <li><strong>Ajustar:</strong> si necesita modificar un monto (conceptos manuales), use el icono de edicion.</li>
+      <li><strong>Cerrar:</strong> cuando todo este correcto, presione <em>"Cerrar Corrida"</em> (irreversible).</li>
+      <li><strong>Exportar:</strong> descargue en CSV o PDF (individual o todos).</li>
+    </ol>
+
+    <!-- RUN DETAIL MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="220" fill="#0A0F1C"/>
+        <text x="28" y="28" fill="white" font-family="Inter,sans-serif" font-size="12" font-weight="600">Corrida #A3F8B2C1</text>
+        <rect x="170" y="14" width="72" height="20" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="186" y="28" fill="#4ADE80" font-family="Inter,sans-serif" font-size="8" font-weight="500">Completada</text>
+
+        <!-- Action buttons -->
+        <rect x="470" y="12" width="70" height="24" rx="6" fill="#2563EB"/>
+        <text x="488" y="28" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="500">Calcular</text>
+        <rect x="548" y="12" width="56" height="24" rx="6" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="558" y="28" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Cerrar</text>
+        <rect x="612" y="12" width="84" height="24" rx="6" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="624" y="28" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Exportar CSV</text>
+
+        <!-- Summary cards -->
+        <g transform="translate(28,46)">
+          <rect width="215" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Haberes</text>
+          <text x="16" y="44" fill="#4ADE80" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 45.230.000</text>
+        </g>
+        <g transform="translate(253,46)">
+          <rect width="215" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Deducciones</text>
+          <text x="16" y="44" fill="#F87171" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 6.784.500</text>
+        </g>
+        <g transform="translate(478,46)">
+          <rect width="214" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Neto</text>
+          <text x="16" y="44" fill="white" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 38.445.500</text>
+        </g>
+
+        <!-- Table -->
+        <rect x="28" y="116" width="668" height="24" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EMPLEADO</text>
+        <text x="300" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">HABERES</text>
+        <text x="430" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">DEDUCCIONES</text>
+        <text x="570" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">NETO</text>
+        <line x1="28" y1="140" x2="696" y2="140" stroke="white" stroke-opacity="0.06"/>
+
+        <text x="44" y="160" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Maria Lopez Gonzalez</text>
+        <text x="300" y="160" fill="#4ADE80" font-family="Inter,sans-serif" font-size="9.5">Gs. 3.200.000</text>
+        <text x="430" y="160" fill="#F87171" font-family="Inter,sans-serif" font-size="9.5">Gs. 480.000</text>
+        <text x="570" y="160" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Gs. 2.720.000</text>
+        <text x="676" y="160" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">Ver ></text>
+        <line x1="28" y1="170" x2="696" y2="170" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="190" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Carlos Benitez Ruiz</text>
+        <text x="300" y="190" fill="#4ADE80" font-family="Inter,sans-serif" font-size="9.5">Gs. 2.800.000</text>
+        <text x="430" y="190" fill="#F87171" font-family="Inter,sans-serif" font-size="9.5">Gs. 420.000</text>
+        <text x="570" y="190" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Gs. 2.380.000</text>
+        <text x="676" y="190" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">Ver ></text>
+        <line x1="28" y1="200" x2="696" y2="200" stroke="white" stroke-opacity="0.04"/>
+      </svg>
+    </div>
+    <p class="mockup-label">Detalle de una corrida con resumen y recibos</p>
+
+    <h3>Firmas</h3>
+    <p>Los administradores ven una barra de progreso indicando cuantos empleados han firmado sus recibos.</p>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Corrida cerrada</strong>Una vez cerrada no podra modificar ningun recibo. Revise todos los montos antes de cerrar.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 13. LIQUIDACION -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">13</span><h2 class="section-title">Liquidacion de Empleados</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Calculo automatico de la liquidacion final por despido o renuncia.</p>
+
+    <!-- SETTLEMENT MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="230" fill="#0A0F1C"/>
+        <text x="28" y="26" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">RESULTADO DE LA LIQUIDACION</text>
+
+        <!-- Info cards -->
+        <g transform="translate(28,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Motivo</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">Despido</text>
+        </g>
+        <g transform="translate(193,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Fecha de terminacion</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">05/03/2026</text>
+        </g>
+        <g transform="translate(358,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Antiguedad</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">3 anos, 2 meses, 5 dias</text>
+        </g>
+        <g transform="translate(523,40)">
+          <rect width="168" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Salario diario</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">Gs. 106.667</text>
+        </g>
+
+        <!-- Lines table -->
+        <rect x="28" y="100" width="664" height="24" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">CONCEPTO</text>
+        <text x="400" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">CATEGORIA</text>
+        <text x="624" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600" text-anchor="end">MONTO</text>
+        <line x1="28" y1="124" x2="692" y2="124" stroke="white" stroke-opacity="0.06"/>
+
+        <text x="44" y="142" fill="white" font-family="Inter,sans-serif" font-size="9">Salario proporcional</text>
+        <rect x="396" y="131" width="44" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="143" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Haber</text>
+        <text x="624" y="142" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 533.333</text>
+        <line x1="28" y1="150" x2="692" y2="150" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="166" fill="white" font-family="Inter,sans-serif" font-size="9">Aguinaldo proporcional</text>
+        <rect x="396" y="155" width="44" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="167" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Haber</text>
+        <text x="624" y="166" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 711.111</text>
+        <line x1="28" y1="174" x2="692" y2="174" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="190" fill="white" font-family="Inter,sans-serif" font-size="9">Vacaciones proporcionales</text>
+        <rect x="396" y="179" width="44" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="191" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Haber</text>
+        <text x="624" y="190" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 1.600.005</text>
+        <line x1="28" y1="198" x2="692" y2="198" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Total -->
+        <rect x="28" y="202" width="664" height="26" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="220" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="600">TOTAL NETO</text>
+        <text x="624" y="220" fill="white" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="end">Gs. 5.444.449</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Resultado de liquidacion con desglose de conceptos</p>
+
+    <h3>Generar una liquidacion</h3>
+    <p>Requiere rol <span class="role admin">ADMIN</span> o superior.</p>
+    <ol class="steps">
+      <li>Acceda al detalle del empleado.</li>
+      <li>Presione <em>"Generar Liquidacion"</em>.</li>
+      <li>Seleccione el motivo: <strong>Despido</strong> (incluye indemnizacion) o <strong>Renuncia</strong> (solo proporcionales).</li>
+      <li>Indique la fecha de terminacion.</li>
+      <li>Presione <em>"Confirmar"</em>.</li>
+    </ol>
+
+    <h3>Que calcula el sistema?</h3>
+    <table>
+      <tr><th>Concepto</th><th>Despido</th><th>Renuncia</th></tr>
+      <tr><td>Salario proporcional del mes</td><td>Si</td><td>Si</td></tr>
+      <tr><td>Aguinaldo proporcional</td><td>Si</td><td>Si</td></tr>
+      <tr><td>Vacaciones proporcionales</td><td>Si</td><td>Si</td></tr>
+      <tr><td>Indemnizacion por preaviso</td><td>Si</td><td>No</td></tr>
+      <tr><td>Indemnizacion por antiguedad</td><td>Si</td><td>No</td></tr>
+    </table>
+
+    <div class="tip red">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Irreversible</strong>Al generar la liquidacion, el empleado se marca como inactivo y su contrato se cierra automaticamente.</div>
+    </div>
+
+    <h3>Configurar reglas</h3>
+    <p>Las reglas de calculo se personalizan desde <strong>Configuracion</strong> → <strong>Liquidacion</strong> (<span class="role admin">ADMIN</span>): dias de preaviso, indemnizacion por ano (default 15 dias) y vacaciones segun antiguedad.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 14. MIS RECIBOS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">14</span><h2 class="section-title">Mis Recibos</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Consulta y firma de recibos (vista del empleado).</p>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Solo para miembros</strong>Esta seccion es visible unicamente para usuarios con rol <span class="role member">MIEMBRO</span>. Los roles superiores acceden a los recibos desde el modulo de Nomina.</div>
+    </div>
+
+    <h3>Consultar recibos</h3>
+    <p>Vera una lista con periodo, salario neto y estado de firma (Firmado / Pendiente). Haga clic para ver el desglose.</p>
+
+    <h3>Detalle del recibo</h3>
+    <p>Muestra tres tarjetas (Bruto, Deducciones, Neto) y el listado de haberes y deducciones con sus montos.</p>
+
+    <h3>Firmar un recibo</h3>
+    <ol class="steps">
+      <li>Abra el recibo pendiente.</li>
+      <li>Opcionalmente escriba un comentario.</li>
+      <li>Presione <em>"Firmar Recibo"</em>.</li>
+      <li>El estado cambiara a Firmado con fecha y hora. No se puede deshacer.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 15. PERFIL -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">15</span><h2 class="section-title">Perfil y Seguridad</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Cuenta personal, contrasena y sesiones.</p>
+
+    <h3>Informacion de cuenta</h3>
+    <p>Vea su nombre, correo y estado de verificacion.</p>
+
+    <h3>Idioma</h3>
+    <p>Disponible en <strong>espanol</strong> e <strong>ingles</strong>. El cambio afecta toda la interfaz, fechas y numeros.</p>
+
+    <h3>Cambiar contrasena</h3>
+    <ol class="steps">
+      <li>Ingrese su contrasena actual.</li>
+      <li>Escriba y confirme la nueva contrasena.</li>
+      <li>Presione <em>"Actualizar"</em>.</li>
+    </ol>
+
+    <h3>Sesiones activas</h3>
+    <p>Vea todas las sesiones con dispositivo, IP y fecha. Puede cerrar sesiones individuales o todas a la vez.</p>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Seguridad</strong>Si sospecha acceso no autorizado, cierre todas las sesiones y cambie su contrasena.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 16. ROLES -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">16</span><h2 class="section-title">Roles y Permisos</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Jerarquia de acceso y permisos por modulo.</p>
+
+    <!-- ROLE HIERARCHY SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 110" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="110" fill="#0A0F1C"/>
+        <text x="360" y="22" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">JERARQUIA DE ROLES</text>
+
+        <g transform="translate(60,38)">
+          <rect width="130" height="52" rx="10" fill="#7C3AED" fill-opacity="0.1" stroke="#7C3AED" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#A78BFA" font-family="Inter,sans-serif" font-size="11" font-weight="700">PROPIETARIO</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Control total</text>
+        </g>
+        <text x="200" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(215,38)">
+          <rect width="130" height="52" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="700">ADMIN</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Gestion completa</text>
+        </g>
+        <text x="355" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(370,38)">
+          <rect width="130" height="52" rx="10" fill="#06B6D4" fill-opacity="0.1" stroke="#06B6D4" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#67E8F9" font-family="Inter,sans-serif" font-size="11" font-weight="700">GERENTE</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Solo lectura</text>
+        </g>
+        <text x="510" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(525,38)">
+          <rect width="130" height="52" rx="10" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.1"/>
+          <text x="65" y="26" text-anchor="middle" fill="#94A3B8" font-family="Inter,sans-serif" font-size="11" font-weight="700">MIEMBRO</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Acceso basico</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Jerarquia de roles del sistema</p>
+
+    <h3>Permisos por modulo</h3>
+    <table>
+      <tr>
+        <th>Modulo</th>
+        <th><span class="role member">MBR</span></th>
+        <th><span class="role manager">GER</span></th>
+        <th><span class="role admin">ADM</span></th>
+        <th><span class="role owner">PRO</span></th>
+      </tr>
+      <tr><td>Panel general</td><td>Ver</td><td>Ver</td><td>Ver</td><td>Ver</td></tr>
+      <tr><td>Empleados</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Contratos</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Asistencia</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Horas Extra</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Feriados</td><td>Ver</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Conceptos</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Nomina</td><td>—</td><td>Ver</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Mis Recibos</td><td>Ver/Firmar</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Liquidacion</td><td>—</td><td>—</td><td>Todo</td><td>Todo</td></tr>
+      <tr><td>Miembros</td><td>—</td><td>—</td><td>Gestionar</td><td>Todo</td></tr>
+      <tr><td>Configuracion</td><td>Ver</td><td>Ver</td><td>Editar</td><td>Todo</td></tr>
+    </table>
+    <p><strong>"Todo"</strong> = ver, crear, editar, eliminar. <strong>"Ver"</strong> = solo lectura. <strong>"—"</strong> = sin acceso.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 17. FUTURAS IMPLEMENTACIONES -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">17</span><h2 class="section-title">Futuras Implementaciones</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Modulos y funcionalidades planificadas para las proximas versiones de Silent Port.</p>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Roadmap</strong>Las siguientes funcionalidades estan en planificacion. Las prioridades y alcances pueden ajustarse segun las necesidades de los usuarios.</div>
+    </div>
+
+    <h3>17.1 Sindicatos y Convenios Colectivos</h3>
+    <p><strong>Prioridad: Alta</strong></p>
+    <h4>Sindicatos</h4>
+    <ul>
+      <li>CRUD de sindicatos (nombre, codigo, representante, contacto, cuota sindical)</li>
+      <li>Asignacion de empleados a sindicatos a nivel contrato</li>
+      <li>Cuota sindical como concepto de deduccion automatica (porcentaje o monto fijo)</li>
+      <li>Dashboard de sindicatos: cantidad de afiliados, costos totales</li>
+      <li>Historial de afiliacion/desafiliacion por empleado</li>
+    </ul>
+    <h4>Convenios Colectivos</h4>
+    <ul>
+      <li>CRUD de convenios (nombre, codigo, vigencia desde/hasta, sindicato asociado)</li>
+      <li>Escalas salariales por convenio (categorias y montos)</li>
+      <li>Conceptos asociados al convenio (plus por convenio, antiguedad, presentismo)</li>
+      <li>Asignacion de convenio y categoria a nivel contrato del empleado</li>
+      <li>Alertas de vencimiento de convenio e historico de versiones</li>
+    </ul>
+    <h4>Categorias Profesionales</h4>
+    <ul>
+      <li>Definicion de categorias dentro de cada convenio</li>
+      <li>Salario basico por categoria</li>
+      <li>Reglas de promocion y recategorizacion</li>
+    </ul>
+    <h4>Subida de Convenios con IA</h4>
+    <ul>
+      <li>Upload de PDF/imagen del convenio colectivo</li>
+      <li>Extraccion automatica con IA: categorias, escalas salariales, adicionales, vigencia</li>
+      <li>Revision humana: el sistema sugiere y el usuario confirma/corrige antes de guardar</li>
+      <li>Deteccion de clausulas clave (jornada, vacaciones, plus por antiguedad)</li>
+      <li>Comparador de convenios: diferencias entre version anterior y nueva</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.2 Analisis Inteligente de Empleados (IA)</h3>
+    <p><strong>Prioridad: Alta</strong></p>
+    <h4>Deteccion de Empleados de Riesgo</h4>
+    <ul>
+      <li>Score de riesgo por empleado basado en: ausentismo, llegadas tarde, horas extra excesivas, sanciones</li>
+      <li>Alertas automaticas cuando un empleado supera umbrales configurables</li>
+      <li>Dashboard con ranking de empleados por nivel de riesgo</li>
+      <li>Tendencias: evolucion del comportamiento del empleado</li>
+    </ul>
+    <h4>Analisis Predictivo</h4>
+    <ul>
+      <li>Prediccion de rotacion: probabilidad de que un empleado renuncie basado en patrones</li>
+      <li>Deteccion de anomalias en asistencia (cambios bruscos de comportamiento)</li>
+      <li>Recomendaciones automaticas basadas en datos historicos</li>
+    </ul>
+    <h4>Reportes IA</h4>
+    <ul>
+      <li>Resumen ejecutivo mensual generado por IA en lenguaje natural</li>
+      <li>Analisis de clima laboral basado en metricas objetivas</li>
+      <li>Insights automaticos por departamento y equipo</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.3 Reportes y Dashboards</h3>
+    <p><strong>Prioridad: Alta</strong></p>
+    <ul>
+      <li>Graficos de costos laborales por periodo (barras, lineas)</li>
+      <li>Comparativas mes a mes</li>
+      <li>Distribucion salarial por departamento, sindicato y convenio</li>
+      <li>Exportacion PDF de reportes</li>
+      <li>KPIs en dashboard: headcount, costo promedio, rotacion</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.4 Notificaciones</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Vencimiento de contratos (30/15/7 dias de anticipacion)</li>
+      <li>Periodos de nomina pendientes de cierre</li>
+      <li>Convenios proximos a vencer</li>
+      <li>Aprobaciones pendientes</li>
+      <li>Canal: in-app + email (configurable por usuario)</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.5 Auditoria / Logs</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Historial de cambios en empleados, contratos y nominas</li>
+      <li>Registro de quien hizo que y cuando</li>
+      <li>Filtros por entidad, usuario y fecha</li>
+      <li>Exportacion de logs</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.6 Aprobaciones Multi-nivel</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Flujo configurable: GERENTE &rarr; ADMIN &rarr; PROPIETARIO</li>
+      <li>Aprobacion de nominas antes de cierre</li>
+      <li>Aprobacion de altas/bajas de empleados</li>
+      <li>Panel de aprobaciones pendientes</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.7 Documentos</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Subida de archivos por empleado (contratos, cedulas, certificados)</li>
+      <li>Categorizacion de documentos</li>
+      <li>Fechas de vencimiento con alertas automaticas</li>
+      <li>Visualizacion inline (PDF e imagenes)</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.8 Portal del Empleado (Self-Service)</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Vista propia de recibos de sueldo</li>
+      <li>Solicitud de vacaciones y licencias</li>
+      <li>Actualizacion de datos personales</li>
+      <li>Firma digital de recibos</li>
+      <li>Descarga de certificados laborales</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.9 Organigrama</h3>
+    <p><strong>Prioridad: Baja</strong></p>
+    <ul>
+      <li>Visualizacion jerarquica de la empresa</li>
+      <li>Drag &amp; drop para reorganizar</li>
+      <li>Filtros por departamento y area</li>
+      <li>Info rapida al hover sobre cada nodo</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.10 Evaluaciones de Desempeno</h3>
+    <p><strong>Prioridad: Baja</strong></p>
+    <ul>
+      <li>Ciclos de evaluacion configurables</li>
+      <li>Objetivos y KPIs por empleado</li>
+      <li>Feedback 360&deg;</li>
+      <li>Historial de evaluaciones</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.11 Finanzas y Contabilidad</h3>
+    <p><strong>Prioridad: Media</strong></p>
+    <ul>
+      <li>Exportacion a formatos contables (asientos)</li>
+      <li>Simulador de nomina (&ldquo;que pasa si...?&rdquo;)</li>
+      <li>Historico de salarios (timeline por empleado)</li>
+      <li>Reportes fiscales automaticos</li>
+      <li>Integracion con sistemas contables externos</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.12 Mejoras Tecnicas / UX</h3>
+    <p><strong>Prioridad: Baja</strong></p>
+    <ul>
+      <li><strong>PWA + push notifications</strong> &mdash; acceso offline y notificaciones movil</li>
+      <li><strong>Dark/light mode toggle</strong> &mdash; actualmente solo dark</li>
+      <li><strong>Internacionalizacion (i18n)</strong> &mdash; soporte multi-idioma</li>
+      <li><strong>Acciones masivas</strong> &mdash; seleccion multiple en tablas para acciones en lote</li>
+      <li><strong>Atajos de teclado</strong> &mdash; navegacion rapida para power users</li>
+      <li><strong>Tour de onboarding</strong> &mdash; guia interactiva para nuevos usuarios</li>
+      <li><strong>Busqueda global</strong> &mdash; barra de busqueda unificada (Cmd+K)</li>
+    </ul>
+
+    <hr>
+
+    <h3>Resumen de Prioridades</h3>
+    <table>
+      <tr><th style="width:8%">#</th><th>Modulo</th><th style="width:20%">Prioridad</th></tr>
+      <tr><td>1</td><td>Sindicatos, Convenios Colectivos y Subida con IA</td><td><strong style="color:var(--red)">Alta</strong></td></tr>
+      <tr><td>2</td><td>Analisis Inteligente de Empleados (IA)</td><td><strong style="color:var(--red)">Alta</strong></td></tr>
+      <tr><td>3</td><td>Reportes y Dashboards</td><td><strong style="color:var(--red)">Alta</strong></td></tr>
+      <tr><td>4</td><td>Notificaciones</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>5</td><td>Auditoria / Logs</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>6</td><td>Aprobaciones Multi-nivel</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>7</td><td>Documentos</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>8</td><td>Portal del Empleado (Self-Service)</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>9</td><td>Organigrama</td><td><strong style="color:var(--green)">Baja</strong></td></tr>
+      <tr><td>10</td><td>Evaluaciones de Desempeno</td><td><strong style="color:var(--green)">Baja</strong></td></tr>
+      <tr><td>11</td><td>Finanzas y Contabilidad</td><td><strong style="color:var(--amber)">Media</strong></td></tr>
+      <tr><td>12</td><td>Mejoras Tecnicas / UX</td><td><strong style="color:var(--green)">Baja</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ FOOTER -->
+<div class="doc-footer">
+  <p><strong>Silent Port</strong> &mdash; Sistema de Gestion de Nomina</p>
+  <p>Guia de Usuario MVP v1.0 &mdash; Marzo 2026</p>
+  <p style="margin-top:8px; color:#94A3B8; font-size:8.5pt;">Este documento cubre todos los modulos del MVP y el roadmap de futuras implementaciones.</p>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Silent Port — User Guide v1.0</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    :root {
+      --blue: #2563EB;
+      --blue-dark: #1D4ED8;
+      --blue-light: #93BBFC;
+      --blue-bg: #EFF6FF;
+      --dark: #0F172A;
+      --sidebar-bg: #060B16;
+      --card-bg: #0F172A;
+      --gray-900: #1E293B;
+      --gray-700: #334155;
+      --gray-500: #64748B;
+      --gray-400: #94A3B8;
+      --gray-300: #CBD5E1;
+      --gray-200: #E2E8F0;
+      --gray-100: #F1F5F9;
+      --gray-50: #F8FAFC;
+      --green: #16A34A;
+      --green-light: #DCFCE7;
+      --red: #DC2626;
+      --red-light: #FEE2E2;
+      --amber: #D97706;
+      --amber-light: #FEF3C7;
+      --violet: #7C3AED;
+      --cyan: #06B6D4;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--dark);
+      line-height: 1.65;
+      background: white;
+      font-size: 10.5pt;
+    }
+
+    @media print {
+      body { font-size: 9.5pt; }
+      .page-break { page-break-before: always; }
+      .no-print { display: none; }
+      .cover { min-height: 100vh; }
+      .steps, table, .tip, .mockup-container { page-break-inside: avoid; }
+      h3 { page-break-after: avoid; }
+    }
+
+    /* ─── Cover ─── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(160deg, #060B16 0%, #0F172A 40%, #1E293B 100%);
+      color: white;
+      text-align: center;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(37,99,235,0.12) 0%, transparent 70%);
+      top: 30%; left: 50%; transform: translate(-50%,-50%);
+      pointer-events: none;
+    }
+    .cover-logo {
+      width: 72px; height: 72px;
+      background: var(--blue);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 28px;
+      box-shadow: 0 20px 60px rgba(37,99,235,0.35);
+      position: relative;
+    }
+    .cover h1 { font-size: 44pt; font-weight: 800; letter-spacing: -1.5px; margin-bottom: 6px; position: relative; }
+    .cover .subtitle { font-size: 14pt; font-weight: 300; color: #94A3B8; margin-bottom: 56px; position: relative; }
+    .cover .guide-label { font-size: 10pt; font-weight: 600; text-transform: uppercase; letter-spacing: 4px; color: var(--blue-light); margin-bottom: 8px; position: relative; }
+    .cover .guide-title { font-size: 22pt; font-weight: 700; color: white; position: relative; }
+    .cover .version { font-size: 10pt; color: #475569; margin-top: 64px; position: relative; }
+
+    /* ─── Content ─── */
+    .content { max-width: 760px; margin: 0 auto; padding: 48px 28px; }
+
+    /* ─── TOC ─── */
+    .toc h2 { font-size: 20pt; font-weight: 700; margin-bottom: 28px; color: var(--dark); }
+    .toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 32px; }
+    .toc-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-100); }
+    .toc-num { font-size: 10pt; font-weight: 700; color: var(--blue); min-width: 22px; }
+    .toc-label { font-size: 10pt; font-weight: 500; color: var(--gray-700); }
+
+    /* ─── Section ─── */
+    .section { margin-bottom: 36px; }
+    .section-header { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+    .section-num { font-size: 28pt; font-weight: 800; color: var(--blue); line-height: 1; opacity: 0.2; }
+    h2.section-title { font-size: 17pt; font-weight: 700; color: var(--dark); }
+    .section-line { height: 3px; background: linear-gradient(90deg, var(--blue), transparent); border-radius: 2px; margin-bottom: 8px; }
+    .section-desc { font-size: 10pt; color: var(--gray-500); margin-bottom: 18px; }
+
+    h3 { font-size: 12pt; font-weight: 600; color: var(--dark); margin: 22px 0 8px; }
+    h4 { font-size: 10.5pt; font-weight: 600; color: var(--gray-700); margin: 14px 0 6px; }
+    p { margin-bottom: 8px; color: var(--gray-700); }
+    ul, ol { margin: 6px 0 10px 18px; color: var(--gray-700); }
+    li { margin-bottom: 4px; }
+    strong { color: var(--dark); }
+    em { font-style: normal; color: var(--blue); font-weight: 500; }
+
+    /* ─── Info Box ─── */
+    .tip { border-radius: 10px; padding: 14px 16px; margin: 14px 0; font-size: 9.5pt; display: flex; gap: 12px; align-items: flex-start; }
+    .tip .tip-icon { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .tip.blue { background: #EFF6FF; border: 1px solid #BFDBFE; }
+    .tip.blue .tip-icon { background: var(--blue); color: white; }
+    .tip.green { background: #F0FDF4; border: 1px solid #BBF7D0; }
+    .tip.green .tip-icon { background: var(--green); color: white; }
+    .tip.amber { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .tip.amber .tip-icon { background: var(--amber); color: white; }
+    .tip.red { background: #FEF2F2; border: 1px solid #FECACA; }
+    .tip.red .tip-icon { background: var(--red); color: white; }
+    .tip-body strong { display: block; margin-bottom: 3px; font-size: 10pt; }
+
+    /* ─── Steps ─── */
+    .steps { counter-reset: step; list-style: none; margin: 10px 0 14px; padding: 0; }
+    .steps > li {
+      counter-increment: step;
+      padding: 5px 0 5px 36px;
+      position: relative;
+      min-height: 20px;
+    }
+    .steps > li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0; top: 4px;
+      width: 22px; height: 22px;
+      background: var(--blue);
+      color: white;
+      border-radius: 50%;
+      font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .steps > li > ul,
+    .steps > li > .fields { margin-top: 4px; margin-left: 0; padding-left: 14px; }
+
+    /* ─── Field list ─── */
+    .fields { margin: 6px 0 8px; padding: 0; list-style: none; }
+    .fields li { padding: 3px 0; font-size: 9.5pt; line-height: 1.4; }
+    .fields .fname { font-weight: 600; color: var(--dark); }
+    .fields .fname::after { content: ':  '; color: var(--gray-300); font-weight: 400; }
+    .fields .fdesc { color: var(--gray-500); }
+
+    /* ─── Tables ─── */
+    table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9.5pt; }
+    th { background: var(--gray-50); text-align: left; padding: 8px 12px; font-weight: 600; color: var(--dark); border-bottom: 2px solid var(--gray-200); }
+    td { padding: 7px 12px; border-bottom: 1px solid var(--gray-100); color: var(--gray-700); }
+    tr:last-child td { border-bottom: none; }
+
+    /* ─── Role Badge ─── */
+    .role { display: inline-block; font-size: 7.5pt; font-weight: 600; padding: 1px 7px; border-radius: 4px; vertical-align: middle; letter-spacing: 0.3px; }
+    .role.owner { background: #EDE9FE; color: #6D28D9; }
+    .role.admin { background: #DBEAFE; color: #1E40AF; }
+    .role.manager { background: #CFFAFE; color: #0E7490; }
+    .role.member { background: var(--gray-100); color: var(--gray-700); }
+
+    /* ─── SVG Mockups ─── */
+    .mockup-container { margin: 16px 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-200); box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+    .mockup-label { font-size: 8.5pt; font-weight: 500; color: var(--gray-400); text-align: center; margin-top: 6px; margin-bottom: 10px; }
+
+    /* ─── Divider ─── */
+    hr { border: none; border-top: 1px solid var(--gray-100); margin: 20px 0; }
+
+    /* ─── Footer ─── */
+    .doc-footer { text-align: center; padding: 36px 24px; color: var(--gray-500); font-size: 9pt; border-top: 1px solid var(--gray-100); margin-top: 32px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-logo">
+    <svg width="32" height="32" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M2 7h6M2 10.5h8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+  </div>
+  <h1>Silent Port</h1>
+  <p class="subtitle">Payroll Management System</p>
+  <p class="guide-label">Documentation</p>
+  <p class="guide-title">User Guide</p>
+  <p class="version">MVP v1.0 &mdash; March 2026</p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ TOC -->
+<div class="content page-break">
+  <div class="toc">
+    <h2>Table of Contents</h2>
+    <div class="toc-grid">
+      <div class="toc-item"><span class="toc-num">01</span><span class="toc-label">System Overview</span></div>
+      <div class="toc-item"><span class="toc-num">09</span><span class="toc-label">Overtime</span></div>
+      <div class="toc-item"><span class="toc-num">02</span><span class="toc-label">Registration & Login</span></div>
+      <div class="toc-item"><span class="toc-num">10</span><span class="toc-label">Holidays</span></div>
+      <div class="toc-item"><span class="toc-num">03</span><span class="toc-label">Companies</span></div>
+      <div class="toc-item"><span class="toc-num">11</span><span class="toc-label">Payroll Concepts</span></div>
+      <div class="toc-item"><span class="toc-num">04</span><span class="toc-label">Company Dashboard</span></div>
+      <div class="toc-item"><span class="toc-num">12</span><span class="toc-label">Payroll</span></div>
+      <div class="toc-item"><span class="toc-num">05</span><span class="toc-label">Team Members</span></div>
+      <div class="toc-item"><span class="toc-num">13</span><span class="toc-label">Employee Settlement</span></div>
+      <div class="toc-item"><span class="toc-num">06</span><span class="toc-label">Employees</span></div>
+      <div class="toc-item"><span class="toc-num">14</span><span class="toc-label">My Payslips</span></div>
+      <div class="toc-item"><span class="toc-num">07</span><span class="toc-label">Contracts</span></div>
+      <div class="toc-item"><span class="toc-num">15</span><span class="toc-label">Profile & Security</span></div>
+      <div class="toc-item"><span class="toc-num">08</span><span class="toc-label">Attendance</span></div>
+      <div class="toc-item"><span class="toc-num">16</span><span class="toc-label">Roles & Permissions</span></div>
+      <div class="toc-item" style="grid-column: 1 / -1; border-top: 2px solid var(--blue-bg);"><span class="toc-num">17</span><span class="toc-label">Future Implementations</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 01. SYSTEM OVERVIEW -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">01</span><h2 class="section-title">System Overview</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Silent Port is a web platform for managing your company's payroll comprehensively.</p>
+
+    <p>The system is organized into modules that cover the entire payroll cycle, from staff registration to the generation and signing of payslips.</p>
+
+    <!-- MODULE MAP SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <defs>
+          <linearGradient id="bgGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#060B16"/><stop offset="100%" stop-color="#0F172A"/></linearGradient>
+          <filter id="glow"><feGaussianBlur stdDeviation="3" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        </defs>
+        <rect width="720" height="380" rx="0" fill="url(#bgGrad)"/>
+
+        <!-- Title -->
+        <text x="360" y="36" text-anchor="middle" fill="#94A3B8" font-family="Inter,sans-serif" font-size="11" font-weight="600" letter-spacing="3">SYSTEM MODULES</text>
+
+        <!-- Row 1: Auth + Companies + Dashboard -->
+        <g transform="translate(28,58)">
+          <rect width="205" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Authentication</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Registration, login, password recovery</text>
+        </g>
+        <g transform="translate(253,58)">
+          <rect width="205" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Companies</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Create, select, configure</text>
+        </g>
+        <g transform="translate(478,58)">
+          <rect width="214" height="66" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="16" y="28" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="600">Dashboard</text>
+          <text x="16" y="48" fill="#64748B" font-family="Inter,sans-serif" font-size="9">KPIs, quick access, statistics</text>
+        </g>
+
+        <!-- Arrow -->
+        <line x1="233" y1="91" x2="253" y2="91" stroke="#2563EB" stroke-opacity="0.3" stroke-width="1.5" marker-end="url(#arr)"/>
+        <line x1="458" y1="91" x2="478" y2="91" stroke="#2563EB" stroke-opacity="0.3" stroke-width="1.5"/>
+
+        <!-- Row 2: HR -->
+        <text x="28" y="152" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">HUMAN RESOURCES</text>
+        <g transform="translate(28,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Employees</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Add, remove, Excel import</text>
+        </g>
+        <g transform="translate(198,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Contracts</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Salary, schedule, concepts</text>
+        </g>
+        <g transform="translate(368,162)">
+          <rect width="155" height="56" rx="10" fill="#16A34A" fill-opacity="0.08" stroke="#16A34A" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Members</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Team roles and access</text>
+        </g>
+
+        <!-- Row 3: Time -->
+        <text x="28" y="248" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">TIME TRACKING</text>
+        <g transform="translate(28,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Attendance</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Clock in, clock out, hours</text>
+        </g>
+        <g transform="translate(198,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Overtime</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">50% and 100%, minutes</text>
+        </g>
+        <g transform="translate(368,258)">
+          <rect width="155" height="56" rx="10" fill="#D97706" fill-opacity="0.08" stroke="#D97706" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Holidays</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Mandatory and optional</text>
+        </g>
+
+        <!-- Row 3 right: Payroll -->
+        <text x="540" y="152" fill="#475569" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">PAYROLL</text>
+        <g transform="translate(540,162)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Concepts</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Earnings and deductions</text>
+        </g>
+        <g transform="translate(540,232)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Periods and Runs</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">Calculation, review, close</text>
+        </g>
+        <g transform="translate(540,302)">
+          <rect width="152" height="56" rx="10" fill="#7C3AED" fill-opacity="0.08" stroke="#7C3AED" stroke-opacity="0.2"/>
+          <text x="14" y="24" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10.5" font-weight="600">Payslips and Settlement</text>
+          <text x="14" y="42" fill="#64748B" font-family="Inter,sans-serif" font-size="8.5">PDF, CSV, signature, dismissal</text>
+        </g>
+
+        <!-- Arrows vertical -->
+        <line x1="616" y1="218" x2="616" y2="232" stroke="#7C3AED" stroke-opacity="0.3" stroke-width="1.5"/>
+        <line x1="616" y1="288" x2="616" y2="302" stroke="#7C3AED" stroke-opacity="0.3" stroke-width="1.5"/>
+
+        <!-- Profile -->
+        <g transform="translate(28,330)">
+          <rect width="140" height="36" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+          <text x="14" y="23" fill="#94A3B8" font-family="Inter,sans-serif" font-size="10" font-weight="500">Profile & Security</text>
+        </g>
+        <g transform="translate(182,330)">
+          <rect width="140" height="36" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+          <text x="14" y="23" fill="#94A3B8" font-family="Inter,sans-serif" font-size="10" font-weight="500">My Payslips</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">System module map</p>
+
+    <h3>What does this MVP include?</h3>
+    <table>
+      <tr><th style="width:30%">Area</th><th>Features</th></tr>
+      <tr><td><strong>Authentication</strong></td><td>Registration, login, password recovery, email verification, multiple sessions</td></tr>
+      <tr><td><strong>Companies</strong></td><td>Create and manage multiple companies, switch between them, configure settings</td></tr>
+      <tr><td><strong>Team</strong></td><td>Invite members, assign roles (Owner, Admin, Manager, Member), transfer ownership</td></tr>
+      <tr><td><strong>Employees</strong></td><td>Individual and bulk creation (Excel), editing, deactivation, search and filters</td></tr>
+      <tr><td><strong>Contracts</strong></td><td>Base salary, work schedule, concepts assigned per employee</td></tr>
+      <tr><td><strong>Time</strong></td><td>Attendance (clock in/out), overtime (50% / 100%), holiday calendar</td></tr>
+      <tr><td><strong>Concepts</strong></td><td>Earnings and deductions with fixed, percentage, hourly or manual calculation</td></tr>
+      <tr><td><strong>Payroll</strong></td><td>Periods, automated runs, payslips, line editing, closing, CSV/PDF export</td></tr>
+      <tr><td><strong>Settlement</strong></td><td>Automatic calculation for dismissal or resignation (bonus, vacation, severance)</td></tr>
+      <tr><td><strong>Self-Service</strong></td><td>Employees can view and sign their payslips</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 02. AUTH -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">02</span><h2 class="section-title">Registration & Login</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">How to create your account and access the system.</p>
+
+    <!-- LOGIN MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="340" fill="#060B16"/>
+        <!-- Card -->
+        <rect x="210" y="30" width="300" height="280" rx="16" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+        <!-- Logo -->
+        <rect x="335" y="48" width="30" height="30" rx="8" fill="#2563EB"/>
+        <text x="360" y="68" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="600">SP</text>
+        <text x="360" y="98" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="14" font-weight="600">Log In</text>
+        <text x="360" y="114" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Enter your credentials to continue</text>
+        <!-- Email -->
+        <text x="236" y="142" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="500">Email address</text>
+        <rect x="230" y="148" width="260" height="34" rx="10" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.1"/>
+        <text x="244" y="170" fill="#475569" font-family="Inter,sans-serif" font-size="9">user@company.com</text>
+        <!-- Password -->
+        <text x="236" y="200" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="500">Password</text>
+        <rect x="230" y="206" width="260" height="34" rx="10" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.1"/>
+        <text x="244" y="228" fill="#475569" font-family="Inter,sans-serif" font-size="9">*************</text>
+        <text x="470" y="228" fill="#64748B" font-family="Inter,sans-serif" font-size="8">👁</text>
+        <!-- Forgot -->
+        <text x="490" y="254" text-anchor="end" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">Forgot my password</text>
+        <!-- Button -->
+        <rect x="230" y="264" width="260" height="36" rx="10" fill="#2563EB"/>
+        <text x="360" y="287" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="600">Log In</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Login screen</p>
+
+    <h3>Create a new account</h3>
+    <ol class="steps">
+      <li>Go to the registration page from the <em>"Create account"</em> link on the login screen.</li>
+      <li>Fill in the fields (see table below).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Field</th><th>Description</th></tr>
+      <tr><td><strong>Name</strong></td><td>Your full name (optional)</td></tr>
+      <tr><td><strong>Email address</strong></td><td>This will be your username for logging in</td></tr>
+      <tr><td><strong>Password</strong></td><td>Minimum 8 characters, with uppercase, lowercase and a number</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Click <em>"Create account"</em>. You will receive a confirmation email.</li>
+      <li>Open the email and click the verification link.</li>
+    </ol>
+
+    <h3>Log in</h3>
+    <ol class="steps">
+      <li>Enter your email address and password.</li>
+      <li>Click <em>"Log In"</em>.</li>
+      <li>You will be redirected to the company list.</li>
+    </ol>
+
+    <h3>Recover password</h3>
+    <ol class="steps">
+      <li>On the login screen, click <em>"Forgot my password"</em>.</li>
+      <li>Enter your email and click <em>"Send link"</em>.</li>
+      <li>Check your inbox and click the link you received.</li>
+      <li>Enter your new password (twice) and click <em>"Reset"</em>.</li>
+    </ol>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Email not verified?</strong>If you try to log in without verifying your email, you will see a message with the option to resend the confirmation email.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 03. COMPANIES -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">03</span><h2 class="section-title">Companies</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Managing your companies on the platform.</p>
+
+    <h3>Company list</h3>
+    <p>Upon logging in, you will see all the companies you belong to. Each card shows the name, tax ID, address, status (Active/Inactive) and your role. Click any card to access that company's dashboard.</p>
+
+    <h3>Create a new company</h3>
+    <ol class="steps">
+      <li>Click <em>"New Company"</em> or the card with the + icon.</li>
+      <li>Fill in the details (see table below).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Field</th><th>Description</th></tr>
+      <tr><td><strong>Company name</strong></td><td>Required</td></tr>
+      <tr><td><strong>Tax ID</strong></td><td>Tax identification number (optional)</td></tr>
+      <tr><td><strong>Address</strong></td><td>Optional</td></tr>
+      <tr><td><strong>Phone</strong></td><td>Optional</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Click <em>"Create company"</em>.</li>
+    </ol>
+
+    <div class="tip green">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Automatic owner</strong>When you create a company, you are registered as the Owner with all permissions.</div>
+    </div>
+
+    <h3>Switch between companies</h3>
+    <p>Use the <strong>company selector</strong> in the left sidebar to switch between your companies without logging out.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 04. DASHBOARD -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">04</span><h2 class="section-title">Company Dashboard</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Overview and quick access to all modules.</p>
+
+    <!-- DASHBOARD MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="300" fill="#0A0F1C"/>
+        <!-- Sidebar hint -->
+        <rect x="0" y="0" width="56" height="300" fill="#060B16"/>
+        <rect x="56" y="0" width="1" height="300" fill="white" fill-opacity="0.06"/>
+        <!-- Sidebar icons -->
+        <rect x="16" y="16" width="24" height="24" rx="6" fill="#2563EB"/>
+        <text x="28" y="32" text-anchor="middle" fill="white" font-family="Inter,sans-serif" font-size="7" font-weight="700">SP</text>
+        <circle cx="28" cy="64" r="4" fill="#93BBFC" fill-opacity="0.3"/>
+        <circle cx="28" cy="88" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="112" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="136" r="4" fill="#64748B" fill-opacity="0.3"/>
+        <circle cx="28" cy="160" r="4" fill="#64748B" fill-opacity="0.3"/>
+
+        <!-- Content area -->
+        <text x="80" y="38" fill="white" font-family="Inter,sans-serif" font-size="14" font-weight="600">My Company Inc.</text>
+        <text x="80" y="54" fill="#64748B" font-family="Inter,sans-serif" font-size="9">Tax ID: 80012345-6 | Asuncion, Paraguay</text>
+
+        <!-- KPI Cards -->
+        <g transform="translate(80,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Members</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="18" font-weight="600">4</text>
+          <text x="14" y="60" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Your role: Admin</text>
+        </g>
+        <g transform="translate(235,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Active Employees</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="18" font-weight="600">23</text>
+        </g>
+        <g transform="translate(390,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Last Payroll</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="#4ADE80" font-family="Inter,sans-serif" font-size="12" font-weight="600">Completed</text>
+          <text x="14" y="60" fill="#64748B" font-family="Inter,sans-serif" font-size="8">February 2026</text>
+        </g>
+        <g transform="translate(545,72)">
+          <rect width="145" height="68" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="14" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Since</text>
+          <rect x="110" y="10" width="22" height="22" rx="6" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="14" y="46" fill="white" font-family="Inter,sans-serif" font-size="12" font-weight="600">Jan 2025</text>
+        </g>
+
+        <!-- Quick access label -->
+        <text x="80" y="168" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9" font-weight="500">Quick Access</text>
+
+        <!-- Quick cards row -->
+        <g transform="translate(80,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Employees</text>
+        </g>
+        <g transform="translate(190,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Attendance</text>
+        </g>
+        <g transform="translate(300,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Payroll</text>
+        </g>
+        <g transform="translate(410,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Concepts</text>
+        </g>
+        <g transform="translate(520,178)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Holidays</text>
+        </g>
+        <g transform="translate(80,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Overtime</text>
+        </g>
+        <g transform="translate(190,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Members</text>
+        </g>
+        <g transform="translate(300,240)">
+          <rect width="100" height="52" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <rect x="10" y="10" width="18" height="18" rx="5" fill="#2563EB" fill-opacity="0.1"/>
+          <text x="10" y="44" fill="white" font-family="Inter,sans-serif" font-size="8.5" font-weight="500">Settings</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Company dashboard with indicators and quick access</p>
+
+    <p>The visible modules depend on your role. See section <strong>16 — Roles & Permissions</strong> for more details.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 05. MEMBERS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">05</span><h2 class="section-title">Team Members</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Invite users and manage access permissions for the company.</p>
+
+    <h3>View members</h3>
+    <p>The table shows all users with access to the company, their role and join date.</p>
+
+    <h3>Add a member</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Click <em>"Add member"</em>.</li>
+      <li>Enter the user ID (the user must have a Silent Port account).</li>
+      <li>Select the role: Admin, Manager or Member.</li>
+      <li>Click <em>"Add"</em>.</li>
+    </ol>
+
+    <h3>Change role</h3>
+    <p>Use the dropdown in the Role column to change it. The change takes effect immediately.</p>
+
+    <h3>Remove a member</h3>
+    <p>From the options menu, select <em>"Remove"</em>. A confirmation will be requested.</p>
+
+    <h3>Transfer ownership</h3>
+    <p>Only the <span class="role owner">OWNER</span> can transfer ownership. This action is irreversible.</p>
+
+    <div class="tip red">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Important</strong>The owner cannot be removed, and a user cannot remove themselves.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 06. EMPLOYEES -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">06</span><h2 class="section-title">Employees</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Full registration and management of company staff.</p>
+
+    <!-- EMPLOYEES MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 240" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="240" fill="#0A0F1C"/>
+        <!-- Header -->
+        <text x="28" y="32" fill="white" font-family="Inter,sans-serif" font-size="13" font-weight="600">Employees</text>
+        <!-- Buttons -->
+        <rect x="440" y="14" width="82" height="28" rx="8" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="460" y="33" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Template</text>
+        <rect x="530" y="14" width="72" height="28" rx="8" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="544" y="33" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Import</text>
+        <rect x="610" y="14" width="86" height="28" rx="8" fill="#2563EB"/>
+        <text x="626" y="33" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="600">+ New</text>
+
+        <!-- Search -->
+        <rect x="28" y="52" width="200" height="28" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.08"/>
+        <text x="44" y="71" fill="#475569" font-family="Inter,sans-serif" font-size="8.5">Search employee...</text>
+        <!-- Tabs -->
+        <rect x="248" y="52" width="170" height="28" rx="8" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.06"/>
+        <rect x="252" y="55" width="48" height="22" rx="6" fill="#2563EB"/>
+        <text x="264" y="70" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="500">All</text>
+        <text x="318" y="70" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8">Active</text>
+        <text x="370" y="70" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8">Inactive</text>
+
+        <!-- Table header -->
+        <rect x="28" y="92" width="668" height="28" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EMPLOYEE</text>
+        <text x="280" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EMAIL</text>
+        <text x="480" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">HIRE DATE</text>
+        <text x="620" y="110" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">STATUS</text>
+        <line x1="28" y1="120" x2="696" y2="120" stroke="white" stroke-opacity="0.06"/>
+
+        <!-- Row 1 -->
+        <text x="44" y="140" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Maria Lopez Gonzalez</text>
+        <text x="44" y="153" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">ID 4.521.876</text>
+        <text x="280" y="146" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">mlopez@email.com</text>
+        <text x="480" y="146" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">01/15/2024</text>
+        <rect x="616" y="135" width="50" height="18" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="628" y="148" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Active</text>
+        <line x1="28" y1="162" x2="696" y2="162" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Row 2 -->
+        <text x="44" y="182" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Carlos Benitez Ruiz</text>
+        <text x="44" y="195" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">ID 3.890.234</text>
+        <text x="280" y="188" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">cbenitez@email.com</text>
+        <text x="480" y="188" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">06/03/2023</text>
+        <rect x="616" y="177" width="50" height="18" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="628" y="190" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Active</text>
+        <line x1="28" y1="204" x2="696" y2="204" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Row 3 -->
+        <text x="44" y="224" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Ana Ramirez Torres</text>
+        <text x="44" y="237" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">ID 5.102.445</text>
+        <text x="280" y="230" fill="#94A3B8" font-family="Inter,sans-serif" font-size="9">aramirez@email.com</text>
+        <text x="480" y="230" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="9" font-weight="400">11/20/2022</text>
+        <rect x="616" y="219" width="56" height="18" rx="4" fill="#DC2626" fill-opacity="0.12" stroke="#DC2626" stroke-opacity="0.2"/>
+        <text x="626" y="232" fill="#F87171" font-family="Inter,sans-serif" font-size="7.5" font-weight="500">Inactive</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Employee list with search, filters and table</p>
+
+    <h3>Create an employee</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Click <em>"New Employee"</em>.</li>
+      <li>Fill in the required fields (see table below).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Field</th><th>Description</th></tr>
+      <tr><td><strong>Document type</strong></td><td>ID, Tax ID, Passport or Other</td></tr>
+      <tr><td><strong>Document number</strong></td><td>Unique identification</td></tr>
+      <tr><td><strong>First and Last name</strong></td><td>Employee's personal data</td></tr>
+      <tr><td><strong>Hire date</strong></td><td>Start of the employment relationship</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Optionally add email, phone and date of birth.</li>
+      <li>Click <em>"Create Employee"</em>.</li>
+    </ol>
+
+    <h3>Bulk import from Excel</h3>
+    <ol class="steps">
+      <li>Click <em>"Download Template"</em> to get the Excel template file.</li>
+      <li>Fill in the template with the employee data.</li>
+      <li>Click <em>"Import"</em> and select the file (.xlsx, maximum 5 MB).</li>
+      <li>If there are errors, the system will show a detail per row and field for correction.</li>
+    </ol>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Employee deactivation</strong>You can mark an employee as inactive from their profile. No data is deleted; they simply stop being included in future payroll runs.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 07. CONTRACTS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">07</span><h2 class="section-title">Contracts</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Employment conditions for each employee.</p>
+
+    <p>Contracts are managed from each employee's profile. Only one can be active at a time.</p>
+
+    <h3>Create a contract</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Go to the employee detail view.</li>
+      <li>Click <em>"New Contract"</em>.</li>
+      <li>Fill in the details (see table below).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Field</th><th>Description</th></tr>
+      <tr><td><strong>Start date</strong></td><td>When the contract begins</td></tr>
+      <tr><td><strong>Base salary</strong></td><td>Monthly amount</td></tr>
+      <tr><td><strong>Employment type</strong></td><td>Type of employment</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 3;">
+      <li>Click <em>"Create"</em>.</li>
+    </ol>
+
+    <h3>Work schedule</h3>
+    <p>Each contract can have a schedule (Monday to Sunday) with hours per day. It is used to calculate attendance and overtime.</p>
+
+    <h3>Contract concepts</h3>
+    <p>Assign payroll concepts (earnings/deductions) to the contract. They will be applied automatically when generating payroll.</p>
+    <ol class="steps">
+      <li>Expand the employee's active contract.</li>
+      <li>In <em>"Concepts"</em>, search and select the ones that apply.</li>
+      <li>To remove a concept, click the delete button next to it.</li>
+    </ol>
+
+    <div class="tip green">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Automatic</strong>Concepts assigned to the contract are calculated in each payroll run without manual intervention.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 08. ATTENDANCE -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">08</span><h2 class="section-title">Attendance</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Staff clock-in and clock-out tracking.</p>
+
+    <p>The table shows the employee, date, clock-in/out time, hours worked and notes. Filter by employee and date range.</p>
+
+    <h3>Record attendance</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Click <em>"Record Attendance"</em>.</li>
+      <li>Select the employee and specify the date.</li>
+      <li>Enter the clock-in and clock-out times.</li>
+      <li>Optionally add notes.</li>
+      <li>Click <em>"Save"</em>.</li>
+    </ol>
+    <p>You can edit or delete records from the action buttons in each row.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 09. OVERTIME -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">09</span><h2 class="section-title">Overtime</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Recording and managing overtime hours.</p>
+
+    <h3>Overtime types</h3>
+    <table>
+      <tr><th>Type</th><th>Description</th></tr>
+      <tr><td><strong>50%</strong></td><td>Standard daytime overtime (50% surcharge)</td></tr>
+      <tr><td><strong>100%</strong></td><td>Nighttime, Sunday or holiday overtime (100% surcharge)</td></tr>
+    </table>
+
+    <h3>Record overtime</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Click <em>"Record Overtime"</em>.</li>
+      <li>Select the employee and specify the date.</li>
+      <li>Choose the type: 50% or 100%.</li>
+      <li>Enter the number of minutes worked (1 to 1440).</li>
+      <li>Click <em>"Save"</em>.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 10. HOLIDAYS -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">10</span><h2 class="section-title">Holidays</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Non-working days calendar.</p>
+
+    <p>Visible to all roles. Use the year tabs to navigate.</p>
+
+    <table>
+      <tr><th>Type</th><th>Description</th></tr>
+      <tr><td><strong>Mandatory</strong></td><td>National holiday with mandatory observance</td></tr>
+      <tr><td><strong>Optional</strong></td><td>Day off defined by the company</td></tr>
+    </table>
+
+    <h3>Add a holiday</h3>
+    <p>Requires <span class="role admin">ADMIN</span> or higher.</p>
+    <ol class="steps">
+      <li>Select the year.</li>
+      <li>Click <em>"Add Holiday"</em>.</li>
+      <li>Specify the date, name and type.</li>
+      <li>Click <em>"Save"</em>.</li>
+    </ol>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Payroll</strong>Holidays are automatically considered when calculating overtime and surcharges.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 11. CONCEPTS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">11</span><h2 class="section-title">Payroll Concepts</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Define the earnings and deductions that make up the payslip.</p>
+
+    <p>Each concept represents an income (earning) or discount (deduction) on the payslip. They are organized into two tabs: <strong>Earnings</strong> and <strong>Deductions</strong>.</p>
+
+    <h3>Calculation types</h3>
+    <table>
+      <tr><th>Type</th><th>How it works</th><th>Example</th></tr>
+      <tr><td><strong>Fixed</strong></td><td>Amount that is always applied the same</td><td>Bonus of Gs. 500,000</td></tr>
+      <tr><td><strong>Percentage</strong></td><td>Calculated as % of basic or gross salary</td><td>Social Security 9%</td></tr>
+      <tr><td><strong>Hourly</strong></td><td>Multiplied by hours worked</td><td>Gs. 25,000/hour</td></tr>
+      <tr><td><strong>Manual</strong></td><td>Entered manually in each run</td><td>Advance deduction</td></tr>
+    </table>
+
+    <h3>Create a concept</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Click <em>"New Concept"</em>.</li>
+      <li>Fill in the form (see table below).</li>
+    </ol>
+    <table>
+      <tr><th style="width:35%">Field</th><th>Description</th></tr>
+      <tr><td><strong>Code</strong></td><td>Short identifier, e.g.: SAL_BASE, SS_9</td></tr>
+      <tr><td><strong>Name</strong></td><td>Description of the concept</td></tr>
+      <tr><td><strong>Category</strong></td><td>Earning or Deduction</td></tr>
+      <tr><td><strong>Calculation type</strong></td><td>Fixed, Percentage, Hourly or Manual</td></tr>
+      <tr><td><strong>Value</strong></td><td>Amount, percentage or rate depending on the type</td></tr>
+      <tr><td><strong>Order</strong></td><td>Position in which it appears on the payslip</td></tr>
+    </table>
+    <ol class="steps" style="counter-reset: step 2;">
+      <li>Click <em>"Save"</em>.</li>
+    </ol>
+
+    <p>You can activate/deactivate concepts without deleting them. An inactive concept is not included in new runs.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 12. PAYROLL -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">12</span><h2 class="section-title">Payroll</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Periods, runs and payslip generation.</p>
+
+    <p>The payroll module has three levels: <strong>Periods</strong> → <strong>Runs</strong> → <strong>Payslips</strong>.</p>
+
+    <!-- PAYROLL FLOW SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 130" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="130" fill="#0A0F1C"/>
+        <text x="360" y="22" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">PAYROLL FLOW</text>
+
+        <!-- Step boxes -->
+        <g transform="translate(18,38)">
+          <rect width="100" height="72" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="10" font-weight="600">1. Period</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Define date</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">range</text>
+        </g>
+        <text x="130" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(148,38)">
+          <rect width="100" height="72" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="10" font-weight="600">2. Run</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Create run</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">within period</text>
+        </g>
+        <text x="260" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(278,38)">
+          <rect width="100" height="72" rx="10" fill="#16A34A" fill-opacity="0.1" stroke="#16A34A" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#4ADE80" font-family="Inter,sans-serif" font-size="10" font-weight="600">3. Calculate</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Engine generates</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">payslips</text>
+        </g>
+        <text x="390" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(408,38)">
+          <rect width="100" height="72" rx="10" fill="#D97706" fill-opacity="0.1" stroke="#D97706" stroke-opacity="0.25"/>
+          <text x="50" y="30" text-anchor="middle" fill="#FBBF24" font-family="Inter,sans-serif" font-size="10" font-weight="600">4. Review</text>
+          <text x="50" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Verify and</text>
+          <text x="50" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">adjust amounts</text>
+        </g>
+        <text x="520" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(538,38)">
+          <rect width="74" height="72" rx="10" fill="#DC2626" fill-opacity="0.1" stroke="#DC2626" stroke-opacity="0.25"/>
+          <text x="37" y="30" text-anchor="middle" fill="#F87171" font-family="Inter,sans-serif" font-size="10" font-weight="600">5. Close</text>
+          <text x="37" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Finalize</text>
+          <text x="37" y="60" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">the run</text>
+        </g>
+        <text x="624" y="78" fill="#2563EB" fill-opacity="0.4" font-family="Inter,sans-serif" font-size="16">&#x2192;</text>
+        <g transform="translate(638,38)">
+          <rect width="74" height="72" rx="10" fill="#7C3AED" fill-opacity="0.1" stroke="#7C3AED" stroke-opacity="0.25"/>
+          <text x="37" y="30" text-anchor="middle" fill="#A78BFA" font-family="Inter,sans-serif" font-size="10" font-weight="600">6. Export</text>
+          <text x="37" y="48" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">CSV or PDF</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">Complete payroll processing flow</p>
+
+    <h3>Periods</h3>
+    <p>A period defines the date range (e.g., March 1 to 31). Types: Monthly, Biweekly, Weekly or Custom.</p>
+    <ol class="steps">
+      <li>Click <em>"New Period"</em>.</li>
+      <li>Select the type, name (optional), start and end dates.</li>
+      <li>Click <em>"Create"</em>.</li>
+    </ol>
+
+    <h3>Run statuses</h3>
+    <table>
+      <tr><th>Status</th><th>Meaning</th></tr>
+      <tr><td><strong>Draft</strong></td><td>Created but not processed</td></tr>
+      <tr><td><strong>Processing</strong></td><td>The system is calculating</td></tr>
+      <tr><td><strong>Completed</strong></td><td>Payslips ready for review</td></tr>
+      <tr><td><strong>Closed</strong></td><td>Finalized, cannot be modified</td></tr>
+    </table>
+
+    <h3>Process payroll step by step</h3>
+    <ol class="steps">
+      <li><strong>Create run:</strong> from a period, click <em>"New Run"</em>.</li>
+      <li><strong>Calculate:</strong> click <em>"Calculate"</em>. The system processes earnings and deductions for each active employee.</li>
+      <li><strong>Review:</strong> verify the payslips. Click on an employee to see the breakdown.</li>
+      <li><strong>Adjust:</strong> if you need to modify an amount (manual concepts), use the edit icon.</li>
+      <li><strong>Close:</strong> when everything is correct, click <em>"Close Run"</em> (irreversible).</li>
+      <li><strong>Export:</strong> download as CSV or PDF (individual or all).</li>
+    </ol>
+
+    <!-- RUN DETAIL MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="220" fill="#0A0F1C"/>
+        <text x="28" y="28" fill="white" font-family="Inter,sans-serif" font-size="12" font-weight="600">Run #A3F8B2C1</text>
+        <rect x="170" y="14" width="72" height="20" rx="4" fill="#16A34A" fill-opacity="0.12" stroke="#16A34A" stroke-opacity="0.2"/>
+        <text x="186" y="28" fill="#4ADE80" font-family="Inter,sans-serif" font-size="8" font-weight="500">Completed</text>
+
+        <!-- Action buttons -->
+        <rect x="470" y="12" width="70" height="24" rx="6" fill="#2563EB"/>
+        <text x="488" y="28" fill="white" font-family="Inter,sans-serif" font-size="8" font-weight="500">Calculate</text>
+        <rect x="548" y="12" width="56" height="24" rx="6" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="558" y="28" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Close</text>
+        <rect x="612" y="12" width="84" height="24" rx="6" fill="white" fill-opacity="0.05" stroke="white" stroke-opacity="0.08"/>
+        <text x="624" y="28" fill="#CBD5E1" font-family="Inter,sans-serif" font-size="8">Export CSV</text>
+
+        <!-- Summary cards -->
+        <g transform="translate(28,46)">
+          <rect width="215" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Earnings</text>
+          <text x="16" y="44" fill="#4ADE80" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 45,230,000</text>
+        </g>
+        <g transform="translate(253,46)">
+          <rect width="215" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Deductions</text>
+          <text x="16" y="44" fill="#F87171" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 6,784,500</text>
+        </g>
+        <g transform="translate(478,46)">
+          <rect width="214" height="56" rx="10" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="16" y="22" fill="#94A3B8" font-family="Inter,sans-serif" font-size="8.5">Total Net</text>
+          <text x="16" y="44" fill="white" font-family="Inter,sans-serif" font-size="16" font-weight="600">Gs. 38,445,500</text>
+        </g>
+
+        <!-- Table -->
+        <rect x="28" y="116" width="668" height="24" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EMPLOYEE</text>
+        <text x="300" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">EARNINGS</text>
+        <text x="430" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">DEDUCTIONS</text>
+        <text x="570" y="132" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">NET</text>
+        <line x1="28" y1="140" x2="696" y2="140" stroke="white" stroke-opacity="0.06"/>
+
+        <text x="44" y="160" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Maria Lopez Gonzalez</text>
+        <text x="300" y="160" fill="#4ADE80" font-family="Inter,sans-serif" font-size="9.5">Gs. 3,200,000</text>
+        <text x="430" y="160" fill="#F87171" font-family="Inter,sans-serif" font-size="9.5">Gs. 480,000</text>
+        <text x="570" y="160" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Gs. 2,720,000</text>
+        <text x="676" y="160" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">View ></text>
+        <line x1="28" y1="170" x2="696" y2="170" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="190" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Carlos Benitez Ruiz</text>
+        <text x="300" y="190" fill="#4ADE80" font-family="Inter,sans-serif" font-size="9.5">Gs. 2,800,000</text>
+        <text x="430" y="190" fill="#F87171" font-family="Inter,sans-serif" font-size="9.5">Gs. 420,000</text>
+        <text x="570" y="190" fill="white" font-family="Inter,sans-serif" font-size="9.5" font-weight="500">Gs. 2,380,000</text>
+        <text x="676" y="190" fill="#2563EB" font-family="Inter,sans-serif" font-size="8">View ></text>
+        <line x1="28" y1="200" x2="696" y2="200" stroke="white" stroke-opacity="0.04"/>
+      </svg>
+    </div>
+    <p class="mockup-label">Run detail with summary and payslips</p>
+
+    <h3>Signatures</h3>
+    <p>Administrators see a progress bar indicating how many employees have signed their payslips.</p>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Closed run</strong>Once closed, you will not be able to modify any payslip. Review all amounts before closing.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 13. SETTLEMENT -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">13</span><h2 class="section-title">Employee Settlement</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Automatic calculation of final settlement for dismissal or resignation.</p>
+
+    <!-- SETTLEMENT MOCKUP -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="230" fill="#0A0F1C"/>
+        <text x="28" y="26" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">SETTLEMENT RESULT</text>
+
+        <!-- Info cards -->
+        <g transform="translate(28,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Reason</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">Dismissal</text>
+        </g>
+        <g transform="translate(193,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Termination date</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">03/05/2026</text>
+        </g>
+        <g transform="translate(358,40)">
+          <rect width="155" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Seniority</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">3 years, 2 months, 5 days</text>
+        </g>
+        <g transform="translate(523,40)">
+          <rect width="168" height="48" rx="8" fill="#0F172A" stroke="white" stroke-opacity="0.06"/>
+          <text x="12" y="20" fill="#64748B" font-family="Inter,sans-serif" font-size="7.5">Daily salary</text>
+          <text x="12" y="38" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="500">Gs. 106,667</text>
+        </g>
+
+        <!-- Lines table -->
+        <rect x="28" y="100" width="664" height="24" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">CONCEPT</text>
+        <text x="400" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600">CATEGORY</text>
+        <text x="624" y="116" fill="#64748B" font-family="Inter,sans-serif" font-size="8" font-weight="600" text-anchor="end">AMOUNT</text>
+        <line x1="28" y1="124" x2="692" y2="124" stroke="white" stroke-opacity="0.06"/>
+
+        <text x="44" y="142" fill="white" font-family="Inter,sans-serif" font-size="9">Prorated salary</text>
+        <rect x="396" y="131" width="52" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="143" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Earning</text>
+        <text x="624" y="142" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 533,333</text>
+        <line x1="28" y1="150" x2="692" y2="150" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="166" fill="white" font-family="Inter,sans-serif" font-size="9">Prorated bonus</text>
+        <rect x="396" y="155" width="52" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="167" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Earning</text>
+        <text x="624" y="166" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 711,111</text>
+        <line x1="28" y1="174" x2="692" y2="174" stroke="white" stroke-opacity="0.04"/>
+
+        <text x="44" y="190" fill="white" font-family="Inter,sans-serif" font-size="9">Prorated vacation</text>
+        <rect x="396" y="179" width="52" height="16" rx="3" fill="#16A34A" fill-opacity="0.1"/><text x="404" y="191" fill="#4ADE80" font-family="Inter,sans-serif" font-size="7.5">Earning</text>
+        <text x="624" y="190" fill="white" font-family="Inter,sans-serif" font-size="9" text-anchor="end">Gs. 1,600,005</text>
+        <line x1="28" y1="198" x2="692" y2="198" stroke="white" stroke-opacity="0.04"/>
+
+        <!-- Total -->
+        <rect x="28" y="202" width="664" height="26" rx="0" fill="white" fill-opacity="0.02"/>
+        <text x="44" y="220" fill="white" font-family="Inter,sans-serif" font-size="10" font-weight="600">TOTAL NET</text>
+        <text x="624" y="220" fill="white" font-family="Inter,sans-serif" font-size="11" font-weight="700" text-anchor="end">Gs. 5,444,449</text>
+      </svg>
+    </div>
+    <p class="mockup-label">Settlement result with concept breakdown</p>
+
+    <h3>Generate a settlement</h3>
+    <p>Requires <span class="role admin">ADMIN</span> role or higher.</p>
+    <ol class="steps">
+      <li>Go to the employee detail view.</li>
+      <li>Click <em>"Generate Settlement"</em>.</li>
+      <li>Select the reason: <strong>Dismissal</strong> (includes severance) or <strong>Resignation</strong> (prorated amounts only).</li>
+      <li>Specify the termination date.</li>
+      <li>Click <em>"Confirm"</em>.</li>
+    </ol>
+
+    <h3>What does the system calculate?</h3>
+    <table>
+      <tr><th>Concept</th><th>Dismissal</th><th>Resignation</th></tr>
+      <tr><td>Prorated monthly salary</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Prorated bonus</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Prorated vacation</td><td>Yes</td><td>Yes</td></tr>
+      <tr><td>Notice period severance</td><td>Yes</td><td>No</td></tr>
+      <tr><td>Seniority severance</td><td>Yes</td><td>No</td></tr>
+    </table>
+
+    <div class="tip red">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Irreversible</strong>When generating the settlement, the employee is marked as inactive and their contract is automatically closed.</div>
+    </div>
+
+    <h3>Configure rules</h3>
+    <p>Calculation rules are customized from <strong>Settings</strong> → <strong>Settlement</strong> (<span class="role admin">ADMIN</span>): notice period days, severance per year (default 15 days) and vacation according to seniority.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 14. MY PAYSLIPS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">14</span><h2 class="section-title">My Payslips</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">View and sign payslips (employee view).</p>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Members only</strong>This section is visible only to users with the <span class="role member">MEMBER</span> role. Higher roles access payslips from the Payroll module.</div>
+    </div>
+
+    <h3>View payslips</h3>
+    <p>You will see a list with the period, net salary and signature status (Signed / Pending). Click to view the breakdown.</p>
+
+    <h3>Payslip detail</h3>
+    <p>Shows three cards (Gross, Deductions, Net) and the list of earnings and deductions with their amounts.</p>
+
+    <h3>Sign a payslip</h3>
+    <ol class="steps">
+      <li>Open the pending payslip.</li>
+      <li>Optionally write a comment.</li>
+      <li>Click <em>"Sign Payslip"</em>.</li>
+      <li>The status will change to Signed with the date and time. This cannot be undone.</li>
+    </ol>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 15. PROFILE -->
+<div class="content">
+  <div class="section">
+    <div class="section-header"><span class="section-num">15</span><h2 class="section-title">Profile & Security</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Personal account, password and sessions.</p>
+
+    <h3>Account information</h3>
+    <p>View your name, email and verification status.</p>
+
+    <h3>Language</h3>
+    <p>Available in <strong>Spanish</strong> and <strong>English</strong>. The change affects the entire interface, dates and numbers.</p>
+
+    <h3>Change password</h3>
+    <ol class="steps">
+      <li>Enter your current password.</li>
+      <li>Type and confirm the new password.</li>
+      <li>Click <em>"Update"</em>.</li>
+    </ol>
+
+    <h3>Active sessions</h3>
+    <p>View all sessions with device, IP and date. You can close individual sessions or all at once.</p>
+
+    <div class="tip amber">
+      <div class="tip-icon">!</div>
+      <div class="tip-body"><strong>Security</strong>If you suspect unauthorized access, close all sessions and change your password.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 16. ROLES -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">16</span><h2 class="section-title">Roles & Permissions</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Access hierarchy and permissions by module.</p>
+
+    <!-- ROLE HIERARCHY SVG -->
+    <div class="mockup-container">
+      <svg viewBox="0 0 720 110" xmlns="http://www.w3.org/2000/svg" style="display:block; width:100%;">
+        <rect width="720" height="110" fill="#0A0F1C"/>
+        <text x="360" y="22" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="9" font-weight="600" letter-spacing="2">ROLE HIERARCHY</text>
+
+        <g transform="translate(60,38)">
+          <rect width="130" height="52" rx="10" fill="#7C3AED" fill-opacity="0.1" stroke="#7C3AED" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#A78BFA" font-family="Inter,sans-serif" font-size="11" font-weight="700">OWNER</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Full control</text>
+        </g>
+        <text x="200" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(215,38)">
+          <rect width="130" height="52" rx="10" fill="#2563EB" fill-opacity="0.1" stroke="#2563EB" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#93BBFC" font-family="Inter,sans-serif" font-size="11" font-weight="700">ADMIN</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Full management</text>
+        </g>
+        <text x="355" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(370,38)">
+          <rect width="130" height="52" rx="10" fill="#06B6D4" fill-opacity="0.1" stroke="#06B6D4" stroke-opacity="0.25"/>
+          <text x="65" y="26" text-anchor="middle" fill="#67E8F9" font-family="Inter,sans-serif" font-size="11" font-weight="700">MANAGER</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Read-only</text>
+        </g>
+        <text x="510" y="68" fill="#64748B" font-family="Inter,sans-serif" font-size="14">&#x203A;</text>
+        <g transform="translate(525,38)">
+          <rect width="130" height="52" rx="10" fill="white" fill-opacity="0.04" stroke="white" stroke-opacity="0.1"/>
+          <text x="65" y="26" text-anchor="middle" fill="#94A3B8" font-family="Inter,sans-serif" font-size="11" font-weight="700">MEMBER</text>
+          <text x="65" y="42" text-anchor="middle" fill="#64748B" font-family="Inter,sans-serif" font-size="8">Basic access</text>
+        </g>
+      </svg>
+    </div>
+    <p class="mockup-label">System role hierarchy</p>
+
+    <h3>Permissions by module</h3>
+    <table>
+      <tr>
+        <th>Module</th>
+        <th><span class="role member">MBR</span></th>
+        <th><span class="role manager">MGR</span></th>
+        <th><span class="role admin">ADM</span></th>
+        <th><span class="role owner">OWN</span></th>
+      </tr>
+      <tr><td>Dashboard</td><td>View</td><td>View</td><td>View</td><td>View</td></tr>
+      <tr><td>Employees</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Contracts</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Attendance</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Overtime</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Holidays</td><td>View</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Concepts</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>Payroll</td><td>—</td><td>View</td><td>All</td><td>All</td></tr>
+      <tr><td>My Payslips</td><td>View/Sign</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><td>Settlement</td><td>—</td><td>—</td><td>All</td><td>All</td></tr>
+      <tr><td>Members</td><td>—</td><td>—</td><td>Manage</td><td>All</td></tr>
+      <tr><td>Settings</td><td>View</td><td>View</td><td>Edit</td><td>All</td></tr>
+    </table>
+    <p><strong>"All"</strong> = view, create, edit, delete. <strong>"View"</strong> = read-only. <strong>"—"</strong> = no access.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ 17. FUTURE IMPLEMENTATIONS -->
+<div class="content page-break">
+  <div class="section">
+    <div class="section-header"><span class="section-num">17</span><h2 class="section-title">Future Implementations</h2></div>
+    <div class="section-line"></div>
+    <p class="section-desc">Modules and features planned for upcoming versions of Silent Port.</p>
+
+    <div class="tip blue">
+      <div class="tip-icon">i</div>
+      <div class="tip-body"><strong>Roadmap</strong>The following features are in planning. Priorities and scope may be adjusted according to user needs.</div>
+    </div>
+
+    <h3>17.1 Unions and Collective Bargaining Agreements</h3>
+    <p><strong>Priority: High</strong></p>
+    <h4>Unions</h4>
+    <ul>
+      <li>CRUD for unions (name, code, representative, contact, union dues)</li>
+      <li>Employee assignment to unions at the contract level</li>
+      <li>Union dues as an automatic deduction concept (percentage or fixed amount)</li>
+      <li>Union dashboard: number of members, total costs</li>
+      <li>Affiliation/disaffiliation history per employee</li>
+    </ul>
+    <h4>Collective Bargaining Agreements</h4>
+    <ul>
+      <li>CRUD for agreements (name, code, validity from/to, associated union)</li>
+      <li>Salary scales by agreement (categories and amounts)</li>
+      <li>Concepts associated with the agreement (agreement bonus, seniority, attendance)</li>
+      <li>Agreement and category assignment at the employee contract level</li>
+      <li>Agreement expiration alerts and version history</li>
+    </ul>
+    <h4>Professional Categories</h4>
+    <ul>
+      <li>Category definition within each agreement</li>
+      <li>Base salary by category</li>
+      <li>Promotion and recategorization rules</li>
+    </ul>
+    <h4>AI-Powered Agreement Upload</h4>
+    <ul>
+      <li>Upload PDF/image of the collective bargaining agreement</li>
+      <li>Automatic AI extraction: categories, salary scales, supplements, validity</li>
+      <li>Human review: the system suggests and the user confirms/corrects before saving</li>
+      <li>Key clause detection (working hours, vacation, seniority bonus)</li>
+      <li>Agreement comparator: differences between previous and new version</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.2 Intelligent Employee Analysis (AI)</h3>
+    <p><strong>Priority: High</strong></p>
+    <h4>At-Risk Employee Detection</h4>
+    <ul>
+      <li>Risk score per employee based on: absenteeism, tardiness, excessive overtime, sanctions</li>
+      <li>Automatic alerts when an employee exceeds configurable thresholds</li>
+      <li>Dashboard with employee ranking by risk level</li>
+      <li>Trends: evolution of employee behavior</li>
+    </ul>
+    <h4>Predictive Analysis</h4>
+    <ul>
+      <li>Turnover prediction: probability of an employee resigning based on patterns</li>
+      <li>Attendance anomaly detection (abrupt behavior changes)</li>
+      <li>Automatic recommendations based on historical data</li>
+    </ul>
+    <h4>AI Reports</h4>
+    <ul>
+      <li>Monthly executive summary generated by AI in natural language</li>
+      <li>Work climate analysis based on objective metrics</li>
+      <li>Automatic insights by department and team</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.3 Reports and Dashboards</h3>
+    <p><strong>Priority: High</strong></p>
+    <ul>
+      <li>Labor cost charts by period (bar, line)</li>
+      <li>Month-over-month comparisons</li>
+      <li>Salary distribution by department, union and agreement</li>
+      <li>PDF report export</li>
+      <li>Dashboard KPIs: headcount, average cost, turnover</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.4 Notifications</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>Contract expiration (30/15/7 days in advance)</li>
+      <li>Payroll periods pending closure</li>
+      <li>Agreements about to expire</li>
+      <li>Pending approvals</li>
+      <li>Channel: in-app + email (configurable per user)</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.5 Audit / Logs</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>Change history for employees, contracts and payrolls</li>
+      <li>Record of who did what and when</li>
+      <li>Filters by entity, user and date</li>
+      <li>Log export</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.6 Multi-Level Approvals</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>Configurable flow: MANAGER &rarr; ADMIN &rarr; OWNER</li>
+      <li>Payroll approval before closing</li>
+      <li>Employee onboarding/offboarding approval</li>
+      <li>Pending approvals panel</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.7 Documents</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>File upload per employee (contracts, IDs, certificates)</li>
+      <li>Document categorization</li>
+      <li>Expiration dates with automatic alerts</li>
+      <li>Inline viewing (PDF and images)</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.8 Employee Portal (Self-Service)</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>Personal payslip view</li>
+      <li>Vacation and leave requests</li>
+      <li>Personal data updates</li>
+      <li>Digital payslip signing</li>
+      <li>Employment certificate downloads</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.9 Organization Chart</h3>
+    <p><strong>Priority: Low</strong></p>
+    <ul>
+      <li>Hierarchical company visualization</li>
+      <li>Drag &amp; drop to reorganize</li>
+      <li>Filters by department and area</li>
+      <li>Quick info on hover over each node</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.10 Performance Reviews</h3>
+    <p><strong>Priority: Low</strong></p>
+    <ul>
+      <li>Configurable evaluation cycles</li>
+      <li>Objectives and KPIs per employee</li>
+      <li>360&deg; feedback</li>
+      <li>Evaluation history</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.11 Finance and Accounting</h3>
+    <p><strong>Priority: Medium</strong></p>
+    <ul>
+      <li>Export to accounting formats (journal entries)</li>
+      <li>Payroll simulator (&ldquo;what if...?&rdquo;)</li>
+      <li>Salary history (timeline per employee)</li>
+      <li>Automatic tax reports</li>
+      <li>Integration with external accounting systems</li>
+    </ul>
+
+    <hr>
+
+    <h3>17.12 Technical / UX Improvements</h3>
+    <p><strong>Priority: Low</strong></p>
+    <ul>
+      <li><strong>PWA + push notifications</strong> &mdash; offline access and mobile notifications</li>
+      <li><strong>Dark/light mode toggle</strong> &mdash; currently dark only</li>
+      <li><strong>Internationalization (i18n)</strong> &mdash; multi-language support</li>
+      <li><strong>Bulk actions</strong> &mdash; multiple selection in tables for batch operations</li>
+      <li><strong>Keyboard shortcuts</strong> &mdash; quick navigation for power users</li>
+      <li><strong>Onboarding tour</strong> &mdash; interactive guide for new users</li>
+      <li><strong>Global search</strong> &mdash; unified search bar (Cmd+K)</li>
+    </ul>
+
+    <hr>
+
+    <h3>Priority Summary</h3>
+    <table>
+      <tr><th style="width:8%">#</th><th>Module</th><th style="width:20%">Priority</th></tr>
+      <tr><td>1</td><td>Unions, Collective Agreements and AI Upload</td><td><strong style="color:var(--red)">High</strong></td></tr>
+      <tr><td>2</td><td>Intelligent Employee Analysis (AI)</td><td><strong style="color:var(--red)">High</strong></td></tr>
+      <tr><td>3</td><td>Reports and Dashboards</td><td><strong style="color:var(--red)">High</strong></td></tr>
+      <tr><td>4</td><td>Notifications</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>5</td><td>Audit / Logs</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>6</td><td>Multi-Level Approvals</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>7</td><td>Documents</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>8</td><td>Employee Portal (Self-Service)</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>9</td><td>Organization Chart</td><td><strong style="color:var(--green)">Low</strong></td></tr>
+      <tr><td>10</td><td>Performance Reviews</td><td><strong style="color:var(--green)">Low</strong></td></tr>
+      <tr><td>11</td><td>Finance and Accounting</td><td><strong style="color:var(--amber)">Medium</strong></td></tr>
+      <tr><td>12</td><td>Technical / UX Improvements</td><td><strong style="color:var(--green)">Low</strong></td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ FOOTER -->
+<div class="doc-footer">
+  <p><strong>Silent Port</strong> &mdash; Payroll Management System</p>
+  <p>User Guide MVP v1.0 &mdash; March 2026</p>
+  <p style="margin-top:8px; color:#94A3B8; font-size:8.5pt;">This document covers all MVP modules and the future implementations roadmap.</p>
+</div>
+
+</body>
+</html>

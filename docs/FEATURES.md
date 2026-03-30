@@ -86,10 +86,17 @@ Cuando el backend agrega un endpoint nuevo, documentarlo aca antes de implementa
 #### Endpoints
 | Metodo | Ruta | Descripcion |
 |--------|------|-------------|
-| GET | `/companies` | Listar empresas del usuario |
+| GET | `/companies` | Listar empresas del usuario. Cada item incluye `myRole`, `isEmployee` (bool), `employeeId` (uuid o null) |
 | POST | `/companies` | Crear empresa |
-| GET | `/companies/:id` | Detalle de empresa |
+| GET | `/companies/:id` | Detalle de empresa. Incluye `isEmployee` (bool) y `employeeId` (uuid o null) del usuario actual |
 | PATCH | `/companies/:id` | Actualizar empresa |
+
+#### Cambio importante (2026-03-18): Employee Context
+Los endpoints `GET /companies` y `GET /companies/:id` ahora incluyen:
+- `isEmployee: boolean` — si el usuario actual tiene un Employee vinculado en esa empresa
+- `employeeId: string | null` — el UUID del Employee vinculado, o null
+
+**Uso en el frontend:** si `isEmployee === true`, mostrar "Mis Recibos" en el sidebar independientemente del rol del usuario. Esto permite que un ADMIN que tambien es empleado pueda ver y firmar sus recibos.
 
 #### Frontend Files
 - `src/lib/api/companies.ts`
@@ -815,6 +822,117 @@ Si el backend no tiene Redis configurado o Redis cae:
 - `src/lib/api/payroll.ts` — actualizar `calculatePayroll` para manejar 202 + agregar `getJobStatus`
 - `src/lib/types/payroll.ts` — agregar `JobStatusResponse`
 - `src/app/(dashboard)/companies/[companyId]/payroll/runs/[runId]/page.tsx` — implementar polling con indicador de progreso
+
+---
+
+### 21. Backups (Admin Panel)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: SUPER_ADMIN
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/admin/backups` | Listar todos los backups en S3 |
+| POST | `/admin/backups` | Crear backup manual |
+
+#### Reglas de negocio
+- Solo SUPER_ADMIN puede crear backups manuales (SUPER_VIEWER solo lectura)
+- Backups automáticos: semanales (domingo 3AM) + mensuales (1ro de cada mes 3AM)
+- Response de GET: array de `{ filename, size, lastModified }`
+- Response de POST: `{ filename, size }`
+
+#### Frontend Files sugeridos
+- `src/lib/api/admin.ts` (agregar listBackups, createManualBackup)
+- `src/lib/types/admin.ts` (agregar BackupFile interface)
+- `src/app/(dashboard)/admin/backups/page.tsx`
+
+---
+
+### 22. Planes y Suscripciones — Selección de Plan + Comprobantes de Pago
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: Autenticado (planes), OWNER/ADMIN (comprobantes)
+
+#### Cambios en endpoints existentes
+
+| Metodo | Ruta | Cambio |
+|--------|------|--------|
+| POST | `/companies` | Ahora acepta `planCode` opcional (default: `FREE`). Retorna `subscriptionStatus` y `planCode` |
+
+#### Endpoints nuevos
+
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/plans` | Listar planes activos con limites y features (autenticado, no admin) |
+
+#### Nuevo estado: `PENDING_PAYMENT`
+Cuando el usuario elige un plan pago al crear empresa, la suscripcion queda en `PENDING_PAYMENT`:
+- Bloquea todo excepto: ver empresa (`GET /companies/:cid`), ver suscripcion (`GET /subscription`), subir comprobante (`POST /subscription/payment-proof`)
+- El admin aprueba → pasa a `ACTIVE`
+- El admin rechaza → el usuario puede reintentar
+
+#### Planes disponibles
+
+| Plan | Max empleados | Max empresas | Max miembros | Runs/mes | Export | Sindicatos | Formulas | IA Upload | Precio mensual |
+|------|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|---:|
+| FREE | 10 | 1 | 1 | 2 | ❌ | ❌ | ❌ | ❌ | $0 |
+| STARTER | 50 | 3 | 5 | ∞ | ✅ | ✅ | ✅ | ❌ | $15,000 |
+| PRO | 100 | 10 | 15 | ∞ | ✅ | ✅ | ✅ | ✅ | $35,000 |
+| ENTERPRISE | 500 | ∞ | ∞ | ∞ | ✅ | ✅ | ✅ | ✅ | $75,000 |
+
+#### Reglas de negocio
+- Al crear empresa sin `planCode` → se asigna FREE con status ACTIVE (sin vencimiento)
+- Al crear empresa con plan pago → se asigna con status PENDING_PAYMENT
+- `0` en limites numericos = ilimitado
+- Feature flags: `featureExportPdf`, `featureUnions`, `featureFormulas`, `featureAiUpload`
+- Validacion de `maxCompanies` al crear empresa (cuenta empresas donde el user es OWNER)
+
+#### Frontend Files sugeridos
+- `src/lib/api/plans.ts` — `getPlans()`
+- `src/lib/types/plan.ts` — `SubscriptionPlan` con limites y features
+- `src/app/(dashboard)/companies/new/page.tsx` — refactorizar: paso 1 datos + paso 2 elegir plan
+
+---
+
+### 23. Comprobantes de Pago (Payment Proofs)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: OWNER/ADMIN (empresa), SUPER_ADMIN/SUPER_VIEWER (admin)
+
+#### Endpoints — Usuario (empresa)
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/subscription/payment-proof` | Subir comprobante (multipart, campo `file`, max 5MB, JPG/PNG/WebP/PDF) |
+| GET | `/companies/:cid/subscription/payment-proof` | Listar mis comprobantes (historial con status) |
+
+#### Endpoints — Admin
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/admin/payment-proofs` | Listar todos los comprobantes (paginado, filtro `?status=PENDING`) |
+| GET | `/admin/payment-proofs/:id` | Detalle del comprobante con info de empresa y plan |
+| GET | `/admin/payment-proofs/:id/file` | Descargar/ver el archivo del comprobante |
+| POST | `/admin/payment-proofs/:id/approve` | Aprobar → suscripcion pasa a ACTIVE (o TRIAL si plan tiene trialDays) |
+| POST | `/admin/payment-proofs/:id/reject` | Rechazar con razon `{reason}` → email al usuario |
+
+#### Reglas de negocio
+- Solo se puede subir comprobante si la suscripcion esta en `PENDING_PAYMENT`
+- No se puede subir si ya hay un comprobante `PENDING` (debe esperar revision)
+- Al aprobar: suscripcion → ACTIVE/TRIAL, se setean currentPeriodStart/End
+- Al rechazar: suscripcion sigue en PENDING_PAYMENT, usuario puede subir otro
+- Emails automaticos: al subir (notifica admins), al aprobar (notifica owner), al rechazar (notifica owner con razon)
+- Archivos se guardan en filesystem local: `uploads/payment-proofs/{companyId}/`
+
+#### Estados del comprobante (PaymentProofStatus)
+| Estado | Significado |
+|--------|------------|
+| `PENDING` | Esperando revision del admin |
+| `APPROVED` | Aprobado, suscripcion activada |
+| `REJECTED` | Rechazado con razon |
+
+#### Frontend Files sugeridos
+- `src/lib/api/payment-proofs.ts`
+- `src/lib/types/payment-proof.ts`
+- `src/app/(dashboard)/companies/[companyId]/subscription/payment-proof/page.tsx`
+- `src/app/(dashboard)/admin/payment-proofs/page.tsx`
+- `src/app/(dashboard)/admin/payment-proofs/[proofId]/page.tsx`
 
 ---
 
