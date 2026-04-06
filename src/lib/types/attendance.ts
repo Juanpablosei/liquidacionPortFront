@@ -34,3 +34,34 @@ export interface Holiday {
   createdAt:  string;
   updatedAt:  string;
 }
+
+export type IncidentType   = 'ABSENCE' | 'DEFICIT' | 'SURPLUS' | 'UNSCHEDULED_ATTENDANCE';
+export type IncidentStatus = 'PENDING' | 'ACKNOWLEDGED' | 'DISMISSED';
+
+export interface AttendanceIncident {
+  id:              string;
+  companyId:       string;
+  employeeId:      string;
+  date:            string;
+  type:            IncidentType;
+  status:          IncidentStatus;
+  expectedMinutes: number | null;
+  actualMinutes:   number | null;
+  deltaMinutes:    number | null;
+  notes:           string | null;
+  reviewNote:      string | null;
+  reviewedAt:      string | null;
+  createdAt:       string;
+  updatedAt:       string;
+  employee?:       { firstName: string; lastName: string };
+}
+
+export interface IncidentSummary {
+  ABSENCE:                number;
+  DEFICIT:                number;
+  SURPLUS:                number;
+  UNSCHEDULED_ATTENDANCE: number;
+  PENDING:                number;
+  ACKNOWLEDGED:           number;
+  DISMISSED:              number;
+}

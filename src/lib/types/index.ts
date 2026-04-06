@@ -8,3 +8,7 @@ export type * from './settlement';
 export type * from './convenio';
 export type * from './admin';
 export type * from './plan';
+export * from './shift';
+export * from './absence';
+export * from './vacation';
+export * from './leave';

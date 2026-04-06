@@ -936,6 +936,234 @@ Cuando el usuario elige un plan pago al crear empresa, la suscripcion queda en `
 
 ---
 
+### 24. Turnos de Empresa (Shifts)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN (CRUD)
+
+#### Descripcion
+Los turnos definen los horarios laborales de la empresa (ej: "Turno mañana 8-16hs"). Los empleados se asocian a un turno via su contrato. El motor de asistencia usa el turno para detectar llegadas tarde, ausencias y horas extra.
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/shifts` | Crear turno |
+| GET | `/companies/:cid/shifts` | Listar turnos activos |
+| GET | `/companies/:cid/shifts/:id` | Detalle de turno |
+| PATCH | `/companies/:cid/shifts/:id` | Editar turno |
+| DELETE | `/companies/:cid/shifts/:id` | Desactivar turno (soft delete) |
+
+#### Reglas de negocio
+- Un turno tiene entradas por dia de la semana (`weekday: 0-6`, donde 0=domingo)
+- Cada entrada tiene `startTime` y `endTime` en formato `HH:mm`
+- Los empleados con `shiftId` en su contrato usan ese turno para el procesamiento de asistencia
+- Desactivar un turno no afecta contratos existentes
+
+#### Frontend Files sugeridos
+- `src/lib/api/shifts.ts`
+- `src/lib/types/shift.ts`
+- `src/app/(dashboard)/companies/[companyId]/shifts/page.tsx`
+
+---
+
+### 25. Procesamiento de Asistencia — Incidentes y Alertas
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN/MANAGER (gestionar)
+
+#### Descripcion
+El backend procesa la asistencia registrada comparandola contra el turno contractual del empleado. Detecta automaticamente ausencias, deficit de horas, excedentes y genera incidentes que el operador puede revisar.
+
+#### Endpoints — Incidentes
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/attendance-incidents` | Listar incidentes (filtros: employeeId, date, type, status) |
+| GET | `/companies/:cid/attendance-incidents/summary` | Resumen por tipo y estado |
+| GET | `/companies/:cid/attendance-incidents/:id` | Detalle de incidente |
+| POST | `/companies/:cid/attendance-incidents/:id/acknowledge` | Reconocer incidente |
+| POST | `/companies/:cid/attendance-incidents/:id/dismiss` | Descartar incidente |
+
+#### Endpoints — Alertas
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/attendance-alerts/generate` | Generar alertas para un rango de fechas (OWNER/ADMIN) |
+
+#### Tipos de incidente (IncidentType)
+| Tipo | Significado |
+|------|------------|
+| `ABSENCE` | Dia laboral sin registro de asistencia |
+| `DEFICIT` | Trabajo menos minutos de lo pactado |
+| `SURPLUS` | Trabajo mas minutos de lo pactado |
+| `UNSCHEDULED_ATTENDANCE` | Registro en dia no laboral segun turno |
+
+#### Estados de incidente (IncidentStatus)
+| Estado | Significado |
+|--------|------------|
+| `PENDING` | Sin revisar |
+| `ACKNOWLEDGED` | Revisado y aceptado por el operador |
+| `DISMISSED` | Descartado (no impacta en nomina) |
+
+#### Frontend Files sugeridos
+- `src/lib/api/attendance-incidents.ts`
+- `src/lib/types/attendance-incident.ts`
+- `src/app/(dashboard)/companies/[companyId]/attendance/incidents/page.tsx`
+
+---
+
+### 26. Ausencias (Absences)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN/MANAGER (CRUD + aprobar)
+
+#### Descripcion
+Registro de ausencias de empleados con workflow de aprobacion. Las ausencias aprobadas impactan en el calculo de salario del periodo.
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/absences` | Registrar ausencia |
+| GET | `/companies/:cid/absences` | Listar ausencias (filtros: employeeId, type, status, dateFrom, dateTo) |
+| GET | `/companies/:cid/absences/report/absenteeism` | Reporte de ausentismo |
+| GET | `/companies/:cid/absences/:id` | Detalle de ausencia |
+| PATCH | `/companies/:cid/absences/:id` | Editar ausencia (solo si PENDING) |
+| POST | `/companies/:cid/absences/:id/review` | Aprobar o rechazar ausencia |
+| DELETE | `/companies/:cid/absences/:id` | Eliminar ausencia (solo si PENDING) |
+
+#### Tipos de ausencia (AbsenceType)
+| Tipo | Descripcion |
+|------|------------|
+| `UNJUSTIFIED` | Falta injustificada — descuenta del salario |
+| `JUSTIFIED` | Falta justificada — puede no descontar segun config |
+| `NOTIFIED` | Falta con aviso previo |
+
+#### Estados (AbsenceStatus)
+`PENDING` → `APPROVED` o `REJECTED`
+
+#### Body de POST/PATCH
+```typescript
+interface CreateAbsenceDto {
+  employeeId: string;    // UUID
+  date: string;          // ISO date 'YYYY-MM-DD'
+  type: AbsenceType;
+  reason?: string;
+}
+```
+
+#### Body de POST review
+```typescript
+interface ReviewAbsenceDto {
+  status: 'APPROVED' | 'REJECTED';
+  reviewNote?: string;
+}
+```
+
+#### Frontend Files sugeridos
+- `src/lib/api/absences.ts`
+- `src/lib/types/absence.ts`
+- `src/app/(dashboard)/companies/[companyId]/absences/page.tsx`
+
+---
+
+### 27. Vacaciones (Vacations — LCT Art. 150)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN/MANAGER (gestionar)
+
+#### Descripcion
+Modulo de vacaciones conforme LCT Art. 150. El backend calcula automaticamente los dias que corresponden segun la antiguedad del empleado. Incluye saldos, solicitudes y workflow de aprobacion.
+
+#### Escala de dias (LCT Art. 150)
+| Antiguedad | Dias habiles |
+|-----------|:---:|
+| Hasta 5 anos | 14 |
+| 5 a 10 anos | 21 |
+| 10 a 20 anos | 28 |
+| Mas de 20 anos | 35 |
+
+#### Endpoints
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/vacations/balances` | Saldos de vacaciones de todos los empleados activos |
+| GET | `/companies/:cid/vacations/balances/:employeeId` | Saldo de vacaciones de un empleado |
+| POST | `/companies/:cid/vacations/requests` | Crear solicitud de vacaciones |
+| GET | `/companies/:cid/vacations/requests` | Listar solicitudes (filtros: employeeId, status, year) |
+| GET | `/companies/:cid/vacations/requests/:id` | Detalle de solicitud |
+| POST | `/companies/:cid/vacations/requests/:id/review` | Aprobar o rechazar solicitud |
+| POST | `/companies/:cid/vacations/requests/:id/cancel` | Cancelar solicitud |
+
+#### Response de balance
+```typescript
+interface VacationBalance {
+  employeeId: string;
+  employeeName: string;
+  yearsOfService: number;
+  entitledDays: number;       // dias que corresponden por LCT
+  usedDays: number;           // dias ya tomados en el ano
+  pendingDays: number;        // dias en solicitudes pendientes
+  availableDays: number;      // entitledDays - usedDays - pendingDays
+}
+```
+
+#### Frontend Files sugeridos
+- `src/lib/api/vacations.ts`
+- `src/lib/types/vacation.ts`
+- `src/app/(dashboard)/companies/[companyId]/vacations/page.tsx` — listado de solicitudes + saldos
+- `src/app/(dashboard)/companies/[companyId]/vacations/balances/page.tsx` — tabla de saldos por empleado
+
+---
+
+### 28. Licencias (Leaves — LCT)
+**Status**: Backend listo | Frontend pendiente
+**Rol minimo**: MEMBER (ver), OWNER/ADMIN/MANAGER (gestionar)
+
+#### Descripcion
+Modulo de licencias remuneradas y no remuneradas segun LCT y convenios. Cada tipo de licencia tiene duracion y remuneracion predefinidas por ley. Incluye workflow de solicitud y aprobacion.
+
+#### Endpoints — Tipos de Licencia
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| GET | `/companies/:cid/leave-types` | Listar tipos (globales LCT + personalizados de la empresa) |
+| POST | `/companies/:cid/leave-types` | Crear tipo de licencia personalizado (OWNER/ADMIN) |
+| PATCH | `/companies/:cid/leave-types/:id` | Editar tipo personalizado |
+| DELETE | `/companies/:cid/leave-types/:id` | Desactivar tipo personalizado |
+
+#### Endpoints — Solicitudes
+| Metodo | Ruta | Descripcion |
+|--------|------|-------------|
+| POST | `/companies/:cid/leaves` | Crear solicitud de licencia |
+| GET | `/companies/:cid/leaves` | Listar solicitudes (filtros: employeeId, status, typeCode) |
+| GET | `/companies/:cid/leaves/summary/:employeeId` | Resumen anual de licencias por empleado |
+| GET | `/companies/:cid/leaves/:id` | Detalle de solicitud |
+| POST | `/companies/:cid/leaves/:id/review` | Aprobar o rechazar solicitud |
+| POST | `/companies/:cid/leaves/:id/cancel` | Cancelar solicitud |
+
+#### Tipos de licencia LCT (globales, pre-cargados)
+| Codigo | Descripcion | Dias | Remunerada |
+|--------|-------------|:---:|:---:|
+| `SICKNESS` | Enfermedad/accidente (Art. 208) | Segun antiguedad | Si |
+| `MATERNITY` | Maternidad (Art. 177) | 90 dias | Si |
+| `MARRIAGE` | Matrimonio | 10 | Si |
+| `BEREAVEMENT` | Duelo familiar | 3 | Si |
+| `EXAM` | Examen | 10/ano | Si |
+| `BLOOD_DONATION` | Donacion de sangre | 1 | Si |
+| `MOVING` | Mudanza | 2 | Si |
+| `UNPAID` | Sin goce de sueldo | Indefinido | No |
+
+#### Body de POST `/companies/:cid/leaves`
+```typescript
+interface CreateLeaveRequestDto {
+  employeeId: string;    // UUID
+  leaveTypeId: string;   // UUID del tipo de licencia
+  startDate: string;     // 'YYYY-MM-DD'
+  endDate: string;       // 'YYYY-MM-DD'
+  reason?: string;
+}
+```
+
+#### Frontend Files sugeridos
+- `src/lib/api/leaves.ts`
+- `src/lib/types/leave.ts`
+- `src/app/(dashboard)/companies/[companyId]/leaves/page.tsx` — listado de solicitudes
+- `src/app/(dashboard)/companies/[companyId]/leaves/types/page.tsx` — gestion de tipos
+
+---
+
 ## Features Futuras (Pendientes de Backend)
 
 <!-- Cuando el backend implemente algo nuevo, agregar aca con el template -->

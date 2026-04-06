@@ -42,4 +42,9 @@ export const ROUTES = {
   adminCompanies:     '/admin/companies',
   adminBackups:       '/admin/backups',
   adminPaymentProofs: '/admin/payment-proofs',
+  shifts:              (cid: string) => `/companies/${cid}/shifts`,
+  attendanceIncidents: (cid: string) => `/companies/${cid}/attendance-incidents`,
+  absences:            (cid: string) => `/companies/${cid}/absences`,
+  vacations:           (cid: string) => `/companies/${cid}/vacations`,
+  leaves:              (cid: string) => `/companies/${cid}/leaves`,
 } as const;

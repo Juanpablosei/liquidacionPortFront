@@ -25,6 +25,11 @@ import {
   ClipboardList,
   Handshake,
   HardDrive,
+  CalendarClock,
+  AlertTriangle,
+  UserMinus,
+  Umbrella,
+  Stethoscope,
 } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth-store';
 import { useCompanyStore } from '@/stores/company-store';
@@ -129,7 +134,12 @@ export function Sidebar() {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
-    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,             minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
+    { href: ROUTES.shifts(companyId),               icon: CalendarClock,  label: t.sidebar.shifts,              minRole: 'ADMIN' },
+    { href: ROUTES.attendanceIncidents(companyId),  icon: AlertTriangle,  label: t.sidebar.attendanceIncidents, minRole: 'MANAGER' },
+    { href: ROUTES.absences(companyId),             icon: UserMinus,      label: t.sidebar.absences,            minRole: 'MANAGER' },
+    { href: ROUTES.vacations(companyId),            icon: Umbrella,       label: t.sidebar.vacations,           minRole: 'MANAGER' },
+    { href: ROUTES.leaves(companyId),               icon: Stethoscope,    label: t.sidebar.leaves,              minRole: 'MANAGER' },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
@@ -317,7 +327,12 @@ export function MobileSidebar({ onClose }: { onClose: () => void }) {
     { href: ROUTES.payroll(companyId),    icon: Receipt,         label: t.sidebar.payroll,     minRole: 'MANAGER' },
     { href: ROUTES.payslips(companyId),  icon: FileText,        label: t.sidebar.payslips,    minRole: 'MANAGER' },
     { href: ROUTES.convenios(companyId), icon: Scale,           label: t.sidebar.convenios },
-    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,      minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
+    { href: ROUTES.unions(companyId),    icon: Handshake,       label: t.sidebar.unions,             minRole: 'ADMIN', badge: !features.unions ? 'PRO' : undefined },
+    { href: ROUTES.shifts(companyId),               icon: CalendarClock,  label: t.sidebar.shifts,              minRole: 'ADMIN' },
+    { href: ROUTES.attendanceIncidents(companyId),  icon: AlertTriangle,  label: t.sidebar.attendanceIncidents, minRole: 'MANAGER' },
+    { href: ROUTES.absences(companyId),             icon: UserMinus,      label: t.sidebar.absences,            minRole: 'MANAGER' },
+    { href: ROUTES.vacations(companyId),            icon: Umbrella,       label: t.sidebar.vacations,           minRole: 'MANAGER' },
+    { href: ROUTES.leaves(companyId),               icon: Stethoscope,    label: t.sidebar.leaves,              minRole: 'MANAGER' },
     { href: ROUTES.myPayslips(companyId), icon: FileText,        label: t.sidebar.myPayslips, hidden: !activeCompany?.isEmployee },
   ] : [
     { href: ROUTES.companies, icon: Building2, label: t.sidebar.myCompanies, exact: true },
